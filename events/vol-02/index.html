@@ -109,6 +109,28 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
 .agenda li.p .t{color:var(--acc)}
 .agenda li.p .l{font-family:var(--fd);font-weight:700;letter-spacing:-.015em;color:var(--txt)}
 
+/* ---------- slide 3 : the instrument ---------- */
+.s3{position:relative;z-index:1;display:flex;align-items:center;
+  gap:clamp(32px,5vw,96px);width:100%;max-width:1500px}
+.s3-type{min-width:0;flex:1 1 auto}
+.s3 h2{font-family:var(--fd);font-weight:800;letter-spacing:-.022em;line-height:1.04;
+  margin:clamp(12px,1.6vh,22px) 0 0;font-size:clamp(32px,4.9vw,92px);color:var(--txt)}
+.s3 h2 em{font-style:normal;color:var(--acc)}
+.steps{list-style:none;margin:clamp(22px,3.2vh,46px) 0 0;padding:0;
+  display:grid;gap:clamp(10px,1.7vh,24px)}
+.steps li{display:grid;grid-template-columns:clamp(34px,3.4vw,64px) 1fr;
+  align-items:baseline;gap:clamp(12px,1.6vw,28px)}
+.steps .n{font-family:var(--fd);font-weight:700;font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;font-size:clamp(18px,2.2vw,40px);color:var(--acc)}
+.steps .l{font-family:var(--fb);font-weight:400;line-height:1.25;
+  font-size:clamp(18px,2.2vw,40px);color:var(--txt2)}
+.steps li:last-child .l{font-family:var(--fd);font-weight:700;letter-spacing:-.015em;color:var(--txt)}
+.s3-code{flex:none;display:flex;flex-direction:column;align-items:center;
+  gap:clamp(10px,1.4vh,18px)}
+.s3-code img{display:block;width:clamp(200px,31vmin,420px);height:auto;border-radius:clamp(12px,1.6vmin,22px)}
+.s3-code span{font-family:var(--fd);font-weight:600;letter-spacing:.01em;
+  font-size:clamp(12px,1.1vw,19px);color:var(--txt3)}
+
 /* ---------- chrome ---------- */
 .rail{position:absolute;left:var(--pad);bottom:calc(var(--pad) * .58);z-index:3;display:flex;gap:8px}
 .rail i{display:block;width:clamp(18px,2.2vw,34px);height:2px;background:var(--hair);transition:background 300ms}
@@ -125,6 +147,8 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
 @media (max-aspect-ratio:1/1){
   .s1{flex-direction:column;align-items:flex-start;justify-content:center;gap:clamp(20px,4vh,40px)}
   .s2{max-width:100%}
+  .s3{flex-direction:column;align-items:flex-start;gap:clamp(20px,4vh,40px)}
+  .s3 p{max-width:100%}
   .texture{right:-45%;opacity:calc(var(--fig-op) * .7)}
 }
 </style>
@@ -170,7 +194,26 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
     </div>
   </section>
 
-  <div class="rail" aria-hidden="true"><i data-r="1"></i><i data-r="2"></i></div>
+  <!-- ============ SLIDE 3 : 808.html ============ -->
+  <section class="slide" data-slide="3" data-dwell="11000">
+    <div class="s3">
+      <div class="s3-type">
+        <span class="eyebrow">While you mingle</span>
+        <h2>Make a beat.<br><em>Play it on the big speakers.</em></h2>
+        <ol class="steps">
+          <li><span class="n">1</span><span class="l">Scan the code</span></li>
+          <li><span class="n">2</span><span class="l">Tap out a pattern</span></li>
+          <li><span class="n">3</span><span class="l">Bring your phone to Ben, aux and USB&#8209;C ready</span></li>
+        </ol>
+      </div>
+      <div class="s3-code">
+        <img src="qr-808-coral.png" width="900" height="900" alt="QR code to benjaminmullins.tv/808" decoding="async">
+        <span>benjaminmullins.tv/808</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="rail" aria-hidden="true"><i data-r="1"></i><i data-r="2"></i><i data-r="3"></i></div>
   <p class="hint" id="hint">L light and dark · space pause · arrows move</p>
 </div>
 
