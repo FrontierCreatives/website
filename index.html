@@ -39,20 +39,20 @@
     },
     {
       "@type": "Event",
-      "name": "Frontier Creatives Vol. 02: Designing with AI",
-      "startDate": "2026-08-06T17:00:00-07:00",
+      "name": "Frontier Creatives Vol. 03: Designing with AI",
+      "startDate": "2026-09-03T17:00:00-07:00",
       "eventStatus": "https://schema.org/EventScheduled",
       "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
       "location": {
         "@type": "Place",
         "name": "Pioneer Square Labs",
-        "address": { "@type": "PostalAddress", "addressLocality": "Seattle", "addressRegion": "WA", "addressCountry": "US" }
+        "address": { "@type": "PostalAddress", "streetAddress": "240 2nd Ave S #300", "addressLocality": "Seattle", "addressRegion": "WA", "postalCode": "98104", "addressCountry": "US" }
       },
-      "description": "Short talks from people designing with AI and sharing their process. Next up: Ben Mullins on his 808 drum machine, Sarra Naemi on agentic workflows for playable games, and Patrick Neeman on A2UI component alignment.",
+      "description": "Short talks from people designing with AI and sharing their process. Real work, real wrong turns, and open conversation after.",
       "image": "https://frontiercreatives.design/og.jpg",
       "organizer": { "@id": "https://frontiercreatives.design/#org" },
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "url": "https://luma.com/loge2wi0", "availability": "https://schema.org/InStock" },
-      "url": "https://luma.com/loge2wi0"
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "url": "https://luma.com/pejuj8yl", "availability": "https://schema.org/InStock" },
+      "url": "https://luma.com/pejuj8yl"
     }
   ]
 }
@@ -163,6 +163,10 @@ h3{font-family:var(--font-display);font-weight:600;font-size:22px;line-height:1.
 .rows a.rowi:nth-child(4n+3):hover .ttl{color:var(--coral-ink)}
 .rows a.rowi:nth-child(4n+4):hover .ttl{color:var(--teal-ink)}
 body.dark .rows a.rowi:hover .ttl{color:var(--text-accent)}
+/* status marker: eyebrow style, muted, riding with the volume number.
+   Guide: sentence case everywhere, the eyebrow is the only label style. */
+.rowi .done{display:block;margin-top:5px;font-family:var(--font-display);font-weight:600;
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
 
 /* newsletter */
 .in{font-family:var(--font-body);font-size:18px;padding:14px 0;border:none;border-bottom:2px solid var(--ink-200);background:transparent;width:100%;max-width:360px;transition:border-color var(--dur-fast) var(--ease);color:var(--text-primary)}
@@ -198,6 +202,7 @@ body.dark .rows a.rowi:hover .ttl{color:var(--text-accent)}
   .btn{padding:14px 26px;font-size:16px}
   .rowi{flex-direction:column;align-items:flex-start;gap:5px;padding:18px 0}
   .rowi .lead{min-width:0;font-size:13px}
+  .rowi .done{display:inline;margin:0 0 0 10px}
   .rowi .ttl{font-size:20px}
   .rowi .tr{font-size:14px}
   .paths{gap:30px;margin-top:22px}
@@ -272,6 +277,53 @@ body.dark .in{border-color:#3E362F}
 .fcthanks .tickmark{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:999px;background:var(--brand);color:#fff;font-size:23px;font-weight:700;margin-bottom:8px}
 .fcthanks h3{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,3vw,32px);letter-spacing:-.015em;color:var(--text-primary);margin:0}
 .fcthanks p{color:var(--text-secondary);margin:0;max-width:var(--reading)}
+
+/* ===== recap: a photo run, not a card grid =====
+   Bands (panoramic frames) span the full container at their natural ratio;
+   pairs sit two-up at a common 3:2 so the rhythm stays even. No borders,
+   no chrome; spacing does the work. */
+.recap{margin-top:58px}
+.recap h3{margin-bottom:12px}
+.photorun{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:32px 0 16px}
+.photorun figure{margin:0;min-width:0}
+.photorun .band{grid-column:1/-1}
+.photorun img{display:block;width:100%;height:auto;border-radius:var(--radius-md);
+  background:var(--surface-alt);cursor:zoom-in;
+  transition:transform var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease)}
+.photorun .pair img{aspect-ratio:3/2;object-fit:cover}
+.photorun img:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+/* focus: a soft accent ring, not a hard outline */
+.photorun img:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(233,128,94,.42)}
+
+/* lightbox: always a dark surface, so it pins the dark tokens rather than
+   inheriting the page's, which would strand it in ?light mode. */
+.lbox{--lb-ink:#9C9287;--lb-body:#C4BBB0;--lb-accent:#E9805E;
+  position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;padding:44px 20px;
+  background:rgba(0,0,0,.93);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.lbox[hidden]{display:none}
+.lbox img{max-width:min(1200px,94vw);max-height:80vh;width:auto;height:auto;
+  object-fit:contain;border-radius:var(--radius-md)}
+.lbcap{margin:0;font-family:var(--font-display);font-weight:500;font-size:15px;
+  color:var(--lb-body);text-align:center;max-width:640px}
+/* controls warm to the accent on hover; no filled chip, no container */
+.lbbtn{position:absolute;display:inline-flex;background:none;border:none;padding:14px;
+  color:var(--lb-ink);cursor:pointer;transition:color var(--dur-fast) var(--ease)}
+.lbbtn:hover{color:var(--lb-accent)}
+.lbbtn svg{display:block;width:24px;height:24px}
+.lbbtn:focus-visible{outline:none;border-radius:var(--radius-full);
+  box-shadow:0 0 0 3px rgba(233,128,94,.42)}
+.lbclose{top:14px;right:14px}
+.lbprev{left:8px;top:50%;transform:translateY(-50%)}
+.lbnext{right:8px;top:50%;transform:translateY(-50%)}
+@media (max-width:680px){
+  .photorun{grid-template-columns:1fr;gap:12px;margin:26px 0 14px}
+  .photorun .pair img{aspect-ratio:auto}
+  .lbox{padding:56px 12px;-webkit-backdrop-filter:none;backdrop-filter:none;
+    background:rgba(0,0,0,.97)}
+  .lbox img{max-height:70vh}
+  .lbbtn{padding:12px}
+}
 </style>
 </head>
 <body>
@@ -298,27 +350,24 @@ body.dark .in{border-color:#3E362F}
   <!-- EVENTS -->
   <section id="events" data-fig="1">
     <div class="col">
-      <span class="eyebrow">Vol. 02 · Next event</span>
+      <span class="eyebrow">Vol. 03 · Next event</span>
       <h2><span class="hl">Designing with AI.</span></h2>
-      <p class="lede"><span class="hl">Short talks from people designing with AI and sharing their process. Next up:</span></p>
-      <p class="lede"><span class="hl">Ben Mullins (AI Enablement, Meta) built a <a href="https://benjaminmullins.tv/808/" target="_blank" rel="noopener">drum machine</a> and will show how far AI can carry taste alone, (spoiler, it can't) and how yelling at your agent to fix broken geometry is sometimes a futile effort.</span></p>
-      <p class="lede"><span class="hl">Sarra Naemi (Stemtopia) demystifies agentic workflows for taking design through engineering into playable games that teach.</span></p>
-      <p class="lede"><span class="hl">Patrick Neeman (Substack, Workday) investigates how we might help product teams align on how A2UI components render across every surface to understand intent before building real UI.</span></p>
-      <p class="small tert"><span class="hl">More talks and open conversation to follow.</span></p>
+      <p class="lede"><span class="hl">Short talks from people designing with AI and sharing their process. Real work, real wrong turns, and a room that stays late. We&rsquo;ll also be running a panel with some TBA heavy-design-hitters here in Seattle.</span></p>
+      <p class="lede"><span class="hl">The lineup is coming together. Built something you want to show? <a href="#contact">Get in touch</a> and we&rsquo;ll find you a slot.</span></p>
       <div class="detail-row">
-        <div class="detail"><div class="k">Date</div><div class="v">Aug 6, 5pm</div></div>
+        <div class="detail"><div class="k">Date</div><div class="v">Sept 3, 5pm</div></div>
         <div class="detail"><div class="k">Where</div><div class="v">Pioneer Square Labs</div></div>
         <div class="detail"><div class="k">Cost</div><div class="v">Free</div></div>
       </div>
-      <a class="btn" href="https://luma.com/loge2wi0" target="_blank" rel="noopener">RSVP on Luma <span class="arw">→</span></a>
+      <a class="btn" href="https://luma.com/pejuj8yl" target="_blank" rel="noopener">RSVP on Luma <span class="arw">→</span></a>
 
       <h3 style="margin-top:76px"><span class="hl">All events</span></h3>
       <div class="rows">
-        <a class="rowi" href="https://luma.com/pejuj8yl" target="_blank" rel="noopener"><span class="lead">Vol. 03</span><div style="flex:1"><div class="ttl">More designing with AI.</div><div class="mt">Want to share something you've built? Get in touch.</div></div><span class="tr">Sept 3, 2026 →</span></a>
-        <a class="rowi" href="https://luma.com/loge2wi0" target="_blank" rel="noopener"><span class="lead">Vol. 02</span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Ben Mullins, Sarra Naemi, and Patrick Neeman on drum machines, agentic workflows, and A2UI.</div></div><span class="tr">Aug 6, 2026 →</span></a>
-        <a class="rowi" href="https://luma.com/x1futy5p" target="_blank" rel="noopener"><span class="lead">Vol. 01</span><div style="flex:1"><div class="ttl">Orientation.</div><div class="mt">The inaugural gathering: lightning talks, open conversation, and drinks.</div></div><span class="tr">Jun 9, 2026 →</span></a>
+        <a class="rowi" href="https://luma.com/pejuj8yl" target="_blank" rel="noopener"><span class="lead">Vol. 03</span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Want to share something you&rsquo;ve built? Get in touch.</div></div><span class="tr">Sept 3, 2026 →</span></a>
+        <a class="rowi" href="#learning"><span class="lead">Vol. 02<span class="done">Complete</span></span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Patrick Neeman, Sarra Naemi, and Ben Mullins on journey mapping, agentic workflows, and drum machines. Recap and photos below.</div></div><span class="tr">Aug 6, 2026 →</span></a>
+        <a class="rowi" href="https://luma.com/x1futy5p" target="_blank" rel="noopener"><span class="lead">Vol. 01<span class="done">Complete</span></span><div style="flex:1"><div class="ttl">Orientation.</div><div class="mt">The inaugural gathering: lightning talks, open conversation, and drinks.</div></div><span class="tr">Jun 9, 2026 →</span></a>
       </div>
-      <p class="small tert" style="margin-top:8px"><span class="hl">Full history lives on <a href="https://luma.com/FrontierCreatives" target="_blank" rel="noopener">Luma</a>.</span></p>
+      <p class="small tert" style="margin-top:8px"><span class="hl">Full history lives on <a href="https://luma.com/FrontierCreatives?period=past" target="_blank" rel="noopener">Luma</a>.</span></p>
     </div>
   </section>
 
@@ -328,7 +377,34 @@ body.dark .in{border-color:#3E362F}
       <span class="eyebrow">Learning</span>
       <h2><span class="hl">Field notes, once a month.</span></h2>
       <p><span class="hl">What we learned at the last gathering, workflows worth stealing, and tools that earned a spot. We&rsquo;ll break down the work and have fun doing it. More to come.</span></p>
-      <p class="small tert" style="margin-top:14px"><span class="hl">Issue 1 lands after the August gathering.</span></p>
+
+      <div class="recap">
+        <span class="eyebrow muted">Vol. 02 recap &middot; Aug 6, 2026</span>
+        <h3><span class="hl">Three talks, one messy middle.</span></h3>
+        <p><span class="hl">Vol. 02 filled Pioneer Square Labs. Three people showed the actual work instead of talking about AI in the abstract.</span></p>
+        <p><span class="hl"><a href="https://www.linkedin.com/in/patrick-neeman-ux/" target="_blank" rel="noopener">Patrick Neeman</a> dug into journey mapping and intent across the ecosystem of companies and products we use on a daily basis. His prototype does the heavy lifting and will empower product teams to agree on intent before anyone renders real UI.</span></p>
+        <p><span class="hl"><a href="https://www.linkedin.com/in/sarra-emmanuelle-naemi/" target="_blank" rel="noopener">Sarra Naemi</a> took Stemtopia from design through engineering into a playable game and made agentic workflows look survivable. She then busted out the Xbox controllers and challenged the audience to a fighting game.</span></p>
+        <p><span class="hl"><a href="https://www.linkedin.com/in/benjaminmullins/" target="_blank" rel="noopener">Ben Mullins</a> pulled apart the <a href="https://benjaminmullins.tv/808/" target="_blank" rel="noopener">808 drum machine</a>: 2.6 sextillion possible states, one thumb, and the argument (made in memes) that judgment is still the part that doesn&rsquo;t compute.</span></p>
+        <p><span class="hl">The through line: the messy middle doesn&rsquo;t get less messy because a model is helping. It just moves faster, and the wrong turns get easier to skip past.</span></p>
+        <p><span class="hl">Then everyone stayed and talked, which is the actual point.</span></p>
+      </div>
+    </div>
+
+    <div class="photorun" id="vol02photos">
+      <figure class="pair"><img srcset="assets/events/vol-02/vol-02-01-full-room-800.jpg 800w, assets/events/vol-02/vol-02-01-full-room-1200.jpg 1200w, assets/events/vol-02/vol-02-01-full-room-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc((100vw - 74px)/2), 443px" src="assets/events/vol-02/vol-02-01-full-room-800.jpg" data-full="assets/events/vol-02/vol-02-01-full-room-1600.jpg" data-cap="A full room at Pioneer Square Labs." width="800" height="564" loading="lazy" decoding="async" tabindex="0" alt="A packed room at Pioneer Square Labs watching a talk, seated audience under warehouse lighting and exposed brick."></figure>
+      <figure class="pair"><img srcset="assets/events/vol-02/vol-02-03-stemtopia-talk-800.jpg 800w, assets/events/vol-02/vol-02-03-stemtopia-talk-1200.jpg 1200w, assets/events/vol-02/vol-02-03-stemtopia-talk-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc((100vw - 74px)/2), 443px" src="assets/events/vol-02/vol-02-03-stemtopia-talk-800.jpg" data-full="assets/events/vol-02/vol-02-03-stemtopia-talk-1600.jpg" data-cap="Sarra Naemi on taking Stemtopia from design to a playable game." width="800" height="471" loading="lazy" decoding="async" tabindex="0" alt="A speaker with a microphone in front of a projected Stemtopia game menu showing one player, two player co-op, and two player battle."></figure>
+      <figure class="band"><img srcset="assets/events/vol-02/vol-02-02-808-talk-800.jpg 800w, assets/events/vol-02/vol-02-02-808-talk-1200.jpg 1200w, assets/events/vol-02/vol-02-02-808-talk-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc(100vw - 56px), 904px" src="assets/events/vol-02/vol-02-02-808-talk-800.jpg" data-full="assets/events/vol-02/vol-02-02-808-talk-1600.jpg" data-cap="The 808 talk: 2.6 sextillion possible states, one thumb." width="800" height="365" loading="lazy" decoding="async" tabindex="0" alt="A speaker beside a projected slide reading how do you build a pro instrument without the pro complexity."></figure>
+      <figure class="pair"><img srcset="assets/events/vol-02/vol-02-04-messy-middle-talk-800.jpg 800w, assets/events/vol-02/vol-02-04-messy-middle-talk-1200.jpg 1200w, assets/events/vol-02/vol-02-04-messy-middle-talk-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc((100vw - 74px)/2), 443px" src="assets/events/vol-02/vol-02-04-messy-middle-talk-800.jpg" data-full="assets/events/vol-02/vol-02-04-messy-middle-talk-1600.jpg" data-cap="A metaphor for design and the messy middle." width="800" height="453" loading="lazy" decoding="async" tabindex="0" alt="A speaker gesturing at a projected slide titled a metaphor for design and the messy middle while a second presenter stands by the laptop."></figure>
+      <figure class="pair"><img srcset="assets/events/vol-02/vol-02-06-title-card-800.jpg 800w, assets/events/vol-02/vol-02-06-title-card-1200.jpg 1200w, assets/events/vol-02/vol-02-06-title-card-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc((100vw - 74px)/2), 443px" src="assets/events/vol-02/vol-02-06-title-card-800.jpg" data-full="assets/events/vol-02/vol-02-06-title-card-1600.jpg" data-cap="Before the talks, under the title card." width="800" height="560" loading="lazy" decoding="async" tabindex="0" alt="Two attendees talking in front of the projected Frontier Creatives Vol. 02 title card."></figure>
+      <figure class="band"><img srcset="assets/events/vol-02/vol-02-05-front-row-800.jpg 800w, assets/events/vol-02/vol-02-05-front-row-1200.jpg 1200w, assets/events/vol-02/vol-02-05-front-row-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc(100vw - 56px), 904px" src="assets/events/vol-02/vol-02-05-front-row-800.jpg" data-full="assets/events/vol-02/vol-02-05-front-row-1600.jpg" data-cap="Front row, Vol. 02." width="800" height="327" loading="lazy" decoding="async" tabindex="0" alt="Attendees seated close together in the front rows, mid conversation."></figure>
+      <figure class="band"><img srcset="assets/events/vol-02/vol-02-10-two-ways-in-800.jpg 800w, assets/events/vol-02/vol-02-10-two-ways-in-1200.jpg 1200w, assets/events/vol-02/vol-02-10-two-ways-in-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc(100vw - 56px), 904px" src="assets/events/vol-02/vol-02-10-two-ways-in-800.jpg" data-full="assets/events/vol-02/vol-02-10-two-ways-in-1600.jpg" data-cap="Two ways in, projected on the wall." width="800" height="329" loading="lazy" decoding="async" tabindex="0" alt="Attendees standing and talking while the Frontier Creatives contact page is projected behind them."></figure>
+      <figure class="pair"><img srcset="assets/events/vol-02/vol-02-07-nametags-800.jpg 800w, assets/events/vol-02/vol-02-07-nametags-1200.jpg 1200w, assets/events/vol-02/vol-02-07-nametags-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc((100vw - 74px)/2), 443px" src="assets/events/vol-02/vol-02-07-nametags-800.jpg" data-full="assets/events/vol-02/vol-02-07-nametags-1600.jpg" data-cap="Name tags on, small talk over." width="800" height="414" loading="lazy" decoding="async" tabindex="0" alt="Two attendees in name tags talking in front of the Vol. 02 title card."></figure>
+      <figure class="pair"><img srcset="assets/events/vol-02/vol-02-08-side-conversation-800.jpg 800w, assets/events/vol-02/vol-02-08-side-conversation-1200.jpg 1200w, assets/events/vol-02/vol-02-08-side-conversation-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc((100vw - 74px)/2), 443px" src="assets/events/vol-02/vol-02-08-side-conversation-800.jpg" data-full="assets/events/vol-02/vol-02-08-side-conversation-1600.jpg" data-cap="Side conversations, the actual point." width="800" height="491" loading="lazy" decoding="async" tabindex="0" alt="Two attendees talking beside the desks in the Pioneer Square Labs workspace."></figure>
+      <figure class="band"><img srcset="assets/events/vol-02/vol-02-09-room-after-800.jpg 800w, assets/events/vol-02/vol-02-09-room-after-1200.jpg 1200w, assets/events/vol-02/vol-02-09-room-after-1600.jpg 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:960px) calc(100vw - 56px), 904px" src="assets/events/vol-02/vol-02-09-room-after-800.jpg" data-full="assets/events/vol-02/vol-02-09-room-after-1600.jpg" data-cap="Still talking after the talks." width="800" height="272" loading="lazy" decoding="async" tabindex="0" alt="People standing and talking against the brick wall after the talks."></figure>
+    </div>
+
+    <div class="col">
+      <p class="small tert"><span class="hl">Vol. 03 is September 3. Come be in the next batch.</span></p>
     </div>
   </section>
 
@@ -338,7 +414,7 @@ body.dark .in{border-color:#3E362F}
       <span class="eyebrow">Contact</span>
       <h2><span class="hl">Two ways in.</span></h2>
       <p><span class="hl">Come to the next gathering, or get involved. The good conversations start before anyone sits down.</span></p>
-      <a class="btn" href="https://luma.com/loge2wi0" target="_blank" rel="noopener">RSVP on Luma <span class="arw">→</span></a>
+      <a class="btn" href="https://luma.com/pejuj8yl" target="_blank" rel="noopener">RSVP on Luma <span class="arw">→</span></a>
 
       <h3 class="getinvolved"><span class="hl">Want to get involved?</span></h3>
       <p class="giSub"><span class="hl">Present, partner, or just say hi. We read everything.</span></p>
@@ -394,6 +470,14 @@ body.dark .in{border-color:#3E362F}
     <span class="hl">Frontier Creatives · Seattle, Washington · <a href="https://luma.com/FrontierCreatives" target="_blank" rel="noopener">Luma</a></span>
   </footer>
 
+</div>
+
+<div class="lbox" id="lbox" hidden role="dialog" aria-modal="true" aria-label="Vol. 02 photos">
+  <button class="lbbtn lbclose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  <button class="lbbtn lbprev" type="button" aria-label="Previous photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+  <button class="lbbtn lbnext" type="button" aria-label="Next photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+  <img id="lbimg" alt="">
+  <p class="lbcap" id="lbcap"></p>
 </div>
 <svg id="morph" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g stroke="#C2B5A1" stroke-width="0.8" fill="none" opacity="0.5"><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/></g></svg>
 <svg id="hlayer" aria-hidden="true"></svg>
@@ -530,6 +614,39 @@ body.dark .in{border-color:#3E362F}
         else { r.json().then(function(d){ msg.textContent=(d.errors&&d.errors[0]&&d.errors[0].message)||'Something went wrong. Try again?'; }); msg.className='formmsg err'; btn.disabled=false; btn.innerHTML=orig; }
       })
       .catch(function(){ msg.textContent='Network error. Try again?'; msg.className='formmsg err'; btn.disabled=false; btn.innerHTML=orig; });
+  });
+})();
+</script>
+<script>
+/* photo viewer: click or Enter on any frame in the run, arrows to move,
+   Esc or a click on the ground to leave. No library, no dependencies. */
+(function(){
+  var run=document.getElementById('vol02photos'); if(!run) return;
+  var box=document.getElementById('lbox'), big=document.getElementById('lbimg'),
+      cap=document.getElementById('lbcap'), shots=[].slice.call(run.querySelectorAll('img')),
+      at=-1, from=null;
+  function show(i){
+    at=(i+shots.length)%shots.length;
+    var s=shots[at];
+    big.src=s.getAttribute('data-full')||s.src;
+    big.alt=s.alt;
+    cap.textContent=s.getAttribute('data-cap')||'';
+  }
+  function open(i){ from=shots[i]; box.hidden=false; document.body.style.overflow='hidden'; show(i); box.querySelector('.lbclose').focus(); }
+  function close(){ box.hidden=true; big.removeAttribute('src'); document.body.style.overflow=''; if(from) from.focus(); }
+  shots.forEach(function(s,i){
+    s.addEventListener('click',function(){ open(i); });
+    s.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(i); } });
+  });
+  box.addEventListener('click',function(e){ if(e.target===box||e.target===cap) close(); });
+  box.querySelector('.lbclose').addEventListener('click',close);
+  box.querySelector('.lbprev').addEventListener('click',function(){ show(at-1); });
+  box.querySelector('.lbnext').addEventListener('click',function(){ show(at+1); });
+  document.addEventListener('keydown',function(e){
+    if(box.hidden) return;
+    if(e.key==='Escape') close();
+    else if(e.key==='ArrowLeft') show(at-1);
+    else if(e.key==='ArrowRight') show(at+1);
   });
 })();
 </script>

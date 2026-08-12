@@ -171,12 +171,42 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 <section>
   <span class="eyebrow">07 · Events</span>
   <h2>Volumes.</h2>
-  <p>Every gathering is a numbered volume with its own theme title: <strong>Vol. 03 · Designing with AI</strong>. Field Notes issues mirror the volume numbers; the event and its recap are two halves of one object. Archive rows lead with the volume; dates ride trailing.</p>
+  <p>Every gathering is a numbered volume with its own theme title: <strong>Vol. 03 · Designing with AI</strong>. Field Notes issues mirror the volume numbers; the event and its recap are two halves of one object. Archive rows lead with the volume; dates ride trailing. A past volume is marked <strong>Complete</strong> in the lead column, eyebrow style in tertiary ink, never in the row title; the eyebrow is the only label style and titles stay sentence case.</p>
 </section>
 <hr class="rule">
 
 <section>
-  <span class="eyebrow">08 · Assets</span>
+  <span class="eyebrow">08 &middot; Photography</span>
+  <h2>Ratio picks the layout.</h2>
+  <p>Photography is documentary: real rooms, real people, no stock and no staging. It arrives at mixed aspect ratios, so the layout adapts to the frame rather than cropping every frame to fit the layout.</p>
+  <ul>
+    <li><strong>Wider than ~2.2 becomes a band:</strong> full container width, natural ratio, spanning the run. Panoramas lose their point when they are cropped to a common box.</li>
+    <li><strong>Everything else pairs two-up</strong> at a shared 3:2 with <code>object-fit: cover</code>, so the rhythm stays even without forcing the wide frames.</li>
+    <li>The run sits <strong>outside the reading column</strong>, at container width, and alternates band and pair so no two rows read the same.</li>
+    <li>Corners <code>14px</code>. <strong>No border.</strong> Elevation is <code>--shadow-md</code> on hover with a 1px lift, same as the button.</li>
+  </ul>
+  <h3>When a hairline is earned</h3>
+  <p class="small">The instinct on a true-black ground is to outline every photo. Measure first: sample the mean luminance of the outer 6px on each edge. Above ~40 the frame separates on its own and a border is chrome the guide does not want. Below ~40 on a given edge, that one image may take a <code>--dark-border</code> hairline. Ten photos were measured for the Vol. 02 recap; one edge on one photo qualified, so the run ships borderless.</p>
+  <h3>Export</h3>
+  <p class="small">JPEG, mozjpeg at quality 80, 4:2:0, progressive, metadata stripped. Three widths per photo, <code>800 / 1200 / 1600</code>, wired with <code>srcset</code> and a real <code>sizes</code> string so no frame is ever upscaled at 1x, 2x, or 3x. Name by volume and story order: <code>vol-02-01-full-room-800.jpg</code>. Always set <code>width</code> and <code>height</code>; the highlight bars measure real line boxes and lazily-loaded images without reserved space move the layout underneath them.</p>
+</section>
+<hr class="rule">
+
+<section>
+  <span class="eyebrow">09 &middot; Overlays</span>
+  <h2>Dark, regardless.</h2>
+  <p>An overlay (the photo viewer, any future modal) is always a dark surface, so it <strong>pins the dark tokens</strong> rather than inheriting the page's. Inheriting puts light-mode ink on a black ground the moment someone opens <code>?light</code>.</p>
+  <ul>
+    <li>Ground is black at <code>.93</code> with a 6px backdrop blur. <strong>No blur under 900px</strong>, house rule; raise the ground to <code>.97</code> instead.</li>
+    <li>Controls <strong>warm to the accent on hover</strong>. No filled chip, no circle, no container; the same rule links and rows follow.</li>
+    <li>Close and step controls are <strong>Lucide</strong> at 1.75px stroke with round joins, inlined as SVG because the site CSP is <code>script-src 'self'</code> and blocks the CDN. In production: <code>x</code>, <code>chevron-left</code>, <code>chevron-right</code>. Reuse these three rather than introducing new glyphs.</li>
+    <li>Focus is a soft accent ring, never a hard outline. Esc closes, arrows step, focus returns to the element that opened it.</li>
+  </ul>
+</section>
+<hr class="rule">
+
+<section>
+  <span class="eyebrow">10 · Assets</span>
   <h2>Everything generates.</h2>
   <p style="margin:18px 0 26px"><a href="assets/fc-asset-pack.zip" download style="font-family:var(--fd);font-weight:600;font-size:17px;color:#fff;background:var(--coral-strong);padding:13px 26px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;gap:9px">Download the full asset pack <span>→</span></a> <span class="small" style="margin-left:12px">zip · logo + textures · ~11 MB</span></p>
   <h3>Logo</h3>
