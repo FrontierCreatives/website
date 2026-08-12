@@ -58,20 +58,55 @@ code{font-family:var(--fd);font-size:13.5px;color:var(--acc);background:var(--su
 table{border-collapse:collapse;width:100%;font-size:14.5px}
 td,th{text-align:left;padding:9px 14px 9px 0;border-bottom:1px solid #221D18;color:var(--txt2)}
 th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+
+/* contents rail: fixed in the left margin, no panel and no fill. Colour alone
+   marks where you are. Only shows when the margin can hold it. */
+.rail{display:none}
+@media (min-width:1280px){
+  .rail{position:fixed;left:24px;top:50%;transform:translateY(-50%);z-index:40;
+    width:168px;max-height:calc(100vh - 48px);overflow-y:auto;
+    display:flex;flex-direction:column;gap:1px}
+  .raillabel{font-family:var(--fd);font-weight:600;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--txt3);padding:0 10px 10px}
+  .rail a{display:flex;gap:9px;align-items:baseline;padding:7px 10px;border-radius:9px;
+    font-family:var(--fd);font-weight:500;font-size:13px;line-height:1.35;
+    color:var(--txt3);text-decoration:none;
+    transition:color 180ms cubic-bezier(.22,.61,.36,1)}
+  .rail a i{font-style:normal;font-size:11px;letter-spacing:.06em;opacity:.5;flex:none}
+  .rail a:hover{color:var(--txt)}
+  .rail a[aria-current]{color:var(--acc)}
+  .rail a[aria-current] i{opacity:.9}
+  .rail a:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(233,128,94,.42)}
+}
+@media (prefers-reduced-motion:reduce){.rail a{transition:none}}
 </style>
 </head>
 <body>
+<nav class="rail" id="rail" aria-label="Guide sections">
+  <span class="raillabel">Contents</span>
+  <a href="#mark"><i>01</i>The mark</a>
+  <a href="#color"><i>02</i>Color</a>
+  <a href="#type"><i>03</i>Type</a>
+  <a href="#texture"><i>04</i>Texture</a>
+  <a href="#motion"><i>05</i>Motion</a>
+  <a href="#voice"><i>06</i>Voice</a>
+  <a href="#events"><i>07</i>Events</a>
+  <a href="#photography"><i>08</i>Photography</a>
+  <a href="#overlays"><i>09</i>Overlays</a>
+  <a href="#assets"><i>10</i>Assets</a>
+</nav>
+
 <div class="page">
 
-<section class="cover">
+<section class="cover" id="top">
   <svg id="live" viewBox="0 0 800 800" width="240" height="240" aria-hidden="true"><g stroke="#E76F51" stroke-width="3.2" stroke-linecap="round" fill="none"><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/></g></svg>
-  <span class="eyebrow">Frontier Creatives · brand guide · v1 · July 2026</span>
+  <span class="eyebrow">Frontier Creatives · brand guide · v1.1 · August 2026</span>
   <h1>A metaphor for design and the messy middle.</h1>
   <p class="lede">72 straight lines whose envelope reads as a curve. Connect them one way and you get a star; another way, a bloom; another, a spiral. The same simple elements, transformed by how they relate and a metaphor. That is what we share and teach people about AI; from something at harmony to purposefully chaotic to harmony again in different form.</p>
 </section>
 <hr class="rule">
 
-<section>
+<section id="mark">
   <span class="eyebrow">01 · The mark</span>
   <h2>The mark is the morph.</h2>
   <p>The logo is the stitch star, tilted 20 degrees, in coral. But the full identity is motion: on the site the mark re-stitches between its canonical figures as you scroll. Frozen states each have a job.</p>
@@ -88,7 +123,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="color">
   <span class="eyebrow">02 · Color</span>
   <h2>Dark first. Coral speaks.</h2>
   <p>The ground is true black; on OLED the page disappears and the geometry floats. Warm ivory text, one loud coral, and the palette tints in reserve. Interactive text (links, and list-row titles on hover) warms to the coral accent <code>#E9805E</code>. Dark is the only surfaced mode; a light warm-paper variant stays dormant behind <code>?light</code> as a print and forced-light fallback.</p>
@@ -111,7 +146,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="type">
   <span class="eyebrow">03 · Type</span>
   <h2>Inter over Krub.</h2>
   <div style="margin:26px 0">
@@ -122,7 +157,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="texture">
   <span class="eyebrow">04 · Texture</span>
   <h2>The figures are the texture.</h2>
   <p>No patterns, no noise, no stock. Background texture is the brand geometry at architectural scale: figures filling a full section and bleeding off the page, alternating sides down the scroll (right, left, right, left).</p>
@@ -147,7 +182,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="motion">
   <span class="eyebrow">05 · Motion</span>
   <h2>Scroll is the timeline.</h2>
   <ul>
@@ -160,7 +195,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="voice">
   <span class="eyebrow">06 · Voice</span>
   <h2>One decibel below normal.</h2>
   <p>Warm, plain, confident; a small gathering run by people with taste. Sentence case everywhere. Digits when functional: 120, 5pm, 2026. Say less; one idea per section, air around each. "We" for hosts, "you" for the reader. <strong>No em-dashes, ever</strong>; commas, colons, semicolons, periods.</p>
@@ -168,14 +203,14 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="events">
   <span class="eyebrow">07 · Events</span>
   <h2>Volumes.</h2>
   <p>Every gathering is a numbered volume with its own theme title: <strong>Vol. 03 · Designing with AI</strong>. Field Notes issues mirror the volume numbers; the event and its recap are two halves of one object. Archive rows lead with the volume; dates ride trailing. A past volume is marked <strong>Complete</strong> in the lead column, eyebrow style in tertiary ink, never in the row title; the eyebrow is the only label style and titles stay sentence case.</p>
 </section>
 <hr class="rule">
 
-<section>
+<section id="photography">
   <span class="eyebrow">08 &middot; Photography</span>
   <h2>Ratio picks the layout.</h2>
   <p>Photography is documentary: real rooms, real people, no stock and no staging. It arrives at mixed aspect ratios, so the layout adapts to the frame rather than cropping every frame to fit the layout.</p>
@@ -192,7 +227,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="overlays">
   <span class="eyebrow">09 &middot; Overlays</span>
   <h2>Dark, regardless.</h2>
   <p>An overlay (the photo viewer, any future modal) is always a dark surface, so it <strong>pins the dark tokens</strong> rather than inheriting the page's. Inheriting puts light-mode ink on a black ground the moment someone opens <code>?light</code>.</p>
@@ -205,7 +240,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 </section>
 <hr class="rule">
 
-<section>
+<section id="assets">
   <span class="eyebrow">10 · Assets</span>
   <h2>Everything generates.</h2>
   <p style="margin:18px 0 26px"><a href="assets/fc-asset-pack.zip" download style="font-family:var(--fd);font-weight:600;font-size:17px;color:#fff;background:var(--coral-strong);padding:13px 26px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;gap:9px">Download the full asset pack <span>→</span></a> <span class="small" style="margin-left:12px">zip · logo + textures · ~11 MB</span></p>
@@ -251,6 +286,30 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
   }
   if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(tick);
   else { var A=KF[0]; for(var i=0;i<72;i++){ var L=lines[i],a=A[i]; L.setAttribute('x1',a[0]);L.setAttribute('y1',a[1]);L.setAttribute('x2',a[2]);L.setAttribute('y2',a[3]); } }
+})();
+</script>
+<script>
+/* rail: marks the section under the reading line. Nothing else. */
+(function(){
+  var rail=document.getElementById('rail'); if(!rail) return;
+  var links=[].slice.call(rail.querySelectorAll('a'));
+  var secs=links.map(function(a){ return document.getElementById(a.hash.slice(1)); });
+  var tick=false;
+  function draw(){
+    tick=false;
+    var line=window.scrollY+window.innerHeight*0.35, cur=-1;
+    for(var i=0;i<secs.length;i++){
+      var el=secs[i];
+      if(el && line>=el.offsetTop) cur=i;
+    }
+    if(window.scrollY<40) cur=-1;
+    links.forEach(function(a,i){
+      if(i===cur) a.setAttribute('aria-current','true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  addEventListener('scroll',function(){ if(!tick){tick=true;requestAnimationFrame(draw);} },{passive:true});
+  addEventListener('resize',draw); addEventListener('load',draw); draw();
 })();
 </script>
 </body>
