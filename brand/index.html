@@ -100,7 +100,7 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 
 <section class="cover" id="top">
   <svg id="live" viewBox="0 0 800 800" width="240" height="240" aria-hidden="true"><g stroke="#E76F51" stroke-width="3.2" stroke-linecap="round" fill="none"><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/><line/></g></svg>
-  <span class="eyebrow">Frontier Creatives · brand guide · v1.1 · August 2026</span>
+  <span class="eyebrow">Frontier Creatives · brand guide · v1.2 · August 2026</span>
   <h1>A metaphor for design and the messy middle.</h1>
   <p class="lede">72 straight lines whose envelope reads as a curve. Connect them one way and you get a star; another way, a bloom; another, a spiral. The same simple elements, transformed by how they relate and a metaphor. That is what we share and teach people about AI; from something at harmony to purposefully chaotic to harmony again in different form.</p>
 </section>
@@ -179,6 +179,26 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
     <tr><td>Above the figures, below all text</td><td>The bars live on their own layer between the line field and the type. Wrong paint order and the lines cover the bars instead.</td></tr>
     <tr><td>The layer may never inflate the page</td><td>Give it real height; a zero-height SVG is clipped in Safari and the bars vanish. Measure the document with the layer collapsed, and guard the resize observer on <b>width</b> so a height change can never loop the layout into infinite growth.</td></tr>
   </table>
+  <h3>Placing a figure, documented</h3>
+  <p>A placed figure is a master under a similarity transform, and nothing else. Everything the scroll sequence needs is three numbers per keyframe.</p>
+  <p><code>p&#8242; = centre + scale &#215; R(&#952;) &#215; (p &#8722; (400,&#8202;400))</code></p>
+  <p>Applied to every line of <code>assets/textures/fc-figure-*.svg</code>, in file order. The file order is the load-bearing part: figures morph by interpolating line <i>i</i> of one keyframe toward line <i>i</i> of the next, so line <i>i</i> has to keep its structural role. The masters are authored on the shared skeleton and already satisfy that. Rebuilding a figure from its own construction does not, and the failure only shows up in motion.</p>
+  <table>
+   <tr><th>Rule</th><th>Why it exists</th></tr>
+   <tr><td>Place the master, never rebuild it</td><td>A regenerated cardioid (a monotonic sweep) and a regenerated star (four arms of eighteen rings) each look correct standing still and share no line order. Line <i>i</i> lands somewhere unrelated in the next figure, half the field swings across the frame, and the morph is spaghetti. The masters already hold the order.</td></tr>
+   <tr><td>Never translate an existing keyframe</td><td>Placed figures are full-bleed, wider than the viewBox. Sliding one sideways to a new centre pushes most of it off frame and it reads as a fan rather than a figure. Re-place from the master at the centre you want.</td></tr>
+   <tr><td>Decode with a similarity fit</td><td>Keyframes carry rotation. A scale-and-translate fit on a rotated keyframe reports error in the hundreds of pixels and looks like the line order is broken. It is not; the figure is turned.</td></tr>
+   <tr><td>Interpolate plainly</td><td>Given a shared line order, a straight cartesian lerp per endpoint is smooth. Reindexing, polar interpolation, and dissolve-and-restitch are all fixes for a problem that lives in the data, not the interpolation.</td></tr>
+  </table>
+  <p>Both directions are scripted: <code>tools/place-figure.py place &lt;figure&gt; --scale --rot --centre</code> emits a keyframe, and <code>tools/place-figure.py decode &lt;figure&gt; --keyframe</code> recovers the three numbers from one that exists, so an established composition can be reproduced exactly. The live homepage decodes to under a quarter-pixel:</p>
+  <table>
+   <tr><th>Keyframe</th><th>Figure</th><th>Scale</th><th>Rotation</th><th>Centre</th></tr>
+   <tr><td>0</td><td>star</td><td>2.1976</td><td>0&#176;</td><td>1040,&#8202;380</td></tr>
+   <tr><td>1</td><td>cardioid</td><td>2.2095</td><td>&#8722;20&#176;</td><td>300,&#8202;460</td></tr>
+   <tr><td>2</td><td>pursuit</td><td>2.2893</td><td>&#8722;20&#176;</td><td>1310,&#8202;390</td></tr>
+   <tr><td>3</td><td>star</td><td>2.7209</td><td>&#8722;40&#176;</td><td>420,&#8202;450</td></tr>
+  </table>
+  <p>Sides alternate down the scroll, right, left, right, left, and the sequence itself is free: the lightning talk page runs cardioid, pursuit, star, cardioid on the same centres.</p>
 </section>
 <hr class="rule">
 
@@ -243,7 +263,10 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
 <section id="assets">
   <span class="eyebrow">10 · Assets</span>
   <h2>Everything generates.</h2>
-  <p style="margin:18px 0 26px"><a href="assets/fc-asset-pack.zip" download style="font-family:var(--fd);font-weight:600;font-size:17px;color:#fff;background:var(--coral-strong);padding:13px 26px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;gap:9px">Download the full asset pack <span>→</span></a> <span class="small" style="margin-left:12px">zip · logo + textures · ~11 MB</span></p>
+  <p style="margin:18px 0 26px"><a href="assets/fc-asset-pack.zip" download style="font-family:var(--fd);font-weight:600;font-size:17px;color:#fff;background:var(--coral-strong);padding:13px 26px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;gap:9px">Download the full asset pack <span>→</span></a> <span class="small" style="margin-left:12px">zip · instructions + tokens + components + logo + textures · ~11 MB</span></p>
+  <h3>Give this to your AI</h3>
+  <p>The pack ships with <a href="assets/GIVE-THIS-TO-YOUR-AI.md" download><code>GIVE-THIS-TO-YOUR-AI.md</code></a>. Paste it into whatever you build with, alongside the SVGs. It carries the skeleton rule, the placement formula, the two stroke treatments, the content-protection contract, and the reference composition, so an assistant can generate any figure, any in-between frame, any size, and get it right the first time. The pack also ships the token files and <code>place-figure.py</code>, so the values it quotes can be read rather than retyped. It also carries the recipe for the animated loop, so any starting figure or length can be rendered rather than shipped as another file. The eight core components come with it, so a page built from the pack gets our buttons and inputs rather than invented ones.</p>
+  <p class="small">It leads with the mistake everyone makes: regenerating a figure from its own construction instead of placing the master. That looks correct standing still and turns to spaghetti the moment it moves.</p>
   <h3>Logo</h3>
   <p class="small">
   <a href="assets/logo/fc-mark.svg" download>fc-mark.svg</a> (coral, transparent) ·

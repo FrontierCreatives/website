@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Presenting at Frontier Creatives</title>
+<meta name="description" content="What we ask for in a Frontier Creatives lightning talk, and how we'll help you get there.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://frontiercreatives.design/lightning-talk">
+<meta property="og:title" content="Presenting at Frontier Creatives">
+<meta property="og:description" content="Five to ten minutes, one story, the messy middle fully visible.">
+<meta property="og:image" content="https://frontiercreatives.design/lightning-talk/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="We think you're special.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://frontiercreatives.design/lightning-talk/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Krub:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --container:960px;
+  --coral:#E76F51;
+  --text-primary:#F2EDE5;
+  --text-secondary:#C4BBB0;
+  --text-tertiary:#9C9287;
+  --text-accent:#E9805E;
+  --wash-coral:rgba(231,111,81,.05);
+  --wash-sand:rgba(244,162,97,.06);
+  --font-display:'Inter',system-ui,sans-serif;
+  --font-body:'Krub',system-ui,sans-serif;
+  --dur-fast:.18s;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  padding-top:84px;
+  background:#000;
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.7;
+  overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none}
+
+/* ---- nav ---- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  background:rgba(0,0,0,calc(var(--navf,0)*.62));
+  backdrop-filter:blur(calc(var(--navf,0)*9px));
+  border-bottom:1px solid rgba(255,255,255,calc(var(--navf,0)*.09));
+}
+.navin{max-width:var(--container);margin:0 auto;padding:20px 28px;display:flex;align-items:center;justify-content:flex-start;gap:44px}
+.wordmark{font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;color:var(--text-primary)}
+.marksvg{display:block;flex:0 0 auto;transform:rotate(20deg)}
+.navlinks{display:flex;gap:26px}
+.navlinks a{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--text-secondary);transition:color var(--dur-fast) var(--ease)}
+.navlinks a:hover{color:var(--text-accent)}
+@media (max-width:900px){.nav{backdrop-filter:none;background:rgba(0,0,0,calc(var(--navf,0)*.92))}}
+
+/* ---- the field, and the layer that protects text from it ---- */
+#morph{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#morph line{vector-effect:non-scaling-stroke}
+#morph > g{stroke:var(--coral);stroke-width:.8;fill:none;opacity:.38}
+#hlayer{position:absolute;top:0;left:0;width:100%;z-index:0;pointer-events:none;overflow:visible}
+
+/* ---- layout ---- */
+.page{max-width:var(--container);margin:0 auto;padding:0 28px;position:relative;z-index:1}
+.col{max-width:660px}
+section,header.hero,footer.closer{position:relative}
+section::before{
+  content:"";position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:100vw;z-index:0;pointer-events:none;
+}
+section.wash-coral::before{background:linear-gradient(180deg,transparent 0%,var(--wash-coral) 26%,var(--wash-coral) 74%,transparent 100%)}
+section.wash-sand::before{background:linear-gradient(180deg,transparent 0%,var(--wash-sand) 26%,var(--wash-sand) 74%,transparent 100%)}
+
+.hero{padding:92px 0 30px}
+.eyebrow{
+  font-family:var(--font-display);
+  font-size:13px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--coral);
+  margin:0 0 28px;
+}
+h1{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:clamp(40px,6vw,64px);
+  line-height:1.06;
+  letter-spacing:-.02em;
+  margin:0 0 32px;
+  max-width:13ch;
+}
+.lede{font-size:22px;line-height:1.55;color:var(--text-primary);margin:0;max-width:44ch}
+.hero p{max-width:52ch}
+.hero p:not(.eyebrow):not(.lede){color:var(--text-secondary)}
+
+section{padding:62px 0}
+h2{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:36px;
+  line-height:1.15;
+  letter-spacing:-.02em;
+  margin:0 0 8px;
+}
+.sub{color:var(--coral);font-size:16px;margin:0 0 30px}
+.col a{color:var(--text-accent);text-decoration:none;border-bottom:1px solid rgba(233,128,94,.32);transition:border-color var(--dur-fast) var(--ease)}
+.col a:hover{border-bottom-color:var(--text-accent)}
+p{margin:0 0 24px}
+.col > p:last-child{margin-bottom:0}
+
+/* item lists: no bullets, no boxes, spacing carries hierarchy */
+.items{margin:0;padding:0;list-style:none}
+.items li{margin:0 0 30px}
+.items li:last-child{margin-bottom:0}
+.items b{
+  display:block;
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:17px;
+  letter-spacing:-.005em;
+  color:var(--text-primary);
+  margin-bottom:6px;
+}
+.items span{display:block;color:var(--text-secondary)}
+
+.faq{margin:30px 0 0;padding:0;list-style:none}
+.faq li{margin:0 0 30px}
+.faq li:last-child{margin-bottom:0}
+.faq b{
+  display:block;
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:17px;
+  color:var(--text-accent);
+  margin-bottom:6px;
+}
+.faq span{display:block;color:var(--text-secondary)}
+
+.closer{padding:62px 0 96px}
+.closer p{font-size:22px;line-height:1.55;color:var(--text-primary);max-width:36ch;margin:0 0 16px}
+.closer .fine{font-size:16px;color:var(--text-tertiary);max-width:46ch;margin:0}
+
+@media (max-width:680px){
+  body{padding-top:64px}
+  .navin{gap:16px;padding:14px 20px}
+  .navlinks{gap:16px}
+  .page{padding:0 20px}
+  .hero{padding:36px 0 32px}
+  h1{font-size:clamp(30px,9vw,40px);max-width:none}
+  h2{font-size:clamp(25px,7.5vw,32px)}
+  .lede{font-size:18px;max-width:none}
+  section{padding:46px 0}
+  .closer{padding:46px 0 72px}
+}
+@media (max-width:480px){
+  .wordmark{gap:0}
+  .wordmark .wmtext{display:none}
+}
+</style>
+</head>
+<body class="dark">
+
+<nav class="nav">
+  <div class="navin">
+    <a class="wordmark" href="https://frontiercreatives.design/">
+      <svg id="marklogo" class="marksvg" width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"></svg>
+      <span class="wmtext">Frontier Creatives</span>
+    </a>
+    <div class="navlinks">
+      <a href="https://frontiercreatives.design/#events">Events</a>
+      <a href="https://frontiercreatives.design/#learning">Learning</a>
+      <a href="https://frontiercreatives.design/#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<svg id="morph" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+<svg id="hlayer" aria-hidden="true"></svg>
+
+<header class="hero">
+  <div class="page"><div class="col">
+    <p class="eyebrow">Frontier Creatives &middot; lightning talks</p>
+    <h1>Presenting at Frontier Creatives</h1>
+    <p class="lede">Oh hello. You're seeing this page because we think you're special. You'd make a good presenter for our lightning talks. Want in? Here's the details.</p>
+  </div></div>
+</header>
+
+<section>
+  <div class="page"><div class="col">
+    <h2>The shape of it</h2>
+    <p class="sub">Five to ten minutes, one story.</p>
+    <p>Tell a story. Make it engaging, and remember we're here to have fun and show the messy middle, not polished outcomes. Bring one project or one problem rather than a tour of everything you do.</p>
+    <p>The room spans Design, Founders, Engineering, and Product, but don't generalize for it. Go full nerd if you want. The specifics are what people take away. We're sharing how you think and operate for design inside the AI world.</p>
+    <p>If you need help putting a story together, or want input or direction, ask <a class="mail" href="#" data-n="mullinsben" data-d="gmail.com" data-l="Ben">Ben</a>. We want you to succeed, and we know what it takes to make something you're proud of. Let's keep this simple and easy for you.</p>
+  </div></div>
+</section>
+
+<section>
+  <div class="page"><div class="col">
+    <h2>Setup</h2>
+    <p class="sub">Land these in the first minute.</p>
+    <ul class="items">
+      <li><b>Who are you?</b><span>Your name, whether you're even a designer, and what you're working on.</span></li>
+      <li><b>What was your goal?</b><span>Tell us what you were trying to achieve so we know how to read the rest of the talk. Give us the reasons you care so we can care too.</span></li>
+      <li><b>Name your stack.</b><span>What tools did you use?</span></li>
+    </ul>
+  </div></div>
+</section>
+
+<section class="wash-coral">
+  <div class="page"><div class="col">
+    <h2 data-fig="1">The messy middle</h2>
+    <p class="sub">This is the bulk of the talk. It's also the part people write down.</p>
+    <ul class="items">
+      <li><b>Show us where it got hard, and how you got through it.</b><span>Finished, polished work is a great subject, as long as the path to it stays visible. Think narrative storytelling.</span></li>
+      <li><b>Show us on screen.</b><span>Real files, real prompts, the attempts that went nowhere. A recording or a diagram works too. We've all hit unexpected outputs and frustrations in agentic workflows, so watching you sidestep them is a real, and relatable, joy.</span></li>
+      <li><b>Show us the jigs.</b><span>The helper tools, the file structure, the prompt, the script, the check you run before you trust the output.</span></li>
+      <li><b>What broke?</b><span>Name it plainly. The failure's usually more useful than the win.</span></li>
+    </ul>
+  </div></div>
+</section>
+
+<section>
+  <div class="page"><div class="col">
+    <h2>Learnings</h2>
+    <p class="sub">Wrap it up and leave them something.</p>
+    <ul class="items">
+      <li><b>What did you learn?</b><span>Name the outcome, or where it stands now if it's still moving. This is where the bigger point belongs, and where it works: we've just watched you do the thing, so tell us what you think it means.</span></li>
+      <li><b>Link out.</b><span>A QR code if there's somewhere to send people.</span></li>
+    </ul>
+  </div></div>
+</section>
+
+<section class="wash-sand">
+  <div class="page"><div class="col">
+    <h2 data-fig="2">What not to do</h2>
+    <p class="sub">Short list, and we mean it kindly.</p>
+    <ul class="items">
+      <li><b>Don't show anything you're not free to show.</b><span>No confidential IP, no NDA'd screens, no unreleased client work, no customer data or private names on screen. If you'd have to blur it, bring a different project. Check with your employer before you commit if there's any doubt; it's your call to make and your name on it.</span></li>
+      <li><b>Don't pitch your company.</b><span>Nobody came for the deck you use with prospects. If your work is the product, show the work, not the positioning.</span></li>
+      <li><b>Don't tour your whole practice.</b><span>One project, one problem. Breadth reads as a r&eacute;sum&eacute;; depth reads as a talk.</span></li>
+      <li><b>Don't show only the finished thing.</b><span>A beautiful final artifact with no visible path to it is the one format that reliably loses this room.</span></li>
+      <li><b>Don't open with the conclusion.</b><span>We asked the room what they came for and not one person asked for the state of AI in design; they asked to see how other people actually work. Show us that first. The big thought lands at the end, once we've watched you earn it.</span></li>
+      <li><b>Don't run long.</b><span>Five to ten minutes. We'll be warm about it and we'll still cut you off.</span></li>
+    </ul>
+  </div></div>
+</section>
+
+<section>
+  <div class="page"><div class="col">
+    <h2>Timeline</h2>
+    <p>Our Volumes run once a month. We ask that you share a draft and check in with us about a week before the show. We can then give you a steer, or whatever help you need to get over the finish line.</p>
+  </div></div>
+</section>
+
+<section>
+  <div class="page"><div class="col">
+    <h2>Questions we get</h2>
+    <ul class="faq">
+      <li><b>Should I use AI for this?</b><span>Yes. Your LLM probably already has memory of all these build conversations. Ask it to put the piece together first, then see what needs polishing.</span></li>
+      <li><b>Should I build a deck?</b><span>Up to you, but we'd recommend it. Figma Slides, HTML, PowerPoint, or good old pinch and zoom all work, as long as you tell a story and have a basic narrative.</span></li>
+      <li><b>Can someone build this story with me?</b><span>Yes. If you've got the pieces and a story outlined, Ben can lean in; he's gotten pretty good at this. You take it from there once there's a draft.</span></li>
+      <li><b>Is there anything I can use to start with?</b><span>Yes. You can reference and download all the Frontier Creatives brand assets <a href="https://frontiercreatives.design/brand#assets">here</a>.</span></li>
+    </ul>
+  </div></div>
+</section>
+
+<footer class="closer" data-fig="3">
+  <div class="page"><div class="col">
+    <p>That's the whole ask. One story, told honestly, in ten minutes or less.</p>
+    <p class="fine">Stuck, unsure, or want a second pair of eyes on an outline? Ask <a class="mail" href="#" data-n="mullinsben" data-d="gmail.com">Ben</a>. That offer's real and it isn't a formality.</p>
+  </div></div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var NS="http://www.w3.org/2000/svg";
+  var KF=[[[1359.5,-305.2,1418.0,-274.7],[1725.2,699.5,662.0,1034.7],[720.5,1065.2,1418.0,-274.7],[354.8,60.5,662.0,1034.7],[1418.0,-274.7,1525.9,-199.1],[1694.7,758.0,554.1,959.1],[662.0,1034.7,1525.9,-199.1],[385.3,2.0,554.1,959.1],[1473.6,-239.3,1619.1,-105.9],[1659.3,813.6,460.9,865.9],[606.4,999.3,1619.1,-105.9],[420.7,-53.6,460.9,865.9],[1525.9,-199.1,1694.7,2.0],[1619.1,865.9,385.3,758.0],[554.1,959.1,1694.7,2.0],[460.9,-105.9,385.3,758.0],[1574.5,-154.5,1750.3,121.6],[1574.5,914.5,329.7,638.4],[505.5,914.5,1750.3,121.6],[505.5,-154.5,329.7,638.4],[1619.1,-105.9,1784.5,248.8],[1525.9,959.1,295.5,511.2],[460.9,865.9,1784.5,248.8],[554.1,-199.1,295.5,511.2],[1659.3,-53.6,1796.0,380.0],[1473.6,999.3,284.0,380.0],[420.7,813.6,1796.0,380.0],[606.4,-239.3,284.0,380.0],[1694.7,2.0,1784.5,511.2],[1418.0,1034.7,295.5,248.8],[385.3,758.0,1784.5,511.2],[662.0,-274.7,295.5,248.8],[1725.0,60.5,1750.3,638.4],[1359.5,1065.0,329.7,121.6],[355.0,699.5,1750.3,638.4],[720.5,-305.0,329.7,121.6],[1750.3,121.6,1694.7,758.0],[1298.4,1090.3,385.3,2.0],[329.7,638.4,1694.7,758.0],[781.6,-330.3,385.3,2.0],[1770.3,184.4,1619.1,865.9],[1235.6,1110.3,460.9,-105.9],[309.7,575.6,1619.1,865.9],[844.4,-350.3,460.9,-105.9],[1784.5,248.8,1525.9,959.1],[1171.2,1124.5,554.1,-199.1],[295.5,511.2,1525.9,959.1],[908.8,-364.5,554.1,-199.1],[1793.1,314.1,1418.0,1034.7],[1105.9,1133.1,662.0,-274.7],[286.9,445.9,1418.0,1034.7],[974.1,-373.1,662.0,-274.7],[1796.0,380.0,1298.4,1090.3],[1040.0,1136.0,781.6,-330.3],[284.0,380.0,1298.4,1090.3],[1040.0,-376.0,781.6,-330.3],[1793.1,445.9,1171.2,1124.5],[974.1,1133.1,908.8,-364.5],[286.9,314.1,1171.2,1124.5],[1105.9,-373.1,908.8,-364.5],[1784.5,511.2,1040.0,1136.0],[908.8,1124.5,1040.0,-376.0],[295.5,248.8,1040.0,1136.0],[1171.2,-364.5,1040.0,-376.0],[1770.0,575.6,908.8,1124.5],[844.4,1110.0,1171.2,-364.5],[310.0,184.4,908.8,1124.5],[1235.6,-350.0,1171.2,-364.5],[1750.3,638.4,781.6,1090.3],[781.6,1090.3,1298.4,-330.3],[329.7,121.6,781.6,1090.3],[1298.4,-330.3,781.6,1090.3]],[[-32.9,-213.2,983.2,137.1],[983.2,137.1,632.9,1153.2],[632.9,1153.2,-383.2,802.9],[-383.2,802.9,-32.9,-213.2],[68.8,-178.3,948.3,238.8],[948.3,238.8,531.2,1118.3],[531.2,1118.3,-348.3,701.2],[-348.3,701.2,68.8,-178.3],[156.6,-136.6,906.6,326.6],[906.6,326.6,443.4,1076.6],[443.4,1076.6,-306.6,613.4],[-306.6,613.4,156.6,-136.6],[231.5,-90.3,860.3,401.5],[860.3,401.5,368.5,1030.3],[368.5,1030.3,-260.3,538.5],[-260.3,538.5,231.5,-90.3],[294.6,-41.1,811.1,464.6],[811.1,464.6,305.4,981.1],[305.4,981.1,-211.1,475.4],[-211.1,475.4,294.6,-41.1],[346.1,9.5,760.5,516.1],[760.5,516.1,253.9,930.5],[253.9,930.5,-160.5,423.9],[-160.5,423.9,346.1,9.5],[387.6,60.0,710.0,557.6],[710.0,557.6,212.4,880.0],[212.4,880.0,-110.0,382.4],[-110.0,382.4,387.6,60.0],[419.8,109.9,660.1,589.8],[660.1,589.8,180.2,830.1],[180.2,830.1,-60.1,350.2],[-60.1,350.2,419.8,109.9],[443.8,157.8,612.2,613.8],[612.2,613.8,156.2,782.2],[156.2,782.2,-12.2,326.2],[-12.2,326.2,443.8,157.8],[460.7,203.4,566.6,630.7],[566.6,630.7,139.3,736.6],[139.3,736.6,33.4,309.3],[33.4,309.3,460.7,203.4],[471.3,246.1,523.9,641.3],[523.9,641.3,128.7,693.9],[128.7,693.9,76.1,298.7],[76.1,298.7,471.3,246.1],[476.5,285.6,484.4,646.5],[484.4,646.5,123.5,654.4],[123.5,654.4,115.6,293.5],[115.6,293.5,476.5,285.6],[477.2,321.8,448.2,647.2],[448.2,647.2,122.8,618.2],[122.8,618.2,151.8,292.8],[151.8,292.8,477.2,321.8],[474.4,354.3,415.7,644.4],[415.7,644.4,125.6,585.7],[125.6,585.7,184.3,295.6],[184.3,295.6,474.4,354.3],[468.5,383.3,386.7,638.5],[386.7,638.5,131.5,556.7],[131.5,556.7,213.3,301.5],[213.3,301.5,468.5,383.3],[460.2,408.9,361.1,630.2],[361.1,630.2,139.8,531.1],[139.8,531.1,238.9,309.8],[238.9,309.8,460.2,408.9],[450.4,431.0,339.0,620.4],[339.0,620.4,149.6,509.0],[149.6,509.0,261.0,319.6],[261.0,319.6,450.4,431.0],[439.2,449.9,320.1,609.2],[320.1,609.2,160.8,490.1],[160.8,490.1,279.9,330.8],[279.9,330.8,439.2,449.9]],[[1294.9,348.9,2050.2,120.7],[1351.1,374.9,1579.3,1130.2],[1325.1,431.1,569.8,659.3],[1268.9,405.1,1040.7,-350.2],[1280.1,307.8,2008.9,135.6],[1392.2,360.1,1564.4,1088.9],[1339.9,472.2,611.1,644.4],[1227.8,419.9,1055.6,-308.9],[1265.1,266.6,1967.8,150.7],[1433.4,345.1,1549.3,1047.8],[1354.9,513.4,652.2,629.3],[1186.6,434.9,1070.7,-267.8],[1250.1,225.7,1926.7,165.4],[1474.3,330.1,1534.6,1006.7],[1369.9,554.3,693.3,614.6],[1145.7,449.9,1085.4,-226.7],[1235.2,184.4,1885.5,180.5],[1515.6,315.2,1519.5,965.5],[1384.8,595.6,734.5,599.5],[1104.4,464.8,1100.5,-185.5],[1220.1,143.3,1844.6,195.5],[1556.7,300.1,1504.5,924.6],[1399.9,636.7,775.4,584.5],[1063.3,479.9,1115.5,-144.6],[1205.3,102.2,1803.3,210.4],[1597.8,285.3,1489.6,883.3],[1414.7,677.8,816.7,569.6],[1022.2,494.7,1130.4,-103.3],[1190.3,61.0,1762.2,225.5],[1639.0,270.3,1474.5,842.2],[1429.7,719.0,857.8,554.5],[981.0,509.7,1145.5,-62.2],[1175.3,20.1,1721.2,240.4],[1679.9,255.3,1459.6,801.2],[1444.7,759.9,898.8,539.6],[940.1,524.7,1160.4,-21.2],[1160.4,-21.2,1679.9,255.3],[1721.2,240.4,1444.7,759.9],[1459.6,801.2,940.1,524.7],[898.8,539.6,1175.3,20.1],[1145.5,-62.2,1639.0,270.3],[1762.2,225.5,1429.7,719.0],[1474.5,842.2,981.0,509.7],[857.8,554.5,1190.3,61.0],[1130.4,-103.3,1597.8,285.3],[1803.3,210.4,1414.7,677.8],[1489.6,883.3,1022.2,494.7],[816.7,569.6,1205.3,102.2],[1115.5,-144.6,1556.7,300.1],[1844.6,195.5,1399.9,636.7],[1504.5,924.6,1063.3,479.9],[775.4,584.5,1220.1,143.3],[1100.5,-185.5,1515.6,315.2],[1885.5,180.5,1384.8,595.6],[1519.5,965.5,1104.4,464.8],[734.5,599.5,1235.2,184.4],[1085.4,-226.7,1474.3,330.1],[1926.7,165.4,1369.9,554.3],[1534.6,1006.7,1145.7,449.9],[693.3,614.6,1250.1,225.7],[1070.7,-267.8,1433.4,345.1],[1967.8,150.7,1354.9,513.4],[1549.3,1047.8,1186.6,434.9],[652.2,629.3,1265.1,266.6],[1055.6,-308.9,1392.2,360.1],[2008.9,135.6,1339.9,472.2],[1564.4,1088.9,1227.8,419.9],[611.1,644.4,1280.1,307.8],[1040.7,-350.2,1351.1,374.9],[2050.2,120.7,1325.1,431.1],[1579.3,1130.2,1268.9,405.1],[569.8,659.3,1294.9,348.9]],[[-116.9,-316.8,-48.0,-360.6],[1186.8,-86.9,888.0,1260.6],[956.9,1216.8,-48.0,-360.6],[-346.8,986.9,888.0,1260.6],[-48.0,-360.6,99.9,-429.5],[1230.6,-18.0,740.1,1329.5],[888.0,1260.6,99.9,-429.5],[-390.6,918.0,740.1,1329.5],[24.4,-398.3,257.5,-471.7],[1268.3,54.4,582.5,1371.7],[815.6,1298.3,257.5,-471.7],[-428.3,845.6,582.5,1371.7],[99.9,-429.5,420.0,-486.0],[1299.5,129.9,420.0,1386.0],[740.1,1329.5,420.0,-486.0],[-459.5,770.1,420.0,1386.0],[177.8,-453.9,582.6,-471.6],[1323.9,207.8,257.4,1371.6],[662.2,1353.9,582.6,-471.6],[-483.9,692.2,257.4,1371.6],[257.5,-471.7,740.2,-429.6],[1341.7,287.5,99.8,1329.6],[582.5,1371.7,740.2,-429.6],[-501.7,612.5,99.8,1329.6],[338.5,-482.4,888.0,-360.6],[1352.4,368.5,-48.0,1260.6],[501.5,1382.4,888.0,-360.6],[-512.4,531.5,-48.0,1260.6],[420.0,-486.0,1021.6,-267.1],[1356.0,450.0,-181.6,1167.1],[420.0,1386.0,1021.6,-267.1],[-516.0,450.0,-181.6,1167.1],[501.4,-482.3,1136.8,-151.6],[1352.3,531.4,-296.8,1051.6],[338.6,1382.3,1136.8,-151.6],[-512.3,368.6,-296.8,1051.6],[582.6,-471.6,1230.6,-18.0],[1341.6,612.6,-390.6,918.0],[257.4,1371.6,1230.6,-18.0],[-501.6,287.4,-390.6,918.0],[662.4,-454.1,1299.5,129.9],[1324.1,692.4,-459.5,770.1],[177.6,1354.1,1299.5,129.9],[-484.1,207.6,-459.5,770.1],[740.2,-429.6,1341.7,287.5],[1299.6,770.2,-501.7,612.5],[99.8,1329.6,1341.7,287.5],[-459.6,129.8,-501.7,612.5],[815.5,-398.3,1356.0,450.0],[1268.3,845.5,-516.0,450.0],[24.5,1298.3,1356.0,450.0],[-428.3,54.5,-516.0,450.0],[888.0,-360.6,1341.6,612.6],[1230.6,918.0,-501.6,287.4],[-48.0,1260.6,1341.6,612.6],[-390.6,-18.0,-501.6,287.4],[956.9,-316.7,1299.6,770.2],[1186.7,986.9,-459.6,129.8],[-116.9,1216.7,1299.6,770.2],[-346.7,-86.9,-459.6,129.8],[1021.6,-267.1,1230.6,918.0],[1137.1,1051.6,-390.6,-18.0],[-181.6,1167.1,1230.6,918.0],[-297.1,-151.6,-390.6,-18.0],[1081.7,-211.7,1137.1,1051.6],[1081.7,1111.7,-297.1,-151.6],[-241.7,1111.7,1137.1,1051.6],[-241.7,-211.7,-297.1,-151.6],[1136.8,-151.6,1021.6,1166.8],[1021.6,1166.8,-181.6,-266.8],[-296.8,1051.6,1021.6,1166.8],[-181.6,-266.8,1021.6,1166.8]]];
+  var FIGC=[[1040,380],[300,470],[1310,390],[420,450]];
+  var MCX=[950,470,950,470]; /* narrow screens: alternate sides, never centre */
+  var NKF=[[[54.0,4.2,58.0,4.7],[95.8,54.0,42.0,95.3],[46.0,95.8,58.0,4.7],[4.2,46.0,42.0,95.3],[58.0,4.7,65.7,6.8],[95.3,58.0,34.3,93.2],[42.0,95.3,65.7,6.8],[4.7,42.0,34.3,93.2],[61.9,5.6,73.0,10.2],[94.4,61.9,27.0,89.8],[38.1,94.4,73.0,10.2],[5.6,38.1,27.0,89.8],[65.7,6.8,79.6,14.8],[93.2,65.7,20.4,85.2],[34.3,93.2,79.6,14.8],[6.8,34.3,20.4,85.2],[69.4,8.3,85.2,20.4],[91.7,69.4,14.8,79.6],[30.6,91.7,85.2,20.4],[8.3,30.6,14.8,79.6],[73.0,10.2,89.8,27.0],[89.8,73.0,10.2,73.0],[27.0,89.8,89.8,27.0],[10.2,27.0,10.2,73.0],[76.4,12.3,93.2,34.3],[87.7,76.4,6.8,65.7],[23.6,87.7,93.2,34.3],[12.3,23.6,6.8,65.7],[79.6,14.8,95.3,42.0],[85.2,79.6,4.7,58.0],[20.4,85.2,95.3,42.0],[14.8,20.4,4.7,58.0],[82.5,17.5,96.0,50.0],[82.5,82.5,4.0,50.0],[17.5,82.5,96.0,50.0],[17.5,17.5,4.0,50.0],[85.2,20.4,95.3,58.0],[79.6,85.2,4.7,42.0],[14.8,79.6,95.3,58.0],[20.4,14.8,4.7,42.0],[87.7,23.6,93.2,65.7],[76.4,87.7,6.8,34.3],[12.3,76.4,93.2,65.7],[23.6,12.3,6.8,34.3],[89.8,27.0,89.8,73.0],[73.0,89.8,10.2,27.0],[10.2,73.0,89.8,73.0],[27.0,10.2,10.2,27.0],[91.7,30.6,85.2,79.6],[69.4,91.7,14.8,20.4],[8.3,69.4,85.2,79.6],[30.6,8.3,14.8,20.4],[93.2,34.3,79.6,85.2],[65.7,93.2,20.4,14.8],[6.8,65.7,79.6,85.2],[34.3,6.8,20.4,14.8],[94.4,38.1,73.0,89.8],[61.9,94.4,27.0,10.2],[5.6,61.9,73.0,89.8],[38.1,5.6,27.0,10.2],[95.3,42.0,65.7,93.2],[58.0,95.3,34.3,6.8],[4.7,58.0,65.7,93.2],[42.0,4.7,34.3,6.8],[95.8,46.0,58.0,95.3],[54.0,95.8,42.0,4.7],[4.2,54.0,58.0,95.3],[46.0,4.2,42.0,4.7],[96.0,50.0,50.0,96.0],[50.0,96.0,50.0,4.0],[4.0,50.0,50.0,96.0],[50.0,4.0,50.0,96.0]],[[29.8,8.6,91.4,29.8],[91.4,29.8,70.2,91.4],[70.2,91.4,8.6,70.2],[8.6,70.2,29.8,8.6],[36.0,10.8,89.2,36.0],[89.2,36.0,64.0,89.2],[64.0,89.2,10.8,64.0],[10.8,64.0,36.0,10.8],[41.3,13.3,86.7,41.3],[86.7,41.3,58.7,86.7],[58.7,86.7,13.3,58.7],[13.3,58.7,41.3,13.3],[45.9,16.1,83.9,45.9],[83.9,45.9,54.1,83.9],[54.1,83.9,16.1,54.1],[16.1,54.1,45.9,16.1],[49.7,19.1,80.9,49.7],[80.9,49.7,50.3,80.9],[50.3,80.9,19.1,50.3],[19.1,50.3,49.7,19.1],[52.8,22.1,77.9,52.8],[77.9,52.8,47.2,77.9],[47.2,77.9,22.1,47.2],[22.1,47.2,52.8,22.1],[55.3,25.2,74.8,55.3],[74.8,55.3,44.7,74.8],[44.7,74.8,25.2,44.7],[25.2,44.7,55.3,25.2],[57.2,28.2,71.8,57.2],[71.8,57.2,42.8,71.8],[42.8,71.8,28.2,42.8],[28.2,42.8,57.2,28.2],[58.7,31.1,68.9,58.7],[68.9,58.7,41.3,68.9],[41.3,68.9,31.1,41.3],[31.1,41.3,58.7,31.1],[59.7,33.9,66.1,59.7],[66.1,59.7,40.3,66.1],[40.3,66.1,33.9,40.3],[33.9,40.3,59.7,33.9],[60.4,36.5,63.5,60.4],[63.5,60.4,39.6,63.5],[39.6,63.5,36.5,39.6],[36.5,39.6,60.4,36.5],[60.7,38.8,61.2,60.7],[61.2,60.7,39.3,61.2],[39.3,61.2,38.8,39.3],[38.8,39.3,60.7,38.8],[60.7,41.0,59.0,60.7],[59.0,60.7,39.3,59.0],[39.3,59.0,41.0,39.3],[41.0,39.3,60.7,41.0],[60.6,43.0,57.0,60.6],[57.0,60.6,39.4,57.0],[39.4,57.0,43.0,39.4],[43.0,39.4,60.6,43.0],[60.2,44.8,55.2,60.2],[55.2,60.2,39.8,55.2],[39.8,55.2,44.8,39.8],[44.8,39.8,60.2,44.8],[59.7,46.3,53.7,59.7],[53.7,59.7,40.3,53.7],[40.3,53.7,46.3,40.3],[46.3,40.3,59.7,46.3],[59.1,47.6,52.4,59.1],[52.4,59.1,40.9,52.4],[40.9,52.4,47.6,40.9],[47.6,40.9,59.1,47.6],[58.4,48.8,51.2,58.4],[51.2,58.4,41.6,51.2],[41.6,51.2,48.8,41.6],[48.8,41.6,58.4,48.8]],[[50.0,47.4,96.0,50.0],[52.6,50.0,50.0,96.0],[50.0,52.6,4.0,50.0],[47.4,50.0,50.0,4.0],[50.0,44.9,93.4,50.0],[55.1,50.0,50.0,93.4],[50.0,55.1,6.6,50.0],[44.9,50.0,50.0,6.6],[50.0,42.3,90.9,50.0],[57.7,50.0,50.0,90.9],[50.0,57.7,9.1,50.0],[42.3,50.0,50.0,9.1],[50.0,39.8,88.3,50.0],[60.2,50.0,50.0,88.3],[50.0,60.2,11.7,50.0],[39.8,50.0,50.0,11.7],[50.0,37.2,85.8,50.0],[62.8,50.0,50.0,85.8],[50.0,62.8,14.2,50.0],[37.2,50.0,50.0,14.2],[50.0,34.7,83.2,50.0],[65.3,50.0,50.0,83.2],[50.0,65.3,16.8,50.0],[34.7,50.0,50.0,16.8],[50.0,32.1,80.7,50.0],[67.9,50.0,50.0,80.7],[50.0,67.9,19.3,50.0],[32.1,50.0,50.0,19.3],[50.0,29.6,78.1,50.0],[70.4,50.0,50.0,78.1],[50.0,70.4,21.9,50.0],[29.6,50.0,50.0,21.9],[50.0,27.0,75.6,50.0],[73.0,50.0,50.0,75.6],[50.0,73.0,24.4,50.0],[27.0,50.0,50.0,24.4],[50.0,24.4,73.0,50.0],[75.6,50.0,50.0,73.0],[50.0,75.6,27.0,50.0],[24.4,50.0,50.0,27.0],[50.0,21.9,70.4,50.0],[78.1,50.0,50.0,70.4],[50.0,78.1,29.6,50.0],[21.9,50.0,50.0,29.6],[50.0,19.3,67.9,50.0],[80.7,50.0,50.0,67.9],[50.0,80.7,32.1,50.0],[19.3,50.0,50.0,32.1],[50.0,16.8,65.3,50.0],[83.2,50.0,50.0,65.3],[50.0,83.2,34.7,50.0],[16.8,50.0,50.0,34.7],[50.0,14.2,62.8,50.0],[85.8,50.0,50.0,62.8],[50.0,85.8,37.2,50.0],[14.2,50.0,50.0,37.2],[50.0,11.7,60.2,50.0],[88.3,50.0,50.0,60.2],[50.0,88.3,39.8,50.0],[11.7,50.0,50.0,39.8],[50.0,9.1,57.7,50.0],[90.9,50.0,50.0,57.7],[50.0,90.9,42.3,50.0],[9.1,50.0,50.0,42.3],[50.0,6.6,55.1,50.0],[93.4,50.0,50.0,55.1],[50.0,93.4,44.9,50.0],[6.6,50.0,50.0,44.9],[50.0,4.0,52.6,50.0],[96.0,50.0,50.0,52.6],[50.0,96.0,47.4,50.0],[4.0,50.0,50.0,47.4]],[[54.0,4.2,58.0,4.7],[95.8,54.0,42.0,95.3],[46.0,95.8,58.0,4.7],[4.2,46.0,42.0,95.3],[58.0,4.7,65.7,6.8],[95.3,58.0,34.3,93.2],[42.0,95.3,65.7,6.8],[4.7,42.0,34.3,93.2],[61.9,5.6,73.0,10.2],[94.4,61.9,27.0,89.8],[38.1,94.4,73.0,10.2],[5.6,38.1,27.0,89.8],[65.7,6.8,79.6,14.8],[93.2,65.7,20.4,85.2],[34.3,93.2,79.6,14.8],[6.8,34.3,20.4,85.2],[69.4,8.3,85.2,20.4],[91.7,69.4,14.8,79.6],[30.6,91.7,85.2,20.4],[8.3,30.6,14.8,79.6],[73.0,10.2,89.8,27.0],[89.8,73.0,10.2,73.0],[27.0,89.8,89.8,27.0],[10.2,27.0,10.2,73.0],[76.4,12.3,93.2,34.3],[87.7,76.4,6.8,65.7],[23.6,87.7,93.2,34.3],[12.3,23.6,6.8,65.7],[79.6,14.8,95.3,42.0],[85.2,79.6,4.7,58.0],[20.4,85.2,95.3,42.0],[14.8,20.4,4.7,58.0],[82.5,17.5,96.0,50.0],[82.5,82.5,4.0,50.0],[17.5,82.5,96.0,50.0],[17.5,17.5,4.0,50.0],[85.2,20.4,95.3,58.0],[79.6,85.2,4.7,42.0],[14.8,79.6,95.3,58.0],[20.4,14.8,4.7,42.0],[87.7,23.6,93.2,65.7],[76.4,87.7,6.8,34.3],[12.3,76.4,93.2,65.7],[23.6,12.3,6.8,34.3],[89.8,27.0,89.8,73.0],[73.0,89.8,10.2,27.0],[10.2,73.0,89.8,73.0],[27.0,10.2,10.2,27.0],[91.7,30.6,85.2,79.6],[69.4,91.7,14.8,20.4],[8.3,69.4,85.2,79.6],[30.6,8.3,14.8,20.4],[93.2,34.3,79.6,85.2],[65.7,93.2,20.4,14.8],[6.8,65.7,79.6,85.2],[34.3,6.8,20.4,14.8],[94.4,38.1,73.0,89.8],[61.9,94.4,27.0,10.2],[5.6,61.9,73.0,89.8],[38.1,5.6,27.0,10.2],[95.3,42.0,65.7,93.2],[58.0,95.3,34.3,6.8],[4.7,58.0,65.7,93.2],[42.0,4.7,34.3,6.8],[95.8,46.0,58.0,95.3],[54.0,95.8,42.0,4.7],[4.2,54.0,58.0,95.3],[46.0,4.2,42.0,4.7],[96.0,50.0,50.0,96.0],[50.0,96.0,50.0,4.0],[4.0,50.0,50.0,96.0],[50.0,4.0,50.0,96.0]]];
+
+/* Engine, stagger and placement rule are the homepage's, unchanged.
+     KF is re-authored from FC DS/assets/textures/fc-figure-*.svg using the same
+     recipe the homepage keyframes decode to: scale, rotation, centre applied to
+     the 800x800 source. Every keyframe therefore keeps the source file's line
+     order, which is the whole reason a plain lerp is smooth: line k is line k in
+     every figure. Generating the figures from their constructions instead gives
+     correct static shapes and a spaghetti morph.
+     Sequence here: cardioid right, square left, diamond right, cardioid left. */
+
+  var svg=document.getElementById('morph');
+  var mark=document.getElementById('marklogo');
+  var i,g;
+
+  g=document.createElementNS(NS,'g');
+  for(i=0;i<72;i++) g.appendChild(document.createElementNS(NS,'line'));
+  svg.appendChild(g);
+  var lines=svg.querySelectorAll('line');
+
+  g=document.createElementNS(NS,'g');
+  g.setAttribute('stroke','var(--coral)'); g.setAttribute('stroke-width','2');
+  g.setAttribute('stroke-linecap','round'); g.setAttribute('fill','none');
+  for(i=0;i<72;i++) g.appendChild(document.createElementNS(NS,'line'));
+  mark.appendChild(g);
+  var marks=mark.querySelectorAll('line');
+
+  /* rule: a section owns a figure. Any element with data-fig is the anchor for
+     the next keyframe; anchors are re-measured on resize, so longer sections
+     never break placement. */
+  var anchors=Array.prototype.slice.call(document.querySelectorAll('[data-fig]'))
+    .sort(function(a,b){return a.getBoundingClientRect().top-b.getBoundingClientRect().top});
+  var tops=[], narrow=false, MS=0.85, maxY=0;
+
+  function measure(){
+    var vh=window.innerHeight;
+    narrow=(window.innerWidth/vh)<1.02;
+    maxY=Math.max(0, document.documentElement.scrollHeight-vh);
+    tops=[0].concat(anchors.map(function(el){return el.getBoundingClientRect().top+window.scrollY-vh*0.30}));
+    for(var i=1;i<tops.length;i++){
+      var slack=(tops.length-i)*Math.min(90, vh*0.12);
+      tops[i]=Math.min(tops[i], maxY-slack);
+    }
+    buildHL();
+  }
+  function mapx(k,x){ return narrow ? MCX[k]+(x-FIGC[k][0])*MS : x }
+  function mapy(k,y){ return narrow ? 400+(y-FIGC[k][1])*MS : y }
+  function smooth(t){ return t*t*(3-2*t) }
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function draw(){
+    var y=window.scrollY, vh=window.innerHeight, k=0;
+    while(k<tops.length-1 && y>=tops[k+1]) k++;
+    var t=0;
+    if(y>=maxY-4){ k=KF.length-1; t=0; }
+    else if(k<tops.length-1){
+      var gap=tops[k+1]-tops[k];
+      var W=Math.min(vh*0.5, gap*0.4);
+      var start=tops[k+1]-W;
+      t = y<=start ? 0 : Math.min(1,(y-start)/W);
+    }
+    var kb=Math.min(k+1,KF.length-1);
+    var A=KF[k], B=KF[kb];
+    for(var i=0;i<lines.length;i++){
+      var ti;
+      if(reduced){ ti=(t>0.5?1:0); }
+      else { ti=smooth(Math.min(1,Math.max(0,(t*1.18)-(i/lines.length)*0.18))); }
+      var a=A[i], b=B[i], L=lines[i];
+      var ax1=mapx(k,a[0]), ay1=mapy(k,a[1]), ax2=mapx(k,a[2]), ay2=mapy(k,a[3]);
+      var bx1=mapx(kb,b[0]), by1=mapy(kb,b[1]), bx2=mapx(kb,b[2]), by2=mapy(kb,b[3]);
+      L.setAttribute('x1', ax1+(bx1-ax1)*ti);
+      L.setAttribute('y1', ay1+(by1-ay1)*ti);
+      L.setAttribute('x2', ax2+(bx2-ax2)*ti);
+      L.setAttribute('y2', ay2+(by2-ay2)*ti);
+      var ma=NKF[k][i], mb=NKF[kb][i], ML=marks[i];
+      ML.setAttribute('x1', ma[0]+(mb[0]-ma[0])*ti);
+      ML.setAttribute('y1', ma[1]+(mb[1]-ma[1])*ti);
+      ML.setAttribute('x2', ma[2]+(mb[2]-ma[2])*ti);
+      ML.setAttribute('y2', ma[3]+(mb[3]-ma[3])*ti);
+    }
+    var nf=Math.min(1,Math.max(0,y/280));
+    document.documentElement.style.setProperty('--navf',(nf*nf*(3-nf-nf)).toFixed(3));
+  }
+
+  /* content protection: measured bars under all text, over the field.
+     The nav is fixed and carries its own frost; measuring it would bake a bar
+     into document coordinates that covers body copy once the page scrolls. */
+  var hlayer=document.getElementById('hlayer');
+  var SEL='h1,h2,p,.items b,.items span,.faq b,.faq span';
+  function buildHL(){
+    hlayer.style.height='0px';
+    var docH=document.documentElement.scrollHeight;
+    var els=document.querySelectorAll(SEL), out=[], i, r;
+    for(i=0;i<els.length;i++){
+      var el=els[i];
+      if(!el.firstChild) continue;
+      /* measure the TEXT, not the element box; a block element reports full
+         column width and would over-cover */
+      var rg=document.createRange(); rg.selectNodeContents(el);
+      var rects=rg.getClientRects();
+      for(r=0;r<rects.length;r++){
+        var rc=rects[r]; if(rc.width<2||rc.height<2) continue;
+        out.push('<rect x="'+(rc.left+window.scrollX-9).toFixed(1)+'" y="'+(rc.top+window.scrollY-3).toFixed(1)+
+                 '" width="'+(rc.width+18).toFixed(1)+'" height="'+(rc.height+6).toFixed(1)+
+                 '" rx="8" fill="rgba(0,0,0,.94)"/>');
+      }
+    }
+    hlayer.innerHTML=out.join('');
+    hlayer.style.height=docH+'px';   /* real height; a zero-height SVG is clipped in Safari */
+  }
+
+  /* the address is never a contiguous string in the markup; harvesters that
+     do not run scripts get nothing, and the link still reads as a name */
+  Array.prototype.forEach.call(document.querySelectorAll('a.mail'), function(a){
+    var addr=a.getAttribute('data-n')+String.fromCharCode(64)+a.getAttribute('data-d');
+    a.href='mailto:'+addr;
+    a.setAttribute('title', addr);
+  });
+
+  var pending=false;
+  function onScroll(){ if(!pending){ pending=true; requestAnimationFrame(function(){ pending=false; draw(); }); } }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', function(){ measure(); draw(); });
+  window.addEventListener('load', function(){ measure(); draw(); });
+  if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(function(){ measure(); draw(); }); }
+  measure(); draw();
+  setTimeout(function(){ measure(); draw(); }, 600);
+  if('ResizeObserver' in window){
+    var lastW=window.innerWidth;
+    new ResizeObserver(function(){ var w=window.innerWidth; if(w!==lastW){ lastW=w; measure(); draw(); } }).observe(document.body);
+  }
+})();
+</script>
+
+</body>
+</html>
