@@ -175,6 +175,17 @@ body.dark .rows a.rowi:hover .ttl{color:var(--text-accent)}
 .rowi .done{display:block;margin-top:5px;font-family:var(--font-display);font-weight:600;
   font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
 
+/* row states. .next is the single upcoming event the hero is currently
+   advertising, and carries the only coral in the list; move it forward
+   whenever the hero rolls. .past recedes by weight rather than by badge,
+   per "hierarchy from spacing, a hairline is a last resort".
+   The number and date stay at full tertiary on purpose: they are already
+   the dimmest token, and fading them to 72% measured 2.82:1 in light mode,
+   under AA for 14px text. The title carries the recession instead. */
+.rowi.next .lead{color:var(--text-accent)}
+.rowi.past .ttl{color:var(--text-secondary)}
+.rowi.past .mt{color:var(--text-tertiary)}
+
 /* newsletter */
 .in{font-family:var(--font-body);font-size:18px;padding:14px 0;border:none;border-bottom:2px solid var(--ink-200);background:transparent;width:100%;max-width:360px;transition:border-color var(--dur-fast) var(--ease);color:var(--text-primary)}
 .in:focus{outline:none;border-color:var(--brand)}
@@ -380,9 +391,9 @@ body.dark .in{border-color:#3E362F}
       <h3 style="margin-top:76px"><span class="hl">All events</span></h3>
       <div class="rows">
         <a class="rowi" href="https://luma.com/edkftebw" target="_blank" rel="noopener"><span class="lead">Vol. 04</span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Lineup to come. The same shape: three short talks, a panel, and a room that stays late, timed to the Art Walk after.</div></div><span class="tr">Oct 1, 2026 →</span></a>
-        <a class="rowi" href="https://luma.com/pejuj8yl" target="_blank" rel="noopener"><span class="lead">Vol. 03</span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Dan Hiester, Josh Glick, and Yilin Zhu on design systems for LLMs, designing for K-12 special education, and a motion system built from line art. Panel after, moderated by Madison Joslyn.</div></div><span class="tr">Sept 3, 2026 →</span></a>
-        <a class="rowi" href="#learning"><span class="lead">Vol. 02<span class="done">Complete</span></span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Patrick Neeman, Sarra Naemi, and Ben Mullins on journey mapping, agentic workflows, and drum machines. Recap and photos below.</div></div><span class="tr">Aug 6, 2026 →</span></a>
-        <a class="rowi" href="https://luma.com/x1futy5p" target="_blank" rel="noopener"><span class="lead">Vol. 01<span class="done">Complete</span></span><div style="flex:1"><div class="ttl">Orientation.</div><div class="mt">The inaugural gathering: lightning talks, open conversation, and drinks.</div></div><span class="tr">Jun 9, 2026 →</span></a>
+        <a class="rowi next" href="https://luma.com/pejuj8yl" target="_blank" rel="noopener"><span class="lead">Vol. 03</span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Dan Hiester, Josh Glick, and Yilin Zhu on design systems for LLMs, designing for K-12 special education, and a motion system built from line art. Panel after, moderated by Madison Joslyn.</div></div><span class="tr">Sept 3, 2026 →</span></a>
+        <a class="rowi past" href="#learning"><span class="lead">Vol. 02<span class="done">Complete</span></span><div style="flex:1"><div class="ttl">Designing with AI.</div><div class="mt">Patrick Neeman, Sarra Naemi, and Ben Mullins on journey mapping, agentic workflows, and drum machines. Recap and photos below.</div></div><span class="tr">Aug 6, 2026 →</span></a>
+        <a class="rowi past" href="https://luma.com/x1futy5p" target="_blank" rel="noopener"><span class="lead">Vol. 01<span class="done">Complete</span></span><div style="flex:1"><div class="ttl">Orientation.</div><div class="mt">The inaugural gathering: lightning talks, open conversation, and drinks.</div></div><span class="tr">Jun 9, 2026 →</span></a>
       </div>
       <p class="small tert" style="margin-top:8px"><span class="hl">Full history lives on <a href="https://luma.com/FrontierCreatives?period=past" target="_blank" rel="noopener">Luma</a>.</span></p>
     </div>
