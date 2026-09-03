@@ -287,7 +287,7 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
     if (k === 'l'){ toggleTheme(); }
     else if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){ e.preventDefault(); show(cur + 1); }
     else if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'){   e.preventDefault(); show(cur - 1); }
-    else if (e.key === ' '){ e.preventDefault(); paused = !paused; paused ? clearTimeout(timer) : schedule(); }
+    else if (e.key === ' ' || k === 'p'){ e.preventDefault(); paused = !paused; paused ? clearTimeout(timer) : schedule(); }
   });
   addEventListener('click', function(){ show(cur + 1); });
 
