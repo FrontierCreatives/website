@@ -377,7 +377,7 @@ body.dark .in{border-color:#3E362F}
   </header>
 
   <!-- EVENTS -->
-  <section id="events" data-fig="1">
+  <section id="events">
     <div class="col">
       <span class="eyebrow">Vol. 04 &middot; Next event</span>
       <h2><span class="hl">Designing with AI.</span></h2>
@@ -388,7 +388,7 @@ body.dark .in{border-color:#3E362F}
         <p><span class="hl">Lineup to come. The shape is the same: three short talks, a panel, and a room that stays late.</span></p>
         <p><span class="hl">Want to present at Vol. 04? <a href="#contact">Get in touch.</a></span></p>
       </div>
-      <div class="detail-row">
+      <div class="detail-row" data-fig="1">
         <div class="detail"><div class="k">Date</div><div class="v">Oct 1, 5pm</div></div>
         <div class="detail"><div class="k">Where</div><div class="v">Pioneer Square Labs</div></div>
         <div class="detail"><div class="k">Cost</div><div class="v">Free</div></div>
@@ -413,7 +413,7 @@ body.dark .in{border-color:#3E362F}
       <h2><span class="hl">Field notes, once a month.</span></h2>
       <p><span class="hl">What we learned at the last gathering, workflows worth stealing, and tools that earned a spot. We&rsquo;ll break down the work and have fun doing it. More to come.</span></p>
 
-      <div class="recap">
+      <div class="recap" id="vol-03">
         <span class="eyebrow muted">Vol. 03 recap &middot; Sept 3, 2026</span>
         <h3><span class="hl">Three talks, one panel, and a swear jar.</span></h3>
         <p><span class="hl">Vol. 03 filled Pioneer Square Labs to capacity, with 150 RSVPs and a waitlist behind them; roughly half the room was back from Vol. 02, and the mix widened well past designers into product and engineering.</span></p>
@@ -487,7 +487,7 @@ body.dark .in{border-color:#3E362F}
       </div>
     </div>
     <div class="col">
-      <div class="recap">
+      <div class="recap" id="vol-02">
         <span class="eyebrow muted">Vol. 02 recap &middot; Aug 6, 2026</span>
         <h3><span class="hl">Three talks, one messy middle.</span></h3>
         <p><span class="hl">Vol. 02 filled Pioneer Square Labs. Three people showed the actual work instead of talking about AI in the abstract.</span></p>
@@ -666,7 +666,7 @@ body.dark .in{border-color:#3E362F}
     if(y>=maxY-4){ k=SKF.length-1; t=0; }
     else if(k<tops.length-1){
       var gap=tops[k+1]-tops[k];
-      var W=Math.min(vh*0.5, gap*0.4);
+      var W=Math.min(vh*0.5, gap*0.8);
       var start=tops[k+1]-W;
       t = y<=start ? 0 : Math.min(1,(y-start)/W);
     }
