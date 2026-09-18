@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Frontier Creatives — Moderator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app" class="wrap">
+  <div class="mast">
+    <div class="brand"><span class="mark">Frontier <b>Creatives</b></span><span class="tag">Moderator</span></div>
+    <button id="themeToggle" class="theme-toggle">◑ Light</button>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="lib.js"></script>
+<script>
+fcInitTheme();
+if (fcRequireConfig()) fcGate(startModerator);
+
+// ---- Moderator app ----
+function startModerator() {
+  const view = document.getElementById("view");
+  const sb = FC.client;
+  let state = null, quiz = null, questions = [], q = null, count = 0, aq = [], confirmReset = false;
+
+  async function loadAll() {
+    const { data: st } = await sb.from("quiz_state").select("*").eq("id", 1).single();
+    state = st;
+    if (state?.active_quiz_id) {
+      const { data: qz } = await sb.from("quizzes").select("*").eq("id", state.active_quiz_id).single();
+      quiz = qz;
+      const { data: qs } = await sb.from("questions").select("*").eq("quiz_id", state.active_quiz_id).order("sort_order");
+      questions = qs || [];
+      q = questions.find((x) => x.id === state.current_question_id) || null;
+      const { count: c } = q
+        ? await sb.from("responses").select("*", { count: "exact", head: true }).eq("question_id", q.id)
+        : { count: 0 };
+      count = c || 0;
+      const { data: a } = await sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
+        .order("votes", { ascending: false }).order("created_at");
+      aq = a || [];
+    }
+  }
+
+  async function setState(patch) {
+    patch.updated_at = new Date().toISOString();
+    await sb.from("quiz_state").update(patch).eq("id", 1);
+    await refresh();
+  }
+  const goTo = (qid) => setState({ current_question_id: qid, phase: "question" });
+  function step(d) {
+    const i = questions.findIndex((x) => x.id === q?.id);
+    const n = questions[Math.max(0, Math.min(questions.length - 1, i + d))];
+    if (n) goTo(n.id);
+  }
+  async function setAQ(id, status) { await sb.from("audience_questions").update({ status }).eq("id", id); await refresh(); }
+
+  async function doReset() {
+    const { error } = await sb.rpc("reset_session");
+    confirmReset = false;
+    if (error) { alert("Reset failed — did you run reset.sql in Supabase? (" + error.message + ")"); }
+    await refresh();
+  }
+
+  function render() {
+    if (!state) { view.innerHTML = '<div class="card"><p class="hint">Loading…</p></div>'; return; }
+    if (!quiz) {
+      view.innerHTML = '<div class="card"><p class="eyebrow">No active quiz</p><h2>Nothing is live yet</h2>' +
+        '<p class="hint">Run <b>seed.sql</b> in Supabase to load a quiz, then reload.</p></div>';
+      return;
+    }
+    const idx = questions.findIndex((x) => x.id === q?.id);
+    const phase = state.phase, mode = state.display_mode;
+    const pBtn = (p, label) => '<button class="btn ' + (phase === p ? "primary" : "ghost") + ' sm" onclick="ph(\'' + p + '\')">' + label + '</button>';
+    const dBtn = (m, label) => '<button class="btn ' + (mode === m ? "primary" : "ghost") + ' sm" onclick="dm(\'' + m + '\')">' + label + '</button>';
+
+    const resetCtl = confirmReset
+      ? '<span class="hint" style="align-self:center">Clear all answers &amp; questions?</span>' +
+        '<button class="btn sm primary" onclick="resetYes()">Yes, reset</button>' +
+        '<button class="btn sm ghost" onclick="resetNo()">Cancel</button>'
+      : '<button class="btn sm ghost" onclick="resetAsk()">↺ Reset for next event</button>';
+
+    view.innerHTML =
+      '<div class="card"><div class="spread"><p class="eyebrow" style="margin:0">' + fcEsc(quiz.title) + '</p>' +
+        '<span class="hint">' + count + ' responses to this question</span></div>' +
+        '<h2 class="prompt" style="font-size:1.5rem;margin:.4rem 0">' +
+          (q ? (idx + 1) + '. ' + fcEsc(q.prompt) : 'No question selected') + '</h2>' +
+        '<div class="row mt">' +
+          '<button class="btn" onclick="step(-1)" ' + (idx <= 0 ? "disabled" : "") + '>‹ Prev</button>' +
+          '<button class="btn primary" onclick="step(1)" ' + (idx >= questions.length - 1 ? "disabled" : "") + '>Next ›</button>' +
+        '</div>' +
+        '<div class="mt"><span class="hint">Phase</span><div class="row" style="margin-top:6px">' +
+          pBtn("lobby", "Lobby") + pBtn("question", "Voting open") + pBtn("results", "Show results") +
+          pBtn("qa", "Q & A") + pBtn("ended", "End") + '</div></div>' +
+        '<div class="mt"><span class="hint">Screen shows</span><div class="row" style="margin-top:6px">' +
+          dBtn("bar", "▦ Bar") + dBtn("pie", "◕ Pie") + dBtn("cloud", "❋ Cloud") +
+          '<span class="hint sm" style="align-self:center">(word questions always show a cloud)</span></div></div>' +
+        '<div class="mt" style="padding-top:14px;border-top:1px solid var(--line)"><div class="row">' + resetCtl +
+          '<a class="btn sm ghost" href="results.html" target="_blank" rel="noopener" style="margin-left:auto;text-decoration:none;align-self:center">⤓ Export results</a>' +
+        '</div></div>' +
+      '</div>' +
+
+      '<div class="card mt"><p class="eyebrow">Questions</p><div class="qlist">' +
+        questions.map((x, i) =>
+          '<button class="opt ' + (x.id === q?.id ? "chosen" : "") + '" onclick="goTo(\'' + x.id + '\')">' +
+          '<span class="dot"></span><span>' + (i + 1) + '. ' + fcEsc(x.prompt) + '</span>' +
+          '<span class="pill" style="margin-left:auto">' + x.type + '</span></button>'
+        ).join("") + '</div></div>' +
+
+      '<div class="card mt"><div class="spread"><p class="eyebrow" style="margin:0">Audience Q & A</p>' +
+        '<span class="hint">' + aq.filter((a)=>a.status==="pending").length + ' pending · ' +
+        aq.filter((a)=>a.status==="queued").length + ' queued</span></div>' +
+        '<div class="qlist">' + (aq.length ? aq.map((it) =>
+          '<div class="qitem">' +
+            '<div class="vote"><span class="n">' + it.votes + '</span><span class="hint sm">votes</span></div>' +
+            '<div class="txt">' + fcEsc(it.text) +
+              (it.author ? '<div class="who">— ' + fcEsc(it.author) + '</div>' : '') +
+              '<span class="pill ' + it.status + '">' + it.status + '</span></div>' +
+            '<div class="stack" style="gap:6px">' +
+              (it.status !== "queued" ? '<button class="btn sm primary" onclick="setAQ(\'' + it.id + '\',\'queued\')">Queue</button>' : '') +
+              (it.status !== "asked"  ? '<button class="btn sm" onclick="setAQ(\'' + it.id + '\',\'asked\')">Mark asked</button>' : '') +
+              (it.status !== "dismissed" ? '<button class="btn sm ghost" onclick="setAQ(\'' + it.id + '\',\'dismissed\')">Dismiss</button>' : '') +
+            '</div></div>'
+        ).join("") : '<p class="hint">No audience questions yet.</p>') + '</div></div>';
+  }
+
+  window.step = step; window.goTo = goTo; window.setAQ = setAQ;
+  window.ph = (p) => setState({ phase: p });
+  window.dm = (m) => setState({ display_mode: m });
+  window.resetAsk = () => { confirmReset = true; render(); };
+  window.resetNo = () => { confirmReset = false; render(); };
+  window.resetYes = () => doReset();
+
+  async function refresh() { await loadAll(); render(); }
+
+  sb.channel("m_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
+  sb.channel("m_resp").on("postgres_changes", { event: "INSERT", schema: "public", table: "responses" }, (p) => {
+    if (q && p.new && p.new.question_id === q.id) { count++; const el = view.querySelector(".hint"); if (el) el.textContent = count + " responses to this question"; }
+  }).subscribe();
+  sb.channel("m_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, refresh).subscribe();
+
+  refresh();
+}
+</script>
+</body>
+</html>

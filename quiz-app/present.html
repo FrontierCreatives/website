@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Frontier Creatives — On Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  :root { --maxw: 1400px; }
+  body { display: flex; flex-direction: column; min-height: 100vh; }
+  .screen { flex: 1; display: flex; flex-direction: column; }
+  .bigprompt { font-family: var(--serif); font-weight: 600; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.08; margin: 0 0 8px; }
+  .join { display: flex; align-items: center; gap: 20px; }
+  .qr { background: #fff; padding: 12px; border-radius: 12px; }
+  .qr img, .qr canvas { display: block; }
+  .count { font-family: var(--serif); color: var(--coral); }
+  .footbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px clamp(18px,4vw,40px); border-top: 1px solid var(--line); color: var(--muted); }
+  .qa-big { display: grid; gap: 16px; }
+  .qa-big .qcard { padding: 22px 26px; border-left: 4px solid var(--coral); }
+  .qa-big .qcard.asked { border-left-color: var(--faint); opacity: .6; }
+  .qa-big .qtext { font-family: var(--serif); font-size: clamp(1.4rem, 3vw, 2.2rem); line-height: 1.2; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="wrap" style="width:100%">
+    <div class="mast">
+      <div class="brand">
+        <span class="mark" style="font-size:2rem">Frontier <b>Creatives</b></span>
+        <span class="tag">Live</span>
+      </div>
+      <div class="row" style="align-items:center">
+        <span id="statusPill" class="pill"></span>
+        <button id="themeToggle" class="theme-toggle">◑ Light</button>
+      </div>
+    </div>
+    <div id="view"></div>
+  </div>
+</div>
+<div class="footbar">
+  <span>Join at <b id="joinUrl"></b></span>
+  <span><span id="respCount" class="count">0</span> responses</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="config.js"></script>
+<script src="lib.js"></script>
+<script>
+fcInitTheme();
+if (fcRequireConfig()) {
+  const view = document.getElementById("view");
+  const sb = FC.client;
+  const joinURL = new URL("index.html", location.href).href;
+  document.getElementById("joinUrl").textContent = joinURL.replace(/^https?:\/\//, "");
+  let state = null, questions = [], q = null, rows = [];
+
+  function makeQR(size) {
+    const holder = document.createElement("div");
+    holder.className = "qr";
+    new QRCode(holder, { text: joinURL, width: size, height: size, colorDark: "#0B0A09", colorLight: "#ffffff" });
+    return holder.outerHTML;
+  }
+
+  async function loadState() {
+    const { data } = await sb.from("quiz_state").select("*").eq("id", 1).single();
+    state = data;
+    if (state && state.active_quiz_id) {
+      const { data: qs } = await sb.from("questions").select("*").eq("quiz_id", state.active_quiz_id).order("sort_order");
+      questions = qs || [];
+    } else questions = [];
+    q = questions.find((x) => x.id === state?.current_question_id) || null;
+  }
+  async function loadRows() {
+    if (!q) { rows = []; return; }
+    const { data } = await sb.from("responses").select("id,answer").eq("question_id", q.id);
+    rows = data || [];
+  }
+
+  function setStatus(txt, cls) {
+    const p = document.getElementById("statusPill");
+    p.textContent = txt; p.className = "pill " + (cls || "");
+  }
+
+  function render() {
+    document.getElementById("respCount").textContent = rows.length;
+    if (!state) return;
+    const phase = state.phase;
+
+    if (phase === "lobby" || !q) {
+      setStatus("Lobby");
+      view.innerHTML = '<div class="card" style="display:flex;gap:40px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:48px">' +
+        '<div><p class="eyebrow">Quiz of the day</p>' +
+        '<h1 class="bigprompt">Scan to join</h1>' +
+        '<p class="hint" style="font-size:1.3rem">Point your phone camera at the code — no app needed.</p></div>' +
+        '<div class="join">' + makeQR(220) + '</div></div>';
+      return;
+    }
+    if (phase === "ended") {
+      setStatus("Ended");
+      view.innerHTML = '<div class="card center" style="padding:64px 24px"><p class="eyebrow">Thank you</p>' +
+        '<h1 class="bigprompt">That\'s a wrap</h1></div>';
+      return;
+    }
+    if (phase === "qa") { renderQA(); return; }
+
+    setStatus(phase === "results" ? "Results" : "Voting open", phase === "results" ? "" : "queued");
+    const idx = questions.findIndex((x) => x.id === q.id) + 1;
+    view.innerHTML = '<div class="card" style="padding:clamp(24px,4vw,44px)">' +
+      '<p class="eyebrow">Question ' + idx + ' of ' + questions.length + '</p>' +
+      '<h1 class="bigprompt">' + fcEsc(q.prompt) + '</h1>' +
+      '<div id="chart" class="mt"></div></div>';
+    const mode = q.type === "word" ? "cloud" : state.display_mode;
+    fcRenderChart(mode, document.getElementById("chart"), q, rows, { big: true });
+  }
+
+  function renderQA() {
+    setStatus("Q & A");
+    sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
+      .in("status", ["queued", "asked"]).order("status").order("votes", { ascending: false })
+      .then(({ data }) => {
+        const items = (data || []);
+        const queued = items.filter((i) => i.status === "queued");
+        const asked = items.filter((i) => i.status === "asked");
+        view.innerHTML = '<div class="card" style="padding:clamp(24px,4vw,44px)">' +
+          '<p class="eyebrow">Audience questions</p>' +
+          '<h1 class="bigprompt" style="font-size:clamp(1.8rem,4vw,3rem)">On deck</h1>' +
+          '<div class="qa-big mt">' +
+            (queued.length ? queued.map((it) => qcard(it)).join("")
+                           : '<p class="hint" style="font-size:1.4rem">Waiting for the moderator to queue questions…</p>') +
+            asked.map((it) => qcard(it)).join("") +
+          '</div></div>';
+      });
+  }
+  function qcard(it) {
+    return '<div class="card qcard ' + (it.status === "asked" ? "asked" : "") + '">' +
+      '<div class="qtext">' + fcEsc(it.text) + '</div>' +
+      (it.author ? '<div class="who" style="margin-top:8px;color:var(--faint)">— ' + fcEsc(it.author) + ' · ' + it.votes + ' votes</div>'
+                 : '<div class="who" style="margin-top:8px;color:var(--faint)">' + it.votes + ' votes</div>') + '</div>';
+  }
+
+  async function refresh() { await loadState(); await loadRows(); render(); }
+
+  sb.channel("p_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
+  sb.channel("p_resp").on("postgres_changes", { event: "INSERT", schema: "public", table: "responses" }, (p) => {
+    if (q && p.new && p.new.question_id === q.id) {
+      if (!rows.some((r) => r.id === p.new.id)) rows.push({ id: p.new.id, answer: p.new.answer });
+      render();
+    }
+  }).subscribe();
+  sb.channel("p_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, () => {
+    if (state && state.phase === "qa") renderQA();
+  }).subscribe();
+
+  refresh();
+}
+</script>
+</body>
+</html>

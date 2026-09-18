@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /quiz-app/moderate.html
+Disallow: /quiz-app/results.html
 
 Sitemap: https://frontiercreatives.design/sitemap.xml

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Frontier Creatives — Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app" class="wrap">
+  <div class="mast">
+    <div class="brand"><span class="mark">Frontier <b>Creatives</b></span><span class="tag">Results</span></div>
+    <button id="themeToggle" class="theme-toggle">◑ Light</button>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="lib.js"></script>
+<script>
+fcInitTheme();
+if (fcRequireConfig()) fcGate(startResults);
+
+function startResults() {
+  const view = document.getElementById("view");
+  const sb = FC.client;
+  let quiz = null, questions = [], byQ = {}, aq = [], stamp = "";
+
+  function dateStr() { const d = new Date(); return d.toISOString().slice(0, 10); }
+
+  async function load() {
+    const { data: st } = await sb.from("quiz_state").select("active_quiz_id").eq("id", 1).single();
+    const qid = st && st.active_quiz_id;
+    if (!qid) return false;
+    quiz = (await sb.from("quizzes").select("*").eq("id", qid).single()).data;
+    questions = (await sb.from("questions").select("*").eq("quiz_id", qid).order("sort_order")).data || [];
+    const ids = questions.map((q) => q.id);
+    let resp = [];
+    if (ids.length) resp = (await sb.from("responses").select("id,question_id,participant_id,answer,created_at").in("question_id", ids)).data || [];
+    byQ = {};
+    for (const q of questions) byQ[q.id] = resp.filter((r) => r.question_id === q.id);
+    aq = (await sb.from("audience_questions").select("*").eq("quiz_id", qid).order("votes", { ascending: false }).order("created_at")).data || [];
+    stamp = dateStr();
+    return true;
+  }
+
+  const respondents = (rows) => new Set(rows.map((r) => r.participant_id)).size;
+
+  function render() {
+    if (!quiz) {
+      view.innerHTML = '<div class="card"><p class="eyebrow">No active quiz</p><h2>Nothing to export yet</h2>' +
+        '<p class="hint">Load a quiz with <b>seed.sql</b> first.</p></div>';
+      return;
+    }
+    const totalPeople = new Set([].concat(...questions.map((q) => byQ[q.id].map((r) => r.participant_id)))).size;
+    let html = '<div class="card"><div class="spread"><div><p class="eyebrow" style="margin:0">' + fcEsc(quiz.title) + '</p>' +
+      '<h2 style="margin:.3rem 0 0">Results</h2><p class="hint">' + totalPeople + ' participants · exported ' + stamp + '</p></div>' +
+      '<button class="btn sm ghost" onclick="reloadR()">↻ Refresh</button></div>' +
+      '<div class="row mt">' +
+        '<button class="btn primary" onclick="dlRaw()">⤓ Raw answers (CSV)</button>' +
+        '<button class="btn" onclick="dlSummary()">⤓ Summary (CSV)</button>' +
+        '<button class="btn" onclick="dlMd()">⤓ Report (Markdown)</button>' +
+      '</div></div>';
+
+    // On-page summary
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i], rows = byQ[q.id], n = respondents(rows);
+      const wi = fcWriteIns(rows);
+      const wiBlock = wi.length
+        ? '<div class="mt" style="padding-top:12px;border-top:1px solid var(--line)">' +
+            '<p class="hint" style="margin:0 0 6px"><b>&ldquo;Other&rdquo; write-ins (' + wi.length + ')</b></p>' +
+            wi.map((w) => '<div class="hint">• ' + fcEsc(w.text) + '</div>').join("") + '</div>'
+        : '';
+      html += '<div class="card mt"><p class="eyebrow">Question ' + (i + 1) + ' · ' + n + ' answered</p>' +
+        '<h3 style="margin:.2rem 0 0">' + fcEsc(q.prompt) + '</h3><div id="c' + i + '" class="mt"></div>' + wiBlock + '</div>';
+    }
+    if (aq.length) {
+      html += '<div class="card mt"><p class="eyebrow">Audience questions (' + aq.length + ')</p><div class="qlist">' +
+        aq.map((it) => '<div class="qitem"><div class="vote"><span class="n">' + it.votes + '</span><span class="hint sm">votes</span></div>' +
+          '<div class="txt">' + fcEsc(it.text) + (it.author ? '<div class="who">— ' + fcEsc(it.author) + '</div>' : '') +
+          '<span class="pill ' + it.status + '">' + it.status + '</span></div></div>').join("") + '</div></div>';
+    }
+    view.innerHTML = html;
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      fcRenderChart(q.type === "word" ? "cloud" : "bar", document.getElementById("c" + i), q, byQ[q.id]);
+    }
+  }
+
+  // ---- Builders ----
+  function buildRawCsv() {
+    const head = ["question_no", "question", "type", "answer", "participant_id", "submitted_at"];
+    const lines = [head.join(",")];
+    questions.forEach((q, i) => {
+      byQ[q.id].slice().sort((a, b) => a.created_at.localeCompare(b.created_at)).forEach((r) => {
+        lines.push([i + 1, q.prompt, q.type, r.answer, r.participant_id, r.created_at].map(fcCsvCell).join(","));
+      });
+    });
+    return lines.join("\n");
+  }
+  function buildSummaryCsv() {
+    const head = ["question_no", "question", "option", "votes", "pct_of_respondents"];
+    const lines = [head.join(",")];
+    questions.forEach((q, i) => {
+      const n = respondents(byQ[q.id]);
+      fcTally(q, byQ[q.id]).forEach((d) => {
+        const pct = n ? Math.round((d.count / n) * 100) : 0;
+        lines.push([i + 1, q.prompt, d.label, d.count, pct + "%"].map(fcCsvCell).join(","));
+      });
+    });
+    return lines.join("\n");
+  }
+  function buildMarkdown() {
+    let m = "# " + quiz.title + " — Results\n\n_Exported " + stamp + "_\n";
+    questions.forEach((q, i) => {
+      const n = respondents(byQ[q.id]);
+      m += "\n## " + (i + 1) + ". " + q.prompt + "\n\n_" + n + " answered" + (q.type === "multi" ? " · pick any" : "") + "_\n\n";
+      const data = fcTally(q, byQ[q.id]);
+      if (!data.length) { m += "- (no answers)\n"; return; }
+      data.forEach((d) => { const pct = n ? Math.round((d.count / n) * 100) : 0; m += "- " + d.label + " — " + d.count + " (" + pct + "%)\n"; });
+      const wi = fcWriteIns(byQ[q.id]);
+      if (wi.length) { m += "\n_“Other” write-ins:_\n"; wi.forEach((w) => { m += "- " + w.text + "\n"; }); }
+    });
+    if (aq.length) {
+      m += "\n## Audience questions\n\n";
+      aq.forEach((it) => { m += "- **(" + it.votes + " votes)** " + it.text + (it.author ? " — " + it.author : "") + " _[" + it.status + "]_\n"; });
+    }
+    return m;
+  }
+
+  window.dlRaw = () => fcDownload("fc-quiz-raw-" + stamp + ".csv", buildRawCsv(), "text/csv");
+  window.dlSummary = () => fcDownload("fc-quiz-summary-" + stamp + ".csv", buildSummaryCsv(), "text/csv");
+  window.dlMd = () => fcDownload("fc-quiz-results-" + stamp + ".md", buildMarkdown(), "text/markdown");
+  window.reloadR = async () => { await load(); render(); };
+
+  load().then(render);
+}
+</script>
+</body>
+</html>

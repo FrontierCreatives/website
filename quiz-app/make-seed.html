@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Frontier Creatives — Build Seed SQL</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="wrap">
+  <div class="mast">
+    <div class="brand"><span class="mark">Frontier <b>Creatives</b></span><span class="tag">Seed builder</span></div>
+    <button id="themeToggle" class="theme-toggle">◑ Light</button>
+  </div>
+  <div class="card">
+    <p class="eyebrow">Edit quiz.json → paste this into Supabase</p>
+    <h2 style="margin:.3rem 0 0">Seed SQL for "<span id="title">…</span>"</h2>
+    <p class="hint">Edit <b>quiz.json</b> to change questions, reload this page, then copy the SQL below into the Supabase SQL Editor and run it. It replaces the current quiz of the day and makes it active.</p>
+    <div class="row"><button class="btn primary" onclick="copySql()">Copy SQL</button>
+      <span id="copied" class="hint" style="align-self:center"></span></div>
+    <textarea id="sql" rows="22" style="margin-top:14px;font-family:Consolas,monospace;font-size:.82rem;white-space:pre"></textarea>
+  </div>
+</div>
+<script src="lib.js"></script>
+<script>
+fcInitTheme();
+function q(s){ return "'" + String(s).replace(/'/g, "''") + "'"; }
+function jsonLit(arr){ return "'" + JSON.stringify(arr).replace(/'/g, "''") + "'::jsonb"; }
+
+fetch("quiz.json").then(r => r.json()).then(quiz => {
+  document.getElementById("title").textContent = quiz.title;
+  const rows = quiz.questions.map((qn, i) =>
+    "    (q_id, " + (i+1) + ", " + q(qn.prompt) + ", " + q(qn.type || "single") + ", " +
+    jsonLit(qn.options || []) + ")"
+  ).join(",\n");
+  const sql =
+"-- Generated from quiz.json — run AFTER schema.sql\n" +
+"do $$\ndeclare q_id uuid; first_q uuid;\nbegin\n" +
+"  delete from quizzes where title = " + q(quiz.title) + ";\n" +
+"  insert into quizzes (title, is_active) values (" + q(quiz.title) + ", true) returning id into q_id;\n" +
+"  insert into questions (quiz_id, sort_order, prompt, type, options) values\n" + rows + ";\n" +
+"  select id into first_q from questions where quiz_id = q_id order by sort_order limit 1;\n" +
+"  update quiz_state set active_quiz_id=q_id, current_question_id=first_q, phase='lobby', display_mode='bar', updated_at=now() where id=1;\n" +
+"end $$;\n";
+  document.getElementById("sql").value = sql;
+}).catch(e => {
+  document.getElementById("sql").value = "Could not load quiz.json (" + e + ").\nServe this folder over http (e.g. the deployed Netlify site), not a file:// path.";
+});
+
+function copySql(){
+  const t = document.getElementById("sql"); t.select();
+  navigator.clipboard.writeText(t.value).then(() => { document.getElementById("copied").textContent = "Copied ✓"; });
+}
+window.copySql = copySql;
+</script>
+</body>
+</html>
