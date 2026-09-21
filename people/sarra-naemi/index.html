@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarra Naemi | Frontier Creatives</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Taking Stemtopia from design through engineering into a playable game.">
+<link rel="canonical" href="https://frontiercreatives.design/people/sarra-naemi/">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Krub:wght@400;500;600;700&display=swap');
+
+:root{
+  --coral:#E76F51; --sand:#F4A261; --sage:#A8D5BA; --teal:#3B7A9D;
+  --coral-strong:#BE4A2B; --coral-deep:#A64226; --coral-ink:#A64226;
+  --sand-ink:#9A6410; --sage-ink:#3E7A58; --teal-ink:#2F6683;
+  --coral-tint:#FBE3DB; --sand-tint:#FDEEDD; --sage-tint:#EAF4EE; --teal-tint:#E3EDF3;
+  --on-sand:#3A2A1C; --on-sage:#23372B;
+  --ink-900:#2A2521; --ink-600:#6A625B; --ink-450:#7A7166; --ink-200:#E5DED4; --ink-150:#EBE5DB; --ink-100:#EFEAE1;
+  --paper-2:#FDFBF8; --paper:#FCFAF6; --white:#FFFFFF;
+  --surface-page:var(--paper); --surface-alt:var(--ink-100); --field-fill:var(--white);
+  --text-primary:var(--ink-900); --text-secondary:var(--ink-600); --text-tertiary:var(--ink-450);
+  --text-accent:var(--coral-ink); --brand:var(--coral-strong); --brand-hover:var(--coral-deep);
+  --border:var(--ink-200);
+  --radius-md:14px; --radius-lg:20px; --radius-full:999px;
+  --shadow-sm:0 1px 2px rgba(42,35,32,.03),0 8px 20px rgba(42,35,32,.04);
+  --shadow-md:0 2px 6px rgba(42,35,32,.04),0 16px 36px rgba(42,35,32,.06);
+  --ease:cubic-bezier(.22,.61,.36,1); --dur-fast:140ms;
+  --container:960px; --reading:680px; --section-gap:128px;
+  --font-display:'Inter',system-ui,sans-serif; --font-body:'Krub',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{padding-top:84px}
+html,body{margin:0}
+body{background:#FFFFFF;color:var(--text-primary);font-family:var(--font-body);font-size:17px;line-height:1.7;overflow-x:clip}
+.page{max-width:var(--container);margin:0 auto;padding:0 28px}
+.col{max-width:var(--reading)}
+p{text-wrap:pretty;margin:0 0 1em}
+a{color:var(--text-accent);text-decoration:none}
+section{padding:calc(var(--section-gap)/2) 0;scroll-margin-top:84px}
+.hero{scroll-margin-top:84px}
+section{position:relative}
+section>.col,section>.paths{position:relative;z-index:1}
+.page{position:relative;z-index:1}
+/* content protection: a feathered palette highlight beneath each text block,
+   like a soft marker wash; strong enough to quiet the lines, pale enough to
+   read as paper */
+/* content protection: the whole background alternates between the two
+   protection colors (coral, sand); each section crossfades from the previous
+   color at its top edge. No paper gaps anywhere. */
+.hero::before,section::before,.footer::before{
+  content:"";position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:100vw;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg, var(--pfrom) 0%, var(--prot) 22%, var(--prot) 100%)}
+.hero{--pfrom:rgba(251,227,219,.10);--prot:rgba(251,227,219,.10)}
+.hero::before{top:-84px}
+#events{--pfrom:rgba(251,227,219,.10);--prot:rgba(253,238,221,.13)}
+#learning{--pfrom:rgba(253,238,221,.13);--prot:rgba(251,227,219,.10)}
+#contact{--pfrom:rgba(251,227,219,.10);--prot:rgba(253,238,221,.13)}
+.footer{position:relative;z-index:1;--pfrom:rgba(253,238,221,.13);--prot:rgba(253,238,221,.13)}
+
+/* nav: air, not a bar */
+/* nav frost dissolves in with scroll progress (--navf 0..1), no snap */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;
+  background:rgba(255,255,255,calc(var(--navf,0)*.55));
+  -webkit-backdrop-filter:blur(calc(var(--navf,0)*9px));
+  backdrop-filter:blur(calc(var(--navf,0)*9px));
+  border-bottom:1px solid rgba(235,229,219,var(--navf,0))}
+.navin{max-width:var(--container);margin:0 auto;padding:20px 28px;display:flex;align-items:center;justify-content:flex-start;gap:44px}
+.wordmark{font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;color:var(--text-primary)}
+.marksvg{display:block;flex:0 0 auto;transform:rotate(20deg)}
+.navlinks{display:flex;gap:26px}
+.navlinks a{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--text-secondary);transition:color var(--dur-fast) var(--ease)}
+.navlinks a:hover{color:var(--text-accent)}
+
+.eyebrow{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--coral-ink);display:block;margin-bottom:18px}
+.eyebrow.muted{color:var(--text-tertiary)}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(40px,6vw,64px);line-height:1.06;letter-spacing:-.02em;margin:0 0 22px;text-wrap:balance}
+h2{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,3.6vw,38px);line-height:1.12;letter-spacing:-.015em;margin:0 0 18px;text-wrap:balance}
+h3{font-family:var(--font-display);font-weight:600;font-size:22px;line-height:1.25;margin:0 0 10px}
+.lede{font-size:21px;line-height:1.6;color:var(--text-secondary)}
+.small{font-size:14px;color:var(--text-secondary);line-height:1.55}
+.tert{color:var(--text-tertiary)}
+
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:600;border:none;border-radius:var(--radius-full);cursor:pointer;background:var(--brand);color:#fff;padding:15px 30px;font-size:18px;transition:transform var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease)}
+.btn .arw{transition:transform var(--dur-fast) var(--ease)}
+.btn:hover{background:var(--brand-hover);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn:hover .arw{transform:translateX(3px)}
+.btn.quiet{background:var(--surface-alt);color:var(--text-primary)}
+.btn.quiet:hover{background:var(--ink-150);box-shadow:none}
+
+/* hero */
+.hero{padding:88px 0 96px;position:relative}
+#morph{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#morph line{vector-effect:non-scaling-stroke}
+.hero .col{position:relative;z-index:1}
+
+/* next event */
+.detail-row{display:flex;flex-wrap:wrap;gap:10px 44px;margin:26px 0 30px}
+.detail .k{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-tertiary)}
+.detail .v{font-family:var(--font-display);font-weight:600;font-size:19px;margin-top:4px}
+
+/* past events: air-separated rows */
+.rows{margin-top:18px}
+.rowi{display:flex;align-items:baseline;gap:24px;padding:20px 0;color:var(--text-primary)}
+.rowi .lead{font-size:14px;color:var(--text-tertiary);min-width:88px;flex:0 0 auto}
+.rowi .ttl{font-family:var(--font-display);font-weight:600;font-size:22px;transition:color var(--dur-fast) var(--ease)}
+.rowi .mt{font-size:15px;color:var(--text-secondary);margin-top:3px}
+.rowi .tr{color:var(--text-tertiary);flex:0 0 auto}
+.rows a.rowi:nth-child(4n+1):hover .ttl{color:var(--sage-ink)}
+.rows a.rowi:nth-child(4n+2):hover .ttl{color:var(--sand-ink)}
+.rows a.rowi:nth-child(4n+3):hover .ttl{color:var(--coral-ink)}
+.rows a.rowi:nth-child(4n+4):hover .ttl{color:var(--teal-ink)}
+body.dark .rows a.rowi:hover .ttl{color:var(--text-accent)}
+/* status marker: eyebrow style, muted, riding with the volume number.
+   Guide: sentence case everywhere, the eyebrow is the only label style. */
+.rowi .done{display:block;margin-top:5px;font-family:var(--font-display);font-weight:600;
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
+
+/* row states. .next is the single upcoming event the hero is currently
+   advertising, and carries the only coral in the list; move it forward
+   whenever the hero rolls. .past recedes by weight rather than by badge,
+   per "hierarchy from spacing, a hairline is a last resort".
+   The number and date stay at full tertiary on purpose: they are already
+   the dimmest token, and fading them to 72% measured 2.82:1 in light mode,
+   under AA for 14px text. The title carries the recession instead. */
+.rowi.next .lead{color:var(--text-accent)}
+.rowi.past .ttl{color:var(--text-secondary)}
+.rowi.past .mt{color:var(--text-tertiary)}
+
+/* newsletter */
+.in{font-family:var(--font-body);font-size:18px;padding:14px 0;border:none;border-bottom:2px solid var(--ink-200);background:transparent;width:100%;max-width:360px;transition:border-color var(--dur-fast) var(--ease);color:var(--text-primary)}
+.in:focus{outline:none;border-color:var(--brand)}
+.in::placeholder{color:var(--text-tertiary)}
+.subrow{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-top:10px}
+
+/* contact paths */
+.paths{display:flex;gap:44px;flex-wrap:wrap;margin-top:34px}
+.path{flex:1;min-width:280px;max-width:420px}
+.path p{color:var(--text-secondary)}
+
+/* footer */
+.footer{padding:70px 0 80px;color:var(--text-tertiary);font-size:14px;line-height:1.7}
+.footer a{color:var(--text-secondary)}
+.footer a:hover{color:var(--text-accent)}
+
+/* responsive: phones and small tablets */
+@media (max-width:680px){
+  .page{padding:0 20px}
+  :root{--section-gap:88px}
+  .navin{gap:16px;padding:14px 20px}
+  .navlinks{gap:16px}
+  body{padding-top:64px}
+  section{scroll-margin-top:64px}
+  .hero{scroll-margin-top:64px}
+  .hero{padding:48px 0 56px}
+  h1{font-size:clamp(30px,9vw,40px)}
+  h2{font-size:clamp(25px,7.5vw,32px)}
+  .lede{font-size:18px}
+  .detail-row{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px}
+  .detail:nth-child(2){grid-column:1/-1}
+  .btn{padding:14px 26px;font-size:16px}
+  .rowi{flex-direction:column;align-items:flex-start;gap:5px;padding:18px 0}
+  .rowi .lead{min-width:0;font-size:13px}
+  .rowi .done{display:inline;margin:0 0 0 10px}
+  .rowi .ttl{font-size:20px}
+  .rowi .tr{font-size:14px}
+  .paths{gap:30px;margin-top:22px}
+  .footer{padding:48px 0 60px}
+  /* washes at phone scale read hotter; pull them back toward cream */
+  /* with the washes nearly gone, the lines step back too */
+  #morph g{opacity:.4}
+  /* nav matches the page base, not a pink of its own */
+  .nav{background:rgba(255,255,255,.94)}
+}
+@media (max-width:640px){
+  .wordmark{gap:0}
+  .wordmark .wmtext{display:none}
+}
+@media (max-width:900px){
+  /* no blur on mobile (house rule), but the frost still dissolves with scroll:
+     transparent at top so the figure is real, near-solid once content arrives */
+  .nav{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,calc(var(--navf,0)*.92))}
+}
+
+/* ===== content protection: highlight layer =====
+   Highlight bars are measured from the real text line boxes at runtime and
+   drawn on a dedicated layer BELOW all text (above the line field), so tight
+   leading can never clip ascenders/descenders. .hl etc are markers only. */
+#hlayer{position:absolute;top:0;left:0;width:100%;z-index:0;pointer-events:none}
+body{position:relative}
+
+/* ===== dark variant (?dark): warm near-black, coral geometry ===== */
+body.dark{background:#000000;
+  --text-primary:#F2EDE5;--text-secondary:#C4BBB0;--text-tertiary:#9C9287;
+  --text-accent:#E9805E;--coral-ink:#E9805E;
+  --surface-alt:#1A1714;--ink-150:#1A1714;--ink-200:#3E362F;--field-fill:#0C0A09}
+body.dark .hero{--pfrom:rgba(231,111,81,.05);--prot:rgba(231,111,81,.05)}
+body.dark #events{--pfrom:rgba(231,111,81,.05);--prot:rgba(244,162,97,.06)}
+body.dark #learning{--pfrom:rgba(244,162,97,.06);--prot:rgba(231,111,81,.05)}
+body.dark #contact{--pfrom:rgba(231,111,81,.05);--prot:rgba(244,162,97,.06)}
+body.dark .footer{--pfrom:rgba(244,162,97,.06);--prot:rgba(244,162,97,.06)}
+body.dark #morph>g{stroke:#E76F51;opacity:.38}
+body.dark .nav{background:rgba(0,0,0,calc(var(--navf,0)*.62));border-bottom-color:rgba(255,255,255,calc(var(--navf,0)*.09))}
+body.dark .btn.quiet{background:#1A1714;color:#F2EDE5}
+body.dark .btn.quiet:hover{background:#3E362F}
+body.dark .in{border-color:#3E362F}
+@media (max-width:900px){
+  body.dark .nav{background:rgba(0,0,0,calc(var(--navf,0)*.94))}
+}
+
+/* signup form */
+.getinvolved{font-family:var(--font-display);font-weight:600;font-size:clamp(20px,2.4vw,24px);letter-spacing:-.01em;color:var(--text-primary);margin:46px 0 8px}
+.giSub{color:var(--text-secondary);margin:0;max-width:var(--reading)}
+.signup{max-width:var(--reading);margin-top:20px;display:flex;flex-direction:column;gap:16px}
+.signup .fld{display:flex;flex-direction:column;gap:7px}
+.signup label{font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--text-primary)}
+.signup .req{color:var(--text-accent)}
+.signup input,.signup textarea,.signup select{
+  width:100%;font-family:var(--font-body);font-size:16px;color:var(--text-primary);
+  background:var(--field-fill);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;transition:border-color var(--dur-fast) var(--ease)}
+.signup textarea{resize:vertical;min-height:76px;line-height:1.5}
+.signup select{-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:38px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23E9805E' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center}
+.signup input:focus,.signup textarea:focus,.signup select:focus{outline:none;border-color:var(--brand)}
+.signup input::placeholder,.signup textarea::placeholder{color:var(--text-tertiary)}
+.signup .hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+.signup .send{align-self:flex-start;margin-top:8px}
+.signup .send:disabled{opacity:.55;cursor:default}
+.formmsg{font-size:16px;line-height:1.55;margin-top:2px;font-family:var(--font-display);font-weight:600}
+.formmsg.ok{color:var(--text-primary)}
+.formmsg.err{color:var(--text-accent)}
+.fcthanks{max-width:var(--reading);margin-top:26px;display:flex;flex-direction:column;gap:10px}
+.fcthanks[hidden]{display:none}
+.fcthanks .tickmark{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:999px;background:var(--brand);color:#fff;font-size:23px;font-weight:700;margin-bottom:8px}
+.fcthanks h3{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,3vw,32px);letter-spacing:-.015em;color:var(--text-primary);margin:0}
+.fcthanks p{color:var(--text-secondary);margin:0;max-width:var(--reading)}
+
+/* ===== recap: a photo run, not a card grid =====
+   Bands (panoramic frames) span the full container at their natural ratio;
+   pairs sit two-up at a common 3:2 so the rhythm stays even. No borders,
+   no chrome; spacing does the work. */
+.recap{margin-top:58px}
+.recap h3{margin-bottom:12px}
+.photorun{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:32px 0 16px}
+.photorun figure{margin:0;min-width:0}
+.photorun .band{grid-column:1/-1}
+.photorun img{display:block;width:100%;height:auto;border-radius:var(--radius-md);
+  background:var(--surface-alt);cursor:zoom-in;
+  transition:transform var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease)}
+.photorun .pair img{aspect-ratio:3/2;object-fit:cover}
+.photorun img:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+/* focus: a soft accent ring, not a hard outline */
+.photorun img:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(233,128,94,.42)}
+
+/* ===== Vol. 03 onward: an uncropped run =====
+   Frames keep their own aspect ratio; a row shares one height and each frame's
+   width falls out of its ratio (flex-basis:0, flex-grow:--ar). Nothing is
+   cropped to a cell, nothing is tiled. Spacing still does the work. */
+.prun{position:relative;z-index:1;display:flex;flex-direction:column;gap:18px;margin:32px 0 16px}
+.prow{display:flex;gap:18px}
+.prun figure{margin:0;min-width:0;flex-basis:0;flex-grow:var(--ar)}
+.prun img{display:block;width:100%;height:auto;border-radius:var(--radius-md);
+  background:var(--surface-alt);cursor:zoom-in;
+  transition:transform var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease)}
+.prun img:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.prun img:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(233,128,94,.42)}
+@media (max-width:680px){
+  .prun{gap:12px;margin:26px 0 14px}
+  .prow{flex-direction:column;gap:12px}
+}
+
+/* lightbox: always a dark surface, so it pins the dark tokens rather than
+   inheriting the page's, which would strand it in ?light mode. */
+.lbox{--lb-ink:#9C9287;--lb-body:#C4BBB0;--lb-accent:#E9805E;
+  position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;padding:44px 20px;
+  background:rgba(0,0,0,.93);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.lbox[hidden]{display:none}
+.lbox img{max-width:min(1200px,94vw);max-height:80vh;width:auto;height:auto;
+  object-fit:contain;border-radius:var(--radius-md)}
+.lbcap{margin:0;font-family:var(--font-display);font-weight:500;font-size:15px;
+  color:var(--lb-body);text-align:center;max-width:640px}
+/* controls warm to the accent on hover; no filled chip, no container */
+.lbbtn{position:absolute;display:inline-flex;background:none;border:none;padding:14px;
+  color:var(--lb-ink);cursor:pointer;transition:color var(--dur-fast) var(--ease)}
+.lbbtn:hover{color:var(--lb-accent)}
+.lbbtn svg{display:block;width:24px;height:24px}
+.lbbtn:focus-visible{outline:none;border-radius:var(--radius-full);
+  box-shadow:0 0 0 3px rgba(233,128,94,.42)}
+.lbclose{top:14px;right:14px}
+.lbprev{left:8px;top:50%;transform:translateY(-50%)}
+.lbnext{right:8px;top:50%;transform:translateY(-50%)}
+@media (max-width:680px){
+  .photorun{grid-template-columns:1fr;gap:12px;margin:26px 0 14px}
+  .photorun .pair img{aspect-ratio:auto}
+  .lbox{padding:56px 12px;-webkit-backdrop-filter:none;backdrop-filter:none;
+    background:rgba(0,0,0,.97)}
+  .lbox img{max-height:70vh}
+  .lbbtn{padding:12px}
+}
+
+.person{display:flex;align-items:center;gap:26px;padding:22px 0;color:var(--text-primary)}
+.person img{width:88px;height:88px;object-fit:cover;border-radius:var(--radius-md);flex:0 0 auto}
+.person .ttl{font-family:var(--font-display);font-weight:600;font-size:22px;transition:color var(--dur-fast) var(--ease)}
+.person .mt{font-size:15px;color:var(--text-secondary);margin-top:3px}
+.person .tags{font-size:13px;color:var(--text-tertiary);margin-top:6px}
+.people a.person:nth-child(3n+1):hover .ttl{color:var(--sage-ink)}
+.people a.person:nth-child(3n+2):hover .ttl{color:var(--sand-ink)}
+.people a.person:nth-child(3n+3):hover .ttl{color:var(--coral-ink)}
+body.dark .people a.person:hover .ttl{color:var(--text-accent)}
+.person .ph{width:88px;height:88px;border-radius:var(--radius-md);flex:0 0 auto;background:var(--surface-alt);color:var(--text-tertiary);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;font-size:24px}
+.portrait{width:100%;max-width:340px;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 34px}
+@media(max-width:680px){.person{gap:18px}.person img,.person .ph{width:72px;height:72px}.person .ttl{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="nav" id="nav"><div class="navin">
+    <a href="/" class="wordmark"><svg class="marksvg" viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><g stroke="var(--brand)" stroke-width="2" stroke-linecap="round" fill="none"><line x1="50" y1="47.4" x2="96" y2="50"/><line x1="52.6" y1="50" x2="50" y2="96"/><line x1="50" y1="52.6" x2="4" y2="50"/><line x1="47.4" y1="50" x2="50" y2="4"/><line x1="50" y1="44.9" x2="93.4" y2="50"/><line x1="55.1" y1="50" x2="50" y2="93.4"/><line x1="50" y1="55.1" x2="6.6" y2="50"/><line x1="44.9" y1="50" x2="50" y2="6.6"/><line x1="50" y1="42.3" x2="90.9" y2="50"/><line x1="57.7" y1="50" x2="50" y2="90.9"/><line x1="50" y1="57.7" x2="9.1" y2="50"/><line x1="42.3" y1="50" x2="50" y2="9.1"/><line x1="50" y1="39.8" x2="88.3" y2="50"/><line x1="60.2" y1="50" x2="50" y2="88.3"/><line x1="50" y1="60.2" x2="11.7" y2="50"/><line x1="39.8" y1="50" x2="50" y2="11.7"/><line x1="50" y1="37.2" x2="85.8" y2="50"/><line x1="62.8" y1="50" x2="50" y2="85.8"/><line x1="50" y1="62.8" x2="14.2" y2="50"/><line x1="37.2" y1="50" x2="50" y2="14.2"/><line x1="50" y1="34.7" x2="83.2" y2="50"/><line x1="65.3" y1="50" x2="50" y2="83.2"/><line x1="50" y1="65.3" x2="16.8" y2="50"/><line x1="34.7" y1="50" x2="50" y2="16.8"/><line x1="50" y1="32.1" x2="80.7" y2="50"/><line x1="67.9" y1="50" x2="50" y2="80.7"/><line x1="50" y1="67.9" x2="19.3" y2="50"/><line x1="32.1" y1="50" x2="50" y2="19.3"/><line x1="50" y1="29.6" x2="78.1" y2="50"/><line x1="70.4" y1="50" x2="50" y2="78.1"/><line x1="50" y1="70.4" x2="21.9" y2="50"/><line x1="29.6" y1="50" x2="50" y2="21.9"/><line x1="50" y1="27" x2="75.6" y2="50"/><line x1="73" y1="50" x2="50" y2="75.6"/><line x1="50" y1="73" x2="24.4" y2="50"/><line x1="27" y1="50" x2="50" y2="24.4"/><line x1="50" y1="24.4" x2="73" y2="50"/><line x1="75.6" y1="50" x2="50" y2="73"/><line x1="50" y1="75.6" x2="27" y2="50"/><line x1="24.4" y1="50" x2="50" y2="27"/><line x1="50" y1="21.9" x2="70.4" y2="50"/><line x1="78.1" y1="50" x2="50" y2="70.4"/><line x1="50" y1="78.1" x2="29.6" y2="50"/><line x1="21.9" y1="50" x2="50" y2="29.6"/><line x1="50" y1="19.3" x2="67.9" y2="50"/><line x1="80.7" y1="50" x2="50" y2="67.9"/><line x1="50" y1="80.7" x2="32.1" y2="50"/><line x1="19.3" y1="50" x2="50" y2="32.1"/><line x1="50" y1="16.8" x2="65.3" y2="50"/><line x1="83.2" y1="50" x2="50" y2="65.3"/><line x1="50" y1="83.2" x2="34.7" y2="50"/><line x1="16.8" y1="50" x2="50" y2="34.7"/><line x1="50" y1="14.2" x2="62.8" y2="50"/><line x1="85.8" y1="50" x2="50" y2="62.8"/><line x1="50" y1="85.8" x2="37.2" y2="50"/><line x1="14.2" y1="50" x2="50" y2="37.2"/><line x1="50" y1="11.7" x2="60.2" y2="50"/><line x1="88.3" y1="50" x2="50" y2="60.2"/><line x1="50" y1="88.3" x2="39.8" y2="50"/><line x1="11.7" y1="50" x2="50" y2="39.8"/><line x1="50" y1="9.1" x2="57.7" y2="50"/><line x1="90.9" y1="50" x2="50" y2="57.7"/><line x1="50" y1="90.9" x2="42.3" y2="50"/><line x1="9.1" y1="50" x2="50" y2="42.3"/><line x1="50" y1="6.6" x2="55.1" y2="50"/><line x1="93.4" y1="50" x2="50" y2="55.1"/><line x1="50" y1="93.4" x2="44.9" y2="50"/><line x1="6.6" y1="50" x2="50" y2="44.9"/><line x1="50" y1="4" x2="52.6" y2="50"/><line x1="96" y1="50" x2="50" y2="52.6"/><line x1="50" y1="96" x2="47.4" y2="50"/><line x1="4" y1="50" x2="50" y2="47.4"/></g></svg><span class="wmtext">Frontier Creatives</span></a>
+    <div class="navlinks">
+      <a href="/#events">Events</a>
+      <a href="/#learning">Learning</a>
+      <a href="/people/">People</a>
+      <a href="/#contact">Contact</a>
+    </div>
+  </div></nav>
+  <section><div class="col">
+    <a class="small tert" href="/people/">&larr; People</a>
+    <div style="margin-top:34px"></div>
+    <img class="portrait" src="/assets/events/vol-02/vol-02-03-stemtopia-talk-1200.jpg" alt="Sarra Naemi">
+    <span class="eyebrow">Vol. 02 · Speaker</span>
+    <h1>Sarra Naemi</h1>
+    <p>Sarra took Stemtopia from design through engineering into a playable game and made agentic workflows look survivable. She then busted out the Xbox controllers and challenged the audience to a fighting game.</p>
+    <p class="small tert">Agentic workflows · Games</p>
+    <a class="btn quiet" href="https://www.linkedin.com/in/sarra-emmanuelle-naemi/" target="_blank" rel="noopener">LinkedIn <span class="arw">&rarr;</span></a>
+    <h3 style="margin-top:76px">Learnings</h3>
+    <p class="small tert">Coming soon.</p>
+  </div></section>
+  <footer class="footer">
+    <span class="hl">Frontier Creatives · Seattle, Washington · <a href="/people/">People</a> · <a href="/brand">Brand guide</a> · <a href="https://luma.com/FrontierCreatives" target="_blank" rel="noopener">Luma</a></span>
+  </footer>
+</div>
+<script>if(location.search.indexOf('light')===-1){document.body.classList.add('dark');}</script>
+</body>
+</html>
