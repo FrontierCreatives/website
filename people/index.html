@@ -316,6 +316,57 @@ body.dark .people a.person:hover .ttl{color:var(--text-accent)}
 .person .ph{width:88px;height:88px;border-radius:var(--radius-md);flex:0 0 auto;background:var(--surface-alt);color:var(--text-tertiary);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;font-size:24px}
 .portrait{width:100%;max-width:340px;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 34px}
 @media(max-width:680px){.person{gap:18px}.person img,.person .ph{width:72px;height:72px}.person .ttl{font-size:20px}}
+.person img.diagram{background:var(--surface-alt);object-fit:contain;padding:14px}
+.portrait.diagram{background:var(--surface-alt);object-fit:contain;padding:44px}
+.meta{margin:0 0 34px}
+.meta .k{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
+.meta .v{margin-bottom:14px}
+
+.wide{max-width:none}
+.wash{--pfrom:rgba(251,227,219,.10);--prot:rgba(253,238,221,.13)}
+body.dark .wash{--pfrom:rgba(231,111,81,.05);--prot:rgba(244,162,97,.06)}
+.fld{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:var(--ar,4/5);border-radius:var(--radius-md);font-family:var(--font-display);font-weight:800;font-size:clamp(40px,7vw,84px);letter-spacing:-.02em}
+.f0{background:var(--sand);color:var(--on-sand)}.f1{background:var(--sage);color:var(--on-sage)}.f2{background:var(--teal);color:#fff}
+.ph-img{display:block;width:100%;aspect-ratio:var(--ar,4/5);object-fit:cover;border-radius:var(--radius-md)}
+/* A: chapters */
+.chap{margin-top:104px}
+.numrow{display:flex;align-items:flex-end;gap:34px;margin-bottom:34px}
+.num{font-family:var(--font-display);font-weight:800;font-size:clamp(96px,17vw,190px);line-height:.78;letter-spacing:-.04em;color:var(--ink-200)}
+.bandph{margin:0 0 40px}
+.bandph img{display:block;width:100%;aspect-ratio:21/9;object-fit:cover;border-radius:var(--radius-lg)}
+.bandph.fig img{object-fit:contain;background:var(--surface-alt);padding:24px}
+.ppl3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 36px;align-items:start}
+.ppl3 a{display:block;color:var(--text-primary)}
+.ppl3 a:nth-child(2){margin-top:52px}.ppl3 a:nth-child(3){margin-top:104px}
+.ppl3 .nm{font-family:var(--font-display);font-weight:600;font-size:22px;margin:16px 0 4px;transition:color var(--dur-fast) var(--ease)}
+.ppl3 a:hover .nm{color:var(--text-accent)}
+.ppl3 .mt{font-size:15px;color:var(--text-secondary)}
+/* B: big type */
+.fld.q{background:var(--surface-alt);color:var(--sand-ink)}
+body.dark .fld.q{color:var(--sand)}
+.bsplit{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:48px;margin-top:56px;align-items:start}
+.bigs .big{display:block;padding:6px 0;color:var(--text-primary);transition:opacity var(--dur-fast) var(--ease)}
+.bigs:hover .big{opacity:.32}.bigs .big:hover,.bigs .big:focus{opacity:1}
+.bigs .bn{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,3.5vw,46px);line-height:1.12;letter-spacing:-.02em}
+.bigs .bv{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-left:14px;vertical-align:middle}
+.bigs .big:hover .bn,.bigs .big:focus .bn{color:var(--text-accent)}
+.bigs .mt{display:none;font-size:15px;color:var(--text-secondary);margin-top:2px}
+.pv{position:sticky;top:110px}
+.pv .pvk{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-top:18px}
+.pv .pvt{font-family:var(--font-display);font-weight:600;font-size:22px;margin:4px 0 4px}
+.pv .pvd{font-size:15px;color:var(--text-secondary)}
+/* C: staggered grid */
+.sg{display:grid;grid-template-columns:repeat(12,1fr);gap:56px 28px;align-items:start;margin-top:56px}
+.sg a{display:block;color:var(--text-primary)}
+.sg .nm{font-family:var(--font-display);font-weight:600;font-size:18px;margin:12px 0 2px;transition:color var(--dur-fast) var(--ease)}
+.sg a:hover .nm{color:var(--text-accent)}
+.sg .mt{font-size:14px;color:var(--text-tertiary)}
+@media(max-width:800px){
+  .ppl3{grid-template-columns:1fr;gap:40px}.ppl3 a:nth-child(n){margin-top:0}
+  .numrow{gap:20px}
+  .bsplit{grid-template-columns:1fr}.pv{display:none}.bigs .mt{display:block}.bigs:hover .big{opacity:1}
+  .sg{grid-template-columns:repeat(2,1fr);gap:36px 18px}.sg a{grid-column:auto!important;margin-top:0!important}
+}
 </style>
 </head>
 <body>
@@ -324,28 +375,28 @@ body.dark .people a.person:hover .ttl{color:var(--text-accent)}
     <a href="/" class="wordmark"><svg class="marksvg" viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><g stroke="var(--brand)" stroke-width="2" stroke-linecap="round" fill="none"><line x1="50" y1="47.4" x2="96" y2="50"/><line x1="52.6" y1="50" x2="50" y2="96"/><line x1="50" y1="52.6" x2="4" y2="50"/><line x1="47.4" y1="50" x2="50" y2="4"/><line x1="50" y1="44.9" x2="93.4" y2="50"/><line x1="55.1" y1="50" x2="50" y2="93.4"/><line x1="50" y1="55.1" x2="6.6" y2="50"/><line x1="44.9" y1="50" x2="50" y2="6.6"/><line x1="50" y1="42.3" x2="90.9" y2="50"/><line x1="57.7" y1="50" x2="50" y2="90.9"/><line x1="50" y1="57.7" x2="9.1" y2="50"/><line x1="42.3" y1="50" x2="50" y2="9.1"/><line x1="50" y1="39.8" x2="88.3" y2="50"/><line x1="60.2" y1="50" x2="50" y2="88.3"/><line x1="50" y1="60.2" x2="11.7" y2="50"/><line x1="39.8" y1="50" x2="50" y2="11.7"/><line x1="50" y1="37.2" x2="85.8" y2="50"/><line x1="62.8" y1="50" x2="50" y2="85.8"/><line x1="50" y1="62.8" x2="14.2" y2="50"/><line x1="37.2" y1="50" x2="50" y2="14.2"/><line x1="50" y1="34.7" x2="83.2" y2="50"/><line x1="65.3" y1="50" x2="50" y2="83.2"/><line x1="50" y1="65.3" x2="16.8" y2="50"/><line x1="34.7" y1="50" x2="50" y2="16.8"/><line x1="50" y1="32.1" x2="80.7" y2="50"/><line x1="67.9" y1="50" x2="50" y2="80.7"/><line x1="50" y1="67.9" x2="19.3" y2="50"/><line x1="32.1" y1="50" x2="50" y2="19.3"/><line x1="50" y1="29.6" x2="78.1" y2="50"/><line x1="70.4" y1="50" x2="50" y2="78.1"/><line x1="50" y1="70.4" x2="21.9" y2="50"/><line x1="29.6" y1="50" x2="50" y2="21.9"/><line x1="50" y1="27" x2="75.6" y2="50"/><line x1="73" y1="50" x2="50" y2="75.6"/><line x1="50" y1="73" x2="24.4" y2="50"/><line x1="27" y1="50" x2="50" y2="24.4"/><line x1="50" y1="24.4" x2="73" y2="50"/><line x1="75.6" y1="50" x2="50" y2="73"/><line x1="50" y1="75.6" x2="27" y2="50"/><line x1="24.4" y1="50" x2="50" y2="27"/><line x1="50" y1="21.9" x2="70.4" y2="50"/><line x1="78.1" y1="50" x2="50" y2="70.4"/><line x1="50" y1="78.1" x2="29.6" y2="50"/><line x1="21.9" y1="50" x2="50" y2="29.6"/><line x1="50" y1="19.3" x2="67.9" y2="50"/><line x1="80.7" y1="50" x2="50" y2="67.9"/><line x1="50" y1="80.7" x2="32.1" y2="50"/><line x1="19.3" y1="50" x2="50" y2="32.1"/><line x1="50" y1="16.8" x2="65.3" y2="50"/><line x1="83.2" y1="50" x2="50" y2="65.3"/><line x1="50" y1="83.2" x2="34.7" y2="50"/><line x1="16.8" y1="50" x2="50" y2="34.7"/><line x1="50" y1="14.2" x2="62.8" y2="50"/><line x1="85.8" y1="50" x2="50" y2="62.8"/><line x1="50" y1="85.8" x2="37.2" y2="50"/><line x1="14.2" y1="50" x2="50" y2="37.2"/><line x1="50" y1="11.7" x2="60.2" y2="50"/><line x1="88.3" y1="50" x2="50" y2="60.2"/><line x1="50" y1="88.3" x2="39.8" y2="50"/><line x1="11.7" y1="50" x2="50" y2="39.8"/><line x1="50" y1="9.1" x2="57.7" y2="50"/><line x1="90.9" y1="50" x2="50" y2="57.7"/><line x1="50" y1="90.9" x2="42.3" y2="50"/><line x1="9.1" y1="50" x2="50" y2="42.3"/><line x1="50" y1="6.6" x2="55.1" y2="50"/><line x1="93.4" y1="50" x2="50" y2="55.1"/><line x1="50" y1="93.4" x2="44.9" y2="50"/><line x1="6.6" y1="50" x2="50" y2="44.9"/><line x1="50" y1="4" x2="52.6" y2="50"/><line x1="96" y1="50" x2="50" y2="52.6"/><line x1="50" y1="96" x2="47.4" y2="50"/><line x1="4" y1="50" x2="50" y2="47.4"/></g></svg><span class="wmtext">Frontier Creatives</span></a>
     <div class="navlinks">
       <a href="/#events">Events</a>
-      <a href="/#learning">Learning</a>
+      <a href="/learning/">Learning</a>
       <a href="/people/">People</a>
       <a href="/tools/">Tools</a>
       <a href="/#contact">Contact</a>
     </div>
   </div></nav>
-  <section><div class="col">
+  <section class="wash"><div class="wide">
     <span class="eyebrow">People</span>
     <h1>Who has shared the work.</h1>
-    <p class="lede">Practitioners who showed real projects and the process behind them at our gatherings.</p>
-    <div class="people" style="margin-top:34px">
-      <a class="person" href="/people/ana-marini/"><span class="ph" aria-hidden="true">AM</span><div><div class="ttl">Ana Marini</div><div class="mt">Building a language-learning project with AI as a design partner, and what it does to your judgment.</div><div class="tags">Vol. 04</div></div></a>
-      <a class="person" href="/people/kaelig-deloumeau-prigent/"><span class="ph" aria-hidden="true">KD</span><div><div class="ttl">Kaelig Deloumeau-Prigent</div><div class="mt">One agentic workflow that revamps a product UI head to toe, design system included.</div><div class="tags">Vol. 04</div></div></a>
-      <a class="person" href="/people/shuyuan-ding/"><span class="ph" aria-hidden="true">SD</span><div><div class="ttl">Shuyuan (Sylvia) Ding</div><div class="mt">Going from designer to design engineer, and building a component end to end.</div><div class="tags">Vol. 04</div></div></a>
-      <a class="person" href="/people/dan-hiester/"><img src="/assets/events/vol-03/vol-03-08-dan-talk-800.jpg" alt="Dan Hiester"><div><div class="ttl">Dan Hiester</div><div class="mt">Design systems as mise en place, and a token prototype that rebuilds a site in any design language.</div><div class="tags">Vol. 03</div></div></a>
-      <a class="person" href="/people/yilin-zhu/"><img src="/assets/events/vol-03/vol-03-11-yilin-zhu-800.jpg" alt="Yilin Zhu"><div><div class="ttl">Yilin Zhu</div><div class="mt">A math-driven system that turns line art into shapes, letters, and words, output as video and code.</div><div class="tags">Vol. 03</div></div></a>
-      <a class="person" href="/people/josh-glick/"><img src="/assets/events/vol-03/vol-03-17-josh-glick-800.jpg" alt="Josh Glick"><div><div class="ttl">Josh Glick</div><div class="mt">Building for special education across K-12, where the words are the product.</div><div class="tags">Vol. 03</div></div></a>
-      <a class="person" href="/people/patrick-neeman/"><span class="ph" aria-hidden="true">PN</span><div><div class="ttl">Patrick Neeman</div><div class="mt">Journey mapping and intent across the products we use daily, so teams agree before anyone renders UI.</div><div class="tags">Vol. 02</div></div></a>
-      <a class="person" href="/people/sarra-naemi/"><img src="/assets/events/vol-02/vol-02-03-stemtopia-talk-800.jpg" alt="Sarra Naemi"><div><div class="ttl">Sarra Naemi</div><div class="mt">Taking Stemtopia from design through engineering into a playable game.</div><div class="tags">Vol. 02</div></div></a>
-      <a class="person" href="/people/ben-mullins/"><img src="/assets/events/vol-02/vol-02-02-808-talk-800.jpg" alt="Ben Mullins"><div><div class="ttl">Ben Mullins</div><div class="mt">The 808 drum machine: 2.6 sextillion possible states, one thumb, and why judgment still matters.</div><div class="tags">Vol. 02</div></div></a>
-    </div>
-    <p class="small tert" style="margin-top:14px">Want to present at a future Volume? <a href="/#contact">Get in touch.</a></p>
+    <p class="lede" style="max-width:680px">Practitioners who showed real projects and the process behind them at our gatherings.</p>
+    <div class="bsplit"><div class="bigs"><a class="big" href="/people/ana-marini/" data-img="" data-init="AM" data-cls="q" data-name="Ana Marini" data-vol="Vol. 04" data-short="Building a language-learning project with AI as a design partner, and what it does to your judgment."><span class="bn">Ana Marini</span><span class="bv">Vol. 04</span><div class="mt">Building a language-learning project with AI as a design partner, and what it does to your judgment.</div></a><a class="big" href="/people/kaelig-deloumeau-prigent/" data-img="" data-init="KD" data-cls="q" data-name="Kaelig Deloumeau-Prigent" data-vol="Vol. 04" data-short="One agentic workflow that revamps a product UI head to toe, design system included."><span class="bn">Kaelig Deloumeau-Prigent</span><span class="bv">Vol. 04</span><div class="mt">One agentic workflow that revamps a product UI head to toe, design system included.</div></a><a class="big" href="/people/shuyuan-ding/" data-img="" data-init="SD" data-cls="q" data-name="Shuyuan (Sylvia) Ding" data-vol="Vol. 04" data-short="Going from designer to design engineer, and building a component end to end."><span class="bn">Shuyuan (Sylvia) Ding</span><span class="bv">Vol. 04</span><div class="mt">Going from designer to design engineer, and building a component end to end.</div></a><a class="big" href="/people/dan-hiester/" data-img="/assets/events/vol-03/vol-03-08-dan-talk-1200.jpg" data-init="DH" data-cls="q" data-name="Dan Hiester" data-vol="Vol. 03" data-short="Design systems as mise en place, and a token prototype that rebuilds a site in any design language."><span class="bn">Dan Hiester</span><span class="bv">Vol. 03</span><div class="mt">Design systems as mise en place, and a token prototype that rebuilds a site in any design language.</div></a><a class="big" href="/people/yilin-zhu/" data-img="/assets/events/vol-03/vol-03-11-yilin-zhu-1200.jpg" data-init="YZ" data-cls="q" data-name="Yilin Zhu" data-vol="Vol. 03" data-short="A math-driven system that turns line art into shapes, letters, and words, output as video and code."><span class="bn">Yilin Zhu</span><span class="bv">Vol. 03</span><div class="mt">A math-driven system that turns line art into shapes, letters, and words, output as video and code.</div></a><a class="big" href="/people/josh-glick/" data-img="/assets/events/vol-03/vol-03-17-josh-glick-1200.jpg" data-init="JG" data-cls="q" data-name="Josh Glick" data-vol="Vol. 03" data-short="Building for special education across K-12, where the words are the product."><span class="bn">Josh Glick</span><span class="bv">Vol. 03</span><div class="mt">Building for special education across K-12, where the words are the product.</div></a><a class="big" href="/people/patrick-neeman/" data-img="" data-init="PN" data-cls="q" data-name="Patrick Neeman" data-vol="Vol. 02" data-short="Journey mapping and intent across the products we use daily, so teams agree before anyone renders UI."><span class="bn">Patrick Neeman</span><span class="bv">Vol. 02</span><div class="mt">Journey mapping and intent across the products we use daily, so teams agree before anyone renders UI.</div></a><a class="big" href="/people/sarra-naemi/" data-img="/assets/events/vol-02/vol-02-03-stemtopia-talk-1200.jpg" data-init="SN" data-cls="q" data-name="Sarra Naemi" data-vol="Vol. 02" data-short="Taking Stemtopia from design through engineering into a playable game."><span class="bn">Sarra Naemi</span><span class="bv">Vol. 02</span><div class="mt">Taking Stemtopia from design through engineering into a playable game.</div></a><a class="big" href="/people/ben-mullins/" data-img="/assets/events/vol-02/vol-02-02-808-talk-1200.jpg" data-init="BM" data-cls="q" data-name="Ben Mullins" data-vol="Vol. 02" data-short="The 808 drum machine: 2.6 sextillion possible states, one thumb, and why judgment still matters."><span class="bn">Ben Mullins</span><span class="bv">Vol. 02</span><div class="mt">The 808 drum machine: 2.6 sextillion possible states, one thumb, and why judgment still matters.</div></a></div>
+      <aside class="pv" id="pv" aria-hidden="true"><div class="pvv"></div><div class="pvk"></div><div class="pvt"></div><div class="pvd"></div></aside></div>
+    <script>(function(){
+      var pv=document.getElementById('pv'),v=pv.querySelector('.pvv'),k=pv.querySelector('.pvk'),t=pv.querySelector('.pvt'),d=pv.querySelector('.pvd');
+      function show(a){var i=a.getAttribute('data-img');
+        v.innerHTML=i?'<img class="ph-img" style="--ar:4/5" src="'+i+'" alt="">':'<span class="fld '+a.getAttribute('data-cls')+'" style="--ar:4/5">'+a.getAttribute('data-init')+'</span>';
+        k.textContent=a.getAttribute('data-vol');t.textContent=a.getAttribute('data-name');d.textContent=a.getAttribute('data-short');}
+      var all=document.querySelectorAll('.big');
+      all.forEach(function(a){a.addEventListener('mouseenter',function(){show(a)});a.addEventListener('focus',function(){show(a)});});
+      show(all[0]);
+    })();</script>
+    <p class="small tert" style="margin-top:56px">Want to present at a future Volume? <a href="/#contact">Get in touch.</a></p>
   </div></section>
   <footer class="footer">
     <span class="hl">Frontier Creatives · Seattle, Washington · <a href="/people/">People</a> · <a href="/tools/">Tools</a> · <a href="/brand">Brand guide</a> · <a href="https://luma.com/FrontierCreatives" target="_blank" rel="noopener">Luma</a></span>
