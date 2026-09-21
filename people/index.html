@@ -309,11 +309,17 @@ body.dark .in{border-color:#3E362F}
    s3 paragraph gap and heading above a list, s4 between list items and page gutter,
    s5 between groups in a section, s6 above a group heading (4:1 over s3 below), s7 between sections */
 :root{--s0:4px;--s1:8px;--s2:12px;--s3:20px;--s4:32px;--s5:52px;--s6:84px;--s7:136px;--section-gap:var(--s7)}
+/* Element sizes: the spacing ladder, then Fibonacci x 4px upward (55, 89, 144, 233 x 4) */
+:root{--e1:220px;--e2:356px;--e3:576px;--e4:932px;--reading:var(--e3);--radius-md:var(--s2);--radius-lg:var(--s3)}
+/* Type scale: 17px x 1.333 per step */
+:root{--t-1:13px;--t0:17px;--t1:23px;--t2:30px;--t3:40px;--t4:54px;--t5:72px;--t6:96px}
 .page{padding:0 var(--s4)}
 p{margin:0 0 var(--s3)}
 .eyebrow{margin-bottom:var(--s2)}
-h1{margin:0 0 var(--s3)}
-h2,h3{margin:0 0 var(--s2)}
+/* heading to text gap steps up with heading size: up to 23px s2, 30 to 40px s3, 54px and up s4 */
+h1{margin:0 0 var(--s4)}
+h2{margin:0 0 var(--s3)}
+h3{margin:0 0 var(--s2)}
 .rows{margin-top:var(--s3);display:flex;flex-direction:column;gap:var(--s4)}
 .rowi{padding:0;gap:var(--s4)}
 .rowi .mt{margin-top:var(--s1)}
@@ -324,34 +330,44 @@ section:has(.cta){padding-bottom:var(--cta-band)}
 section:has(.cta)+.footer{padding-top:var(--cta-foot)}
 /* above = list to line (s7); below = line to footer text (s3 to the band edge + s4 inside it), about 2.2 : 1 */
 :root{--cta-above:var(--s7);--cta-band:var(--s3);--cta-foot:var(--s4)}
-/* Line heights are multiples of 4px: body 28, lede 32, small 20, item meta 24, titles 28, labels 20 */
-body{line-height:calc(28/17)}
-.lede{line-height:calc(32/21)}
-.small{line-height:calc(20/14)}
-.eyebrow,.person .tags,.pv .pvk,.meta .k,.bigs .bv{line-height:calc(20/13)}
-.rowi .mt,.person .mt,.bigs .mt,.pv .pvd{line-height:calc(24/15)}
-.rowi .ttl,.person .ttl,.pv .pvt{line-height:calc(28/22)}
+/* Nav and buttons: links 13, wordmark 17, button text 17 on a 52px-tall button; nav paddings from the spacing ladder */
+.navin{padding:var(--s3) var(--s4);gap:var(--s5)}
+.wordmark{font-size:var(--t0);gap:var(--s1)}
+.marksvg{width:var(--s4);height:var(--s4)}
+.navlinks{gap:var(--s4)}
+.navlinks a{font-size:var(--t-1)}
+.btn{font-size:var(--t0);line-height:calc(28/17);padding:var(--s2) var(--s4);gap:var(--s1)}
+/* Roles by step: labels and small -1 (13), body and blurbs 0 (17), item titles, group headings and lede 1 (23), h2 3 (40), h1 4 (54). Line heights are multiples of 4px. */
+body{font-size:var(--t0);line-height:calc(28/17)}
+h1{font-size:clamp(var(--t3),6vw,var(--t4));line-height:1.04}
+h2{font-size:clamp(var(--t2),3.6vw,var(--t3));line-height:1.1}
+h3{font-size:var(--t1);line-height:calc(28/23)}
+.lede{font-size:var(--t1);line-height:calc(36/23)}
+.eyebrow,.small,.rowi .lead,.person .tags,.pv .pvk,.meta .k,.bigs .bv,.footer{font-size:var(--t-1);line-height:calc(20/13)}
+.rowi .ttl,.person .ttl,.pv .pvt{font-size:var(--t1);line-height:calc(28/23)}
+.rowi .mt,.person .mt,.bigs .mt,.pv .pvd{font-size:var(--t0);line-height:calc(28/17)}
 .people{display:flex;flex-direction:column;gap:var(--s4)}
 .person{display:flex;align-items:center;gap:var(--s3);padding:0;color:var(--text-primary)}
-.person img{width:88px;height:88px;object-fit:cover;border-radius:var(--radius-md);flex:0 0 auto}
-.person .ttl{font-family:var(--font-display);font-weight:600;font-size:22px;transition:color var(--dur-fast) var(--ease)}
-.person .mt{font-size:15px;color:var(--text-secondary);margin-top:var(--s1)}
-.person .tags{font-size:13px;color:var(--text-tertiary);margin-top:var(--s1)}
+.person img{width:var(--s6);height:var(--s6);object-fit:cover;border-radius:var(--radius-md);flex:0 0 auto}
+.person .ttl{font-family:var(--font-display);font-weight:600;transition:color var(--dur-fast) var(--ease)}
+.person .mt{color:var(--text-secondary);margin-top:var(--s1)}
+.person .tags{color:var(--text-tertiary);margin-top:var(--s1)}
 .people a.person:nth-child(3n+1):hover .ttl{color:var(--sage-ink)}
 .people a.person:nth-child(3n+2):hover .ttl{color:var(--sand-ink)}
 .people a.person:nth-child(3n+3):hover .ttl{color:var(--coral-ink)}
 body.dark .people a.person:hover .ttl{color:var(--text-accent)}
-.portrait{width:100%;max-width:340px;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 var(--s4)}
-@media(max-width:680px){:root{--section-gap:var(--s6)}.lede{line-height:calc(28/18)}.page{padding:0 var(--s3)}.rowi{gap:var(--s0)}.person img{width:72px;height:72px}.person .ttl{font-size:20px}}
+.portrait{width:100%;max-width:var(--e2);aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 var(--s4)}
+@media(max-width:680px){:root{--section-gap:var(--s6)}.navin{gap:var(--s3);padding:var(--s2) var(--s3)}.navlinks{gap:var(--s3)}h1{font-size:clamp(var(--t2),9vw,var(--t3))}h2{font-size:clamp(var(--t1),7.5vw,var(--t2))}.lede{font-size:var(--t0);line-height:calc(28/17)}.page{padding:0 var(--s3)}.rowi{gap:var(--s0)}}
+@media(max-width:480px){.navin,.navlinks{gap:var(--s2)}}
 .person img.diagram{background:var(--surface-alt);object-fit:contain;padding:var(--s2)}
 .portrait.diagram{background:var(--surface-alt);object-fit:contain;padding:var(--s5)}
-.meta .k{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
+.meta .k{font-family:var(--font-display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
 .meta .v{margin-bottom:var(--s2)}
 
 .wide{max-width:none}
 .wash{--pfrom:rgba(251,227,219,.10);--prot:rgba(253,238,221,.13)}
 body.dark .wash{--pfrom:rgba(231,111,81,.05);--prot:rgba(244,162,97,.06)}
-.fld{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:var(--ar,4/5);border-radius:var(--radius-md);font-family:var(--font-display);font-weight:800;font-size:clamp(40px,7vw,84px);letter-spacing:-.02em}
+.fld{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:var(--ar,4/5);border-radius:var(--radius-md);font-family:var(--font-display);font-weight:800;font-size:clamp(var(--t3),7vw,var(--t5));letter-spacing:-.02em}
 .fld.q{background:var(--surface-alt);color:var(--sand-ink)}
 body.dark .fld.q{color:var(--sand)}
 .ph-img{display:block;width:100%;aspect-ratio:var(--ar,4/5);object-fit:cover;border-radius:var(--radius-md)}
@@ -359,14 +375,14 @@ body.dark .fld.q{color:var(--sand)}
 .bigs{display:flex;flex-direction:column;gap:var(--s1)}
 .bigs .big{display:block;padding:0;color:var(--text-primary);transition:opacity var(--dur-fast) var(--ease)}
 .bigs:hover .big{opacity:.32}.bigs .big:hover,.bigs .big:focus{opacity:1}
-.bigs .bn{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,3.5vw,46px);line-height:1.12;letter-spacing:-.02em}
-.bigs .bv{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-left:var(--s2);vertical-align:middle}
+.bigs .bn{font-family:var(--font-display);font-weight:700;font-size:clamp(var(--t2),3.5vw,var(--t3));line-height:1.1;letter-spacing:-.02em}
+.bigs .bv{white-space:nowrap;font-family:var(--font-display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-left:var(--s2);vertical-align:middle}
 .bigs .big:hover .bn,.bigs .big:focus .bn{color:var(--text-accent)}
-.bigs .mt{display:none;font-size:15px;color:var(--text-secondary);margin-top:var(--s1)}
-.pv{position:sticky;top:110px}
-.pv .pvk{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-top:var(--s3)}
-.pv .pvt{font-family:var(--font-display);font-weight:600;font-size:22px;margin:var(--s0) 0 var(--s1)}
-.pv .pvd{font-size:15px;color:var(--text-secondary)}
+.bigs .mt{display:none;color:var(--text-secondary);margin-top:var(--s1)}
+.pv{position:sticky;top:calc(var(--s6) + var(--s4))}
+.pv .pvk{font-family:var(--font-display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-top:var(--s3)}
+.pv .pvt{font-family:var(--font-display);font-weight:600;margin:var(--s0) 0 var(--s1)}
+.pv .pvd{color:var(--text-secondary)}
 @media(max-width:800px){
   .bsplit{grid-template-columns:1fr}.pv{display:none}.bigs{gap:var(--s3)}.bigs .mt{display:block}.bigs:hover .big{opacity:1}
 }
@@ -387,7 +403,7 @@ body.dark .fld.q{color:var(--sand)}
   <section class="wash"><div class="wide">
     <span class="eyebrow">People</span>
     <h1>Who has shared the work.</h1>
-    <p class="lede" style="max-width:680px">Practitioners who showed real projects and the process behind them at our gatherings.</p>
+    <p class="lede" style="max-width:var(--e3)">Practitioners who showed real projects and the process behind them at our gatherings.</p>
     <div class="bsplit"><div class="bigs"><a class="big" href="/people/ana-marini/" data-img="" data-init="AM" data-cls="q" data-name="Ana Marini" data-vol="Vol. 04" data-short="Building a language-learning project with AI as a design partner, and what it does to your judgment."><span class="bn">Ana Marini</span><span class="bv">Vol. 04</span><div class="mt">Building a language-learning project with AI as a design partner, and what it does to your judgment.</div></a><a class="big" href="/people/kaelig-deloumeau-prigent/" data-img="" data-init="KD" data-cls="q" data-name="Kaelig Deloumeau-Prigent" data-vol="Vol. 04" data-short="One agentic workflow that revamps a product UI head to toe, design system included."><span class="bn">Kaelig Deloumeau-Prigent</span><span class="bv">Vol. 04</span><div class="mt">One agentic workflow that revamps a product UI head to toe, design system included.</div></a><a class="big" href="/people/shuyuan-ding/" data-img="" data-init="SD" data-cls="q" data-name="Shuyuan (Sylvia) Ding" data-vol="Vol. 04" data-short="Going from designer to design engineer, and building a component end to end."><span class="bn">Shuyuan (Sylvia) Ding</span><span class="bv">Vol. 04</span><div class="mt">Going from designer to design engineer, and building a component end to end.</div></a><a class="big" href="/people/dan-hiester/" data-img="/assets/events/vol-03/vol-03-08-dan-talk-1200.jpg" data-init="DH" data-cls="q" data-name="Dan Hiester" data-vol="Vol. 03" data-short="Design systems as mise en place, and a token prototype that rebuilds a site in any design language."><span class="bn">Dan Hiester</span><span class="bv">Vol. 03</span><div class="mt">Design systems as mise en place, and a token prototype that rebuilds a site in any design language.</div></a><a class="big" href="/people/yilin-zhu/" data-img="/assets/events/vol-03/vol-03-11-yilin-zhu-1200.jpg" data-init="YZ" data-cls="q" data-name="Yilin Zhu" data-vol="Vol. 03" data-short="A math-driven system that turns line art into shapes, letters, and words, output as video and code."><span class="bn">Yilin Zhu</span><span class="bv">Vol. 03</span><div class="mt">A math-driven system that turns line art into shapes, letters, and words, output as video and code.</div></a><a class="big" href="/people/josh-glick/" data-img="/assets/events/vol-03/vol-03-17-josh-glick-1200.jpg" data-init="JG" data-cls="q" data-name="Josh Glick" data-vol="Vol. 03" data-short="Building for special education across K-12, where the words are the product."><span class="bn">Josh Glick</span><span class="bv">Vol. 03</span><div class="mt">Building for special education across K-12, where the words are the product.</div></a><a class="big" href="/people/patrick-neeman/" data-img="" data-init="PN" data-cls="q" data-name="Patrick Neeman" data-vol="Vol. 02" data-short="Journey mapping and intent across the products we use daily, so teams agree before anyone renders UI."><span class="bn">Patrick Neeman</span><span class="bv">Vol. 02</span><div class="mt">Journey mapping and intent across the products we use daily, so teams agree before anyone renders UI.</div></a><a class="big" href="/people/sarra-naemi/" data-img="/assets/events/vol-02/vol-02-03-stemtopia-talk-1200.jpg" data-init="SN" data-cls="q" data-name="Sarra Naemi" data-vol="Vol. 02" data-short="Taking Stemtopia from design through engineering into a playable game."><span class="bn">Sarra Naemi</span><span class="bv">Vol. 02</span><div class="mt">Taking Stemtopia from design through engineering into a playable game.</div></a><a class="big" href="/people/ben-mullins/" data-img="/assets/events/vol-02/vol-02-02-808-talk-1200.jpg" data-init="BM" data-cls="q" data-name="Ben Mullins" data-vol="Vol. 02" data-short="The 808 drum machine: 2.6 sextillion possible states, one thumb, and why judgment still matters."><span class="bn">Ben Mullins</span><span class="bv">Vol. 02</span><div class="mt">The 808 drum machine: 2.6 sextillion possible states, one thumb, and why judgment still matters.</div></a></div>
       <aside class="pv" id="pv" aria-hidden="true"><div class="pvv"></div><div class="pvk"></div><div class="pvt"></div><div class="pvd"></div></aside></div>
     <script>(function(){
