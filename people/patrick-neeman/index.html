@@ -304,18 +304,32 @@ body.dark .in{border-color:#3E362F}
   .lbbtn{padding:12px}
 }
 
-.person{display:flex;align-items:center;gap:26px;padding:22px 0;color:var(--text-primary)}
+/* Spacing system: Fibonacci x 4px. Roles:
+   s0 hairline within an item, s1 tight stack, s2 label or heading to its text,
+   s3 paragraph gap and heading above a list, s4 between list items and page gutter,
+   s5 between groups in a section, s6 above a group heading (4:1 over s3 below), s7 between sections */
+:root{--s0:4px;--s1:8px;--s2:12px;--s3:20px;--s4:32px;--s5:52px;--s6:84px;--s7:136px;--section-gap:var(--s7)}
+.page{padding:0 var(--s4)}
+p{margin:0 0 var(--s3)}
+.eyebrow{margin-bottom:var(--s2)}
+h1{margin:0 0 var(--s3)}
+h2,h3{margin:0 0 var(--s2)}
+.rows{margin-top:var(--s3);display:flex;flex-direction:column;gap:var(--s4)}
+.rowi{padding:0;gap:var(--s4)}
+.rowi .mt{margin-top:var(--s0)}
+.footer{padding:var(--s6) 0}
+.people{display:flex;flex-direction:column;gap:var(--s4)}
+.person{display:flex;align-items:center;gap:var(--s3);padding:0;color:var(--text-primary)}
 .person img{width:88px;height:88px;object-fit:cover;border-radius:var(--radius-md);flex:0 0 auto}
 .person .ttl{font-family:var(--font-display);font-weight:600;font-size:22px;transition:color var(--dur-fast) var(--ease)}
-.person .mt{font-size:15px;color:var(--text-secondary);margin-top:3px}
-.person .tags{font-size:13px;color:var(--text-tertiary);margin-top:6px}
+.person .mt{font-size:15px;color:var(--text-secondary);margin-top:var(--s0)}
+.person .tags{font-size:13px;color:var(--text-tertiary);margin-top:var(--s1)}
 .people a.person:nth-child(3n+1):hover .ttl{color:var(--sage-ink)}
 .people a.person:nth-child(3n+2):hover .ttl{color:var(--sand-ink)}
 .people a.person:nth-child(3n+3):hover .ttl{color:var(--coral-ink)}
 body.dark .people a.person:hover .ttl{color:var(--text-accent)}
-.person .ph{width:88px;height:88px;border-radius:var(--radius-md);flex:0 0 auto;background:var(--surface-alt);color:var(--text-tertiary);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;font-size:24px}
-.portrait{width:100%;max-width:340px;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 34px}
-@media(max-width:680px){.person{gap:18px}.person img,.person .ph{width:72px;height:72px}.person .ttl{font-size:20px}}
+.portrait{width:100%;max-width:340px;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 var(--s4)}
+@media(max-width:680px){:root{--section-gap:var(--s6)}.page{padding:0 var(--s3)}.rowi{gap:var(--s0)}.person img{width:72px;height:72px}.person .ttl{font-size:20px}}
 </style>
 </head>
 <body>
@@ -332,13 +346,13 @@ body.dark .people a.person:hover .ttl{color:var(--text-accent)}
   </div></nav>
   <section><div class="col">
     <a class="small tert" href="/people/">&larr; People</a>
-    <div style="margin-top:34px"></div>
+    <div style="margin-top:var(--s4)"></div>
     
     <span class="eyebrow">Vol. 02 · Speaker</span>
     <h1>Patrick Neeman</h1>
     <p>Patrick dug into journey mapping and intent across the ecosystem of companies and products we use on a daily basis. His prototype does the heavy lifting and will empower product teams to agree on intent before anyone renders real UI.</p>
     <a class="btn quiet" href="https://www.linkedin.com/in/patrick-neeman-ux/" target="_blank" rel="noopener">LinkedIn <span class="arw">&rarr;</span></a>
-    <h3 style="margin-top:76px">Learnings</h3>
+    <h3 style="margin-top:var(--s6)">Learnings</h3>
     <p class="small tert">Coming soon.</p>
   </div></section>
   <footer class="footer">

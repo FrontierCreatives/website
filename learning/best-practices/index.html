@@ -304,23 +304,36 @@ body.dark .in{border-color:#3E362F}
   .lbbtn{padding:12px}
 }
 
-.person{display:flex;align-items:center;gap:26px;padding:22px 0;color:var(--text-primary)}
+/* Spacing system: Fibonacci x 4px. Roles:
+   s0 hairline within an item, s1 tight stack, s2 label or heading to its text,
+   s3 paragraph gap and heading above a list, s4 between list items and page gutter,
+   s5 between groups in a section, s6 above a group heading (4:1 over s3 below), s7 between sections */
+:root{--s0:4px;--s1:8px;--s2:12px;--s3:20px;--s4:32px;--s5:52px;--s6:84px;--s7:136px;--section-gap:var(--s7)}
+.page{padding:0 var(--s4)}
+p{margin:0 0 var(--s3)}
+.eyebrow{margin-bottom:var(--s2)}
+h1{margin:0 0 var(--s3)}
+h2,h3{margin:0 0 var(--s2)}
+.rows{margin-top:var(--s3);display:flex;flex-direction:column;gap:var(--s4)}
+.rowi{padding:0;gap:var(--s4)}
+.rowi .mt{margin-top:var(--s0)}
+.footer{padding:var(--s6) 0}
+.people{display:flex;flex-direction:column;gap:var(--s4)}
+.person{display:flex;align-items:center;gap:var(--s3);padding:0;color:var(--text-primary)}
 .person img{width:88px;height:88px;object-fit:cover;border-radius:var(--radius-md);flex:0 0 auto}
 .person .ttl{font-family:var(--font-display);font-weight:600;font-size:22px;transition:color var(--dur-fast) var(--ease)}
-.person .mt{font-size:15px;color:var(--text-secondary);margin-top:3px}
-.person .tags{font-size:13px;color:var(--text-tertiary);margin-top:6px}
+.person .mt{font-size:15px;color:var(--text-secondary);margin-top:var(--s0)}
+.person .tags{font-size:13px;color:var(--text-tertiary);margin-top:var(--s1)}
 .people a.person:nth-child(3n+1):hover .ttl{color:var(--sage-ink)}
 .people a.person:nth-child(3n+2):hover .ttl{color:var(--sand-ink)}
 .people a.person:nth-child(3n+3):hover .ttl{color:var(--coral-ink)}
 body.dark .people a.person:hover .ttl{color:var(--text-accent)}
-.person .ph{width:88px;height:88px;border-radius:var(--radius-md);flex:0 0 auto;background:var(--surface-alt);color:var(--text-tertiary);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;font-size:24px}
-.portrait{width:100%;max-width:340px;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 34px}
-@media(max-width:680px){.person{gap:18px}.person img,.person .ph{width:72px;height:72px}.person .ttl{font-size:20px}}
-.person img.diagram{background:var(--surface-alt);object-fit:contain;padding:14px}
-.portrait.diagram{background:var(--surface-alt);object-fit:contain;padding:44px}
-.meta{margin:0 0 34px}
+.portrait{width:100%;max-width:340px;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-lg);margin:0 0 var(--s4)}
+@media(max-width:680px){:root{--section-gap:var(--s6)}.page{padding:0 var(--s3)}.rowi{gap:var(--s0)}.person img{width:72px;height:72px}.person .ttl{font-size:20px}}
+.person img.diagram{background:var(--surface-alt);object-fit:contain;padding:var(--s2)}
+.portrait.diagram{background:var(--surface-alt);object-fit:contain;padding:var(--s5)}
 .meta .k{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
-.meta .v{margin-bottom:14px}
+.meta .v{margin-bottom:var(--s2)}
 </style>
 </head>
 <body>
@@ -337,15 +350,15 @@ body.dark .people a.person:hover .ttl{color:var(--text-accent)}
   </div></nav>
   <section><div class="col">
     <a class="small tert" href="/learning/">&larr; Learning</a>
-    <div style="margin-top:34px"></div>
+    <div style="margin-top:var(--s4)"></div>
     <span class="eyebrow">Guide</span>
     <h1>Best practices and methodology</h1>
     <p class="lede">Placeholder. What is working across our speakers and members, collected in one place.</p>
-    <h3 style="margin-top:34px">Methods that keep working</h3>
+    <h3 style="margin-top:var(--s5)">Methods that keep working</h3>
     <p>Patterns that show up across talks and jigs.</p>
-    <h3 style="margin-top:34px">What to avoid</h3>
+    <h3 style="margin-top:var(--s5)">What to avoid</h3>
     <p>Dead ends our speakers hit so you can skip them.</p>
-    <h3 style="margin-top:34px">How this page grows</h3>
+    <h3 style="margin-top:var(--s5)">How this page grows</h3>
     <p>Each new field note and jig can add to it.</p>
 
   </div></section>
