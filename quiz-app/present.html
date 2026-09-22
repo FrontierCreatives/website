@@ -43,8 +43,7 @@
   /* the board: a live leaderboard, with a small QR to keep the door open */
   .board { display: grid; grid-template-columns: 1fr auto; gap: clamp(24px, 4vw, 80px); align-items: start; }
   .board .rowi { padding: clamp(10px, 1.4vh, 20px) 0; gap: clamp(16px, 2vw, 32px); align-items: baseline; transition: transform .4s var(--ease); }
-  .board .rowi .lead { font-size: clamp(18px, 1.6vw, 30px); min-width: 2.2em; color: var(--text-2); padding-top: 0; }
-  .board .rowi:first-child .lead { color: var(--acc); }
+  .board .rowi .lead { font-size: clamp(18px, 1.6vw, 30px); min-width: 2.2em; color: var(--acc); padding-top: 0; }
   .board .rowi .ttl { font-size: clamp(20px, 1.9vw, 34px); font-weight: 600; }
   .board .rowi .sub { font-size: clamp(14px, 1.1vw, 19px); }
   .board .rowi.past .ttl { color: var(--text-3); font-weight: 500; }
@@ -61,7 +60,7 @@
   .panel .live-by { overflow-wrap: anywhere; }
   .panel .next .rowi { padding: 10px 0; align-items: baseline; }
   .panel .next .rowi .ttl { font-size: clamp(18px, 1.6vw, 28px); font-weight: 500; color: var(--text-2); }
-  .panel .next .rowi .lead { min-width: 2.2em; font-size: clamp(14px, 1.1vw, 20px); padding-top: 0; }
+  .panel .next .rowi .lead { min-width: 2.2em; font-size: clamp(14px, 1.1vw, 20px); padding-top: 0; color: var(--acc); }
   .panel .side .qr { margin-top: 18px; }
 
   @media (max-width: 1000px) {
