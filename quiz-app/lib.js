@@ -98,9 +98,12 @@ function fcMountQR(el, url, size) {
 
 // ---- The animated mark (standalone treatment: full weight, full opacity) ----
 // The loop lives in assets/logo. Video first (smooth), GIF if video can't play.
-function fcAnimatedMark() {
-  return '<video class="animark" autoplay muted loop playsinline preload="auto" aria-hidden="true">' +
-    '<source src="../assets/logo/fc-mark-animated-800.mp4" type="video/mp4" onerror="fcMarkFallback(this)" />' +
+function fcAnimatedMark(kind) {
+  const wide = kind === "band";
+  const mp4 = wide ? "../assets/logo/fc-mark-hero-2400.mp4" : "../assets/logo/fc-mark-animated-800.mp4";
+  return '<video class="animark' + (wide ? " band" : "") + '" autoplay muted loop playsinline preload="auto" aria-hidden="true"' +
+    (wide ? ' poster="../assets/logo/fc-mark-hero-2400-poster.jpg"' : '') + '>' +
+    '<source src="' + mp4 + '" type="video/mp4" onerror="fcMarkFallback(this)" />' +
     '</video>';
 }
 // Swap to the GIF when the browser can't play the mp4 (or blocks autoplay).
@@ -108,7 +111,9 @@ function fcMarkFallback(src) {
   const v = src.closest ? src.closest("video") : src;
   if (!v || !v.parentNode) return;
   const img = document.createElement("img");
-  img.className = "animark"; img.alt = ""; img.src = "../assets/logo/fc-mark-animated-800.gif";
+  const wide = v.classList.contains("band");
+  img.className = "animark" + (wide ? " band" : ""); img.alt = "";
+  img.src = wide ? "../assets/logo/fc-mark-hero-2400-poster.jpg" : "../assets/logo/fc-mark-animated-800.gif";
   v.replaceWith(img);
 }
 function fcWatchMark(root) {
