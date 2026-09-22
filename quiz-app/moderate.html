@@ -26,6 +26,7 @@
   .focus .next .rowi { padding: 12px 0; }
   .focus .next .rowi .ttl { font-size: 17px; }
   .modes { display: flex; gap: 6px; }
+  @media (max-width: 600px) { .focus .big-acts .btn { flex: 1 1 100%; padding: 20px; font-size: 18px; } }
 </style>
 </head>
 <body>
@@ -87,6 +88,10 @@ function startModerator() {
     if (n) { await setAQ(n.id, "live"); } else { await refresh(); }
   };
   window.doneOnly = async function (id) { await markDone(id); await refresh(); };
+  document.addEventListener("keydown", (e) => {
+    if (!focus || e.target.matches("input, textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === " " || e.key === "ArrowRight" || e.key === "Enter") { e.preventDefault(); const l = aq.find((a) => a.status === "live"); window.doneNext(l ? l.id : null); }
+  });
   window.setFocus = (on) => { focus = !!on; try { sessionStorage.setItem("fc-mod-focus", focus ? "1" : "0"); } catch (e) {} render(); };
   async function doReset() {
     const { error } = await sb.rpc("reset_session");
@@ -133,7 +138,8 @@ function startModerator() {
               '</div>'
             : '<div class="live-q" style="color:var(--text-3)">Nothing on the floor.</div>' +
               '<div class="big-acts"><button class="btn primary" onclick="doneNext(null)"' + (open.length ? '' : ' disabled') + '>Start with the top question</button></div>') +
-          (state.phase !== "panel" ? '<p class="small" style="margin-top:14px">The screen is on ' + PHASES.find((x) => x[0] === state.phase)[1].toLowerCase() + '. Putting a question on the floor switches it.</p>' : '') +
+          '<p class="small" style="margin-top:14px">Space or the right arrow is "Discussed, next one".</p>' +
+          (state.phase !== "panel" ? '<p class="small" style="margin-top:4px">The screen is on ' + PHASES.find((x) => x[0] === state.phase)[1].toLowerCase() + '. Putting a question on the floor switches it.</p>' : '') +
         '</section>' +
         '<section class="block next"><div class="spread"><span class="eyebrow muted" style="margin:0">Up next</span><span class="small">' + open.length + ' waiting</span></div>' +
           '<div class="rows mt">' + (open.length ? open.map((it) =>

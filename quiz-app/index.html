@@ -40,6 +40,9 @@ if (fcRequireConfig()) {
   let state = null, aq = [], note = "";
 
   const votedKey = (id) => "fc-voted-" + id;
+  const mine = (() => { try { return new Set(JSON.parse(localStorage.getItem("fc-mine") || "[]")); } catch (e) { return new Set(); } })();
+  const rememberMine = (id) => { mine.add(id); try { localStorage.setItem("fc-mine", JSON.stringify([...mine])); } catch (e) {} };
+  const savedName = (() => { try { return localStorage.getItem("fc-name") || ""; } catch (e) { return ""; } })();
   const hasVoted = (id) => { try { return !!localStorage.getItem(votedKey(id)); } catch (e) { return false; } };
 
   async function load() {
@@ -60,7 +63,7 @@ if (fcRequireConfig()) {
       '<h1>Ask the panel</h1>' +
       '<p class="hint">Ask a question, or vote for the ones you want answered. The board updates as you tap.</p>' +
       '<div class="mt"><textarea id="qText" rows="2" maxlength="240" placeholder="Got a question?"></textarea></div>' +
-      '<div class="row mt"><input id="qName" type="text" maxlength="40" placeholder="Your name (optional)" style="flex:1;min-width:160px" />' +
+      '<div class="row mt"><input id="qName" type="text" maxlength="40" placeholder="Your name (optional)" value="' + fcEsc(savedName) + '" style="flex:1;min-width:160px" />' +
       '<button class="btn primary" id="sendBtn" onclick="askQ()">Send</button></div>' +
       '<div class="sent" id="sent">' + fcEsc(note) + '</div></section>';
   }
@@ -75,7 +78,7 @@ if (fcRequireConfig()) {
             '<span class="n">' + it.votes + '</span><span class="l">votes</span></button>' +
           '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
           '<div class="sub">' + (it.author ? fcEsc(it.author) : '') +
-          (it.status === "asked" ? (it.author ? ' · ' : '') + '<span class="marker">Asked</span>' : '') + '</div></div></div>';
+          (mine.has(it.id) ? (it.author ? ' · ' : '') + '<span class="marker on">Yours</span>' : '') + '</div></div></div>';
       }).join("") : fcEmpty("No questions yet. Yours could be first.")) + '</div></section>';
   }
 
@@ -86,7 +89,8 @@ if (fcRequireConfig()) {
         '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p></section>';
       return;
     }
-    const keep = { t: (document.getElementById("qText") || {}).value || "", n: (document.getElementById("qName") || {}).value || "" };
+    const hadName = document.getElementById("qName");
+    const keep = { t: (document.getElementById("qText") || {}).value || "", n: hadName ? hadName.value : savedName };
     view.innerHTML = liveBlock() + askBlock() + listBlock();
     const t = document.getElementById("qText"), n = document.getElementById("qName");
     if (t) t.value = keep.t; if (n) n.value = keep.n;
@@ -97,9 +101,11 @@ if (fcRequireConfig()) {
     if (!t) return;
     const name = document.getElementById("qName").value.trim() || null;
     const btn = document.getElementById("sendBtn"); btn.disabled = true;
-    const { error } = await sb.from("audience_questions").insert([{ quiz_id: state.active_quiz_id, text: t.slice(0, 240), author: name }]);
+    const { data, error } = await sb.from("audience_questions").insert([{ quiz_id: state.active_quiz_id, text: t.slice(0, 240), author: name }]).select();
     btn.disabled = false;
     if (error) { note = "That did not go through. Try again."; render(); return; }
+    if (data && data[0]) rememberMine(data[0].id);
+    try { localStorage.setItem("fc-name", name || ""); } catch (e) {}
     document.getElementById("qText").value = "";
     note = "Sent. It is on the board.";
     await load(); render();

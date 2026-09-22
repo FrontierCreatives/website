@@ -15,7 +15,8 @@
   html, body { height: 100%; }
   body { display: flex; flex-direction: column; }
   .wrap { flex: 1; display: flex; flex-direction: column; width: 100%; padding-bottom: 24px; }
-  .top { margin-bottom: clamp(12px, 2vh, 28px); justify-content: flex-start; }
+  .wrap { padding-top: clamp(28px, 5vh, 64px); }
+  .foot .ctx { font-size: 12px; }
   .ctx { font-size: 13px; }
   .field.bg { position: fixed; z-index: 0; }
   #view { flex: 1; display: flex; flex-direction: column; }
@@ -44,7 +45,9 @@
   .board .side .small { display: block; margin-top: 12px; max-width: 220px; line-height: 1.4; }
 
   /* panel: the one on the floor, and what is coming */
-  .panel { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px, 5vw, 96px); align-items: center; }
+  .panel { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px, 5vw, 96px); align-items: start; padding-top: clamp(8px, 4vh, 48px); }
+  .panel .side { display: flex; flex-direction: column; gap: clamp(20px, 4vh, 44px); }
+  .panel .side .eyebrow { margin-bottom: 8px; }
   .panel .live-q { font-size: clamp(32px, 4vw, 72px); }
   .panel .next .rowi { padding: 10px 0; align-items: baseline; }
   .panel .next .rowi .ttl { font-size: clamp(18px, 1.6vw, 28px); font-weight: 500; color: var(--text-2); }
@@ -62,12 +65,10 @@
 <div class="wash"></div>
 <div class="field bg" id="bgField" aria-hidden="true"></div>
 <div class="wrap">
-  <header class="top">
-    <span class="ctx" id="statusPill"></span>
-  </header>
   <main id="view"></main>
 </div>
 <footer class="foot">
+  <span class="ctx" id="footTitle"></span>
   <span>Ask at <b id="joinUrl"></b></span>
   <span><span id="qCount" class="n num">0</span> <span id="qLabel">questions</span></span>
 </footer>
@@ -95,7 +96,7 @@ if (fcRequireConfig()) {
     aq = await fcLoadQuestions(sb, state && state.active_quiz_id, ["pending", "queued", "live"]);
   }
 
-  const setStatus = (t) => { document.getElementById("statusPill").textContent = t; };
+  const setStatus = (t) => { document.getElementById("footTitle").textContent = fcClean(fcTitle()) + " · " + t; };
   let bgName = null;
   function setBg(name, o) {
     const host = document.getElementById("bgField");
@@ -140,8 +141,9 @@ if (fcRequireConfig()) {
         (live ? '<div class="live-q">' + fcEsc(live.text) + '</div>' + (live.author ? '<div class="live-by">' + fcEsc(live.author) + '</div>' : '')
               : '<div class="live-q" style="color:var(--text-2)">Picking the next question.</div>') +
         '</div><div class="side">' +
-        (next.length ? '<div class="next"><span class="eyebrow muted">Up next</span><div class="rows">' + next.map((it) => qRow(it)).join("") + '</div></div>' : '') +
-        '<span class="eyebrow muted" style="margin-top:28px">Add yours</span>' + qrSlot(150) +
+        '<div class="next"><span class="eyebrow muted">Up next</span>' +
+          (next.length ? '<div class="rows">' + next.map((it) => qRow(it)).join("") + '</div>' : '<p class="empty" style="padding:6px 0">The board is empty. Ask from your phone.</p>') + '</div>' +
+        '<div><span class="eyebrow muted">Add yours</span>' + qrSlot(140) + '</div>' +
         '</div></section>';
       mountQRs();
       return;
