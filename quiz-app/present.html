@@ -24,13 +24,18 @@
   .screen h1 { font-size: clamp(32px, 4.2vw, 68px); }
   .screen .eyebrow { font-size: clamp(13px, 1vw, 17px); margin-bottom: clamp(12px, 1.6vh, 22px); }
   .screen .lede { font-size: clamp(18px, 1.6vw, 28px); }
-  .foot { display: flex; justify-content: flex-start; align-items: baseline; gap: 28px; color: var(--text-3); font-size: clamp(14px, 1.1vw, 19px); padding: 12px clamp(16px, 4vw, 40px) 22px; position: relative; z-index: 1; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: baseline; gap: 8px 28px; color: var(--text-3); font-size: clamp(14px, 1.1vw, 19px); padding: 12px clamp(16px, 4vw, 40px) calc(22px + env(safe-area-inset-bottom, 0px)); position: relative; z-index: 1; }
+  .foot > span { white-space: nowrap; }
+  .foot > span:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+  @media (max-width: 700px) { .foot .ctx { display: none; } .lobby .qrwrap { justify-content: flex-start; } }
   .foot b { color: var(--text-2); font-family: var(--fd); font-weight: 500; }
   .foot .n { color: var(--text); }
 
   /* lobby: words left, QR on the cardioid right */
   .lobby { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 4vw, 80px); align-items: center; min-height: 60vh; }
   .lobby .qrwrap { display: flex; justify-content: center; align-items: center; min-height: 420px; }
+  .lobby .markwrap { display: flex; justify-content: center; align-items: center; }
+  .lobby .markwrap video, .lobby .markwrap img { width: min(64vh, 36vw, 720px); height: auto; display: block; }
   .lobby .url { font-family: var(--fd); font-weight: 600; font-size: clamp(18px, 1.6vw, 28px); margin-top: 22px; color: var(--text); letter-spacing: -.01em; }
 
   /* the board: a live leaderboard, with a small QR to keep the door open */
@@ -122,13 +127,16 @@ if (fcRequireConfig()) {
     setCount();
     if (!state) return;
     const phase = state.phase;
+    document.body.classList.toggle("ended", state.phase === "ended");
     const title = fcEsc(fcTitle());
 
     if (phase === "ended") {
       setStatus("Ended");
       view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + title + '</span>' +
-        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p></div><div></div></section>';
-      setBg("star", { scale: 1.5, rot: 0, cx: 1440, cy: 540 });
+        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p></div>' +
+        '<div class="markwrap">' + fcAnimatedMark() + '</div></section>';
+      fcWatchMark(view);
+      setBg(null);
       return;
     }
     if (phase === "panel") {

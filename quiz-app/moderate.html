@@ -105,7 +105,7 @@ function startModerator() {
   function render() {
     if (!state) { view.innerHTML = '<p class="empty">Loading</p>'; return; }
     if (!state.active_quiz_id) {
-      view.innerHTML = '<span class="eyebrow">No active event</span><h2>Nothing is live yet</h2>' +
+      view.innerHTML = '<span class="eyebrow">No active event</span><h2>Nothing&rsquo;s live yet</h2>' +
         '<p class="hint">Run <b>seed.sql</b> in Supabase to create the event, then reload.</p>';
       return;
     }
@@ -138,7 +138,7 @@ function startModerator() {
               '</div>'
             : '<div class="live-q" style="color:var(--text-3)">Nothing on the floor.</div>' +
               '<div class="big-acts"><button class="btn primary" onclick="doneNext(null)"' + (open.length ? '' : ' disabled') + '>Start with the top question</button></div>') +
-          '<p class="small" style="margin-top:14px">Space or the right arrow is "Discussed, next one".</p>' +
+          '<p class="small" style="margin-top:14px">Space or the right arrow means "Discussed, next one".</p>' +
           (state.phase !== "panel" ? '<p class="small" style="margin-top:4px">The screen is on ' + PHASES.find((x) => x[0] === state.phase)[1].toLowerCase() + '. Putting a question on the floor switches it.</p>' : '') +
         '</section>' +
         '<section class="block next"><div class="spread"><span class="eyebrow muted" style="margin:0">Up next</span><span class="small">' + open.length + ' waiting</span></div>' +

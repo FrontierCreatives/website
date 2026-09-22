@@ -13,9 +13,15 @@
 <style>
   :root { --maxw: 560px; }
   .lobby { min-height: 50vh; display: flex; flex-direction: column; justify-content: center; }
+  .lobby .markwrap { margin-top: 40px; }
+  .lobby .markwrap video, .lobby .markwrap img { width: min(70vw, 320px); height: auto; display: block; margin-left: -6%; }
   .live-now .live-q { font-size: clamp(22px, 6vw, 30px); }
   .ask h1 { font-size: clamp(26px, 7vw, 34px); }
   .sent { color: var(--acc); font-size: 15px; margin-top: 10px; min-height: 1.4em; }
+  .askrow { flex-wrap: nowrap; }
+  .askrow input { flex: 1 1 0; min-width: 0; }
+  .askrow .btn { flex: 0 0 auto; }
+  @media (max-width: 359px) { .askrow { flex-wrap: wrap; } .askrow input, .askrow .btn { flex: 1 1 100%; } }
 </style>
 </head>
 <body>
@@ -63,7 +69,7 @@ if (fcRequireConfig()) {
       '<h1>Ask the panel</h1>' +
       '<p class="hint">Ask a question, or vote for the ones you want answered. The board updates as you tap.</p>' +
       '<div class="mt"><textarea id="qText" rows="2" maxlength="240" placeholder="Got a question?"></textarea></div>' +
-      '<div class="row mt"><input id="qName" type="text" maxlength="40" placeholder="Your name (optional)" value="' + fcEsc(savedName) + '" style="flex:1;min-width:160px" />' +
+      '<div class="row mt askrow"><input id="qName" type="text" maxlength="40" placeholder="Name (optional)" value="' + fcEsc(savedName) + '" autocomplete="name" />' +
       '<button class="btn primary" id="sendBtn" onclick="askQ()">Send</button></div>' +
       '<div class="sent" id="sent">' + fcEsc(note) + '</div></section>';
   }
@@ -84,9 +90,12 @@ if (fcRequireConfig()) {
 
   function render() {
     if (!state) { view.innerHTML = '<p class="empty">Connecting</p>'; return; }
+    document.body.classList.toggle("ended", state.phase === "ended");
     if (state.phase === "ended") {
       view.innerHTML = '<section class="lobby"><span class="eyebrow">' + fcEsc(fcTitle()) + '</span>' +
-        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p></section>';
+        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p>' +
+        '<div class="markwrap">' + fcAnimatedMark() + '</div></section>';
+      fcWatchMark(view);
       return;
     }
     const hadName = document.getElementById("qName");
@@ -100,14 +109,15 @@ if (fcRequireConfig()) {
     const t = document.getElementById("qText").value.trim();
     if (!t) return;
     const name = document.getElementById("qName").value.trim() || null;
+    if (fcBlocked(t) || (name && fcBlocked(name))) { note = "Let\u2019s keep it on topic."; render(); return; }
     const btn = document.getElementById("sendBtn"); btn.disabled = true;
     const { data, error } = await sb.from("audience_questions").insert([{ quiz_id: state.active_quiz_id, text: t.slice(0, 240), author: name }]).select();
     btn.disabled = false;
-    if (error) { note = "That did not go through. Try again."; render(); return; }
+    if (error) { note = "That didn\u2019t go through. Try again."; render(); return; }
     if (data && data[0]) rememberMine(data[0].id);
     try { localStorage.setItem("fc-name", name || ""); } catch (e) {}
     document.getElementById("qText").value = "";
-    note = "Sent. It is on the board.";
+    note = "Sent. It\u2019s on the board.";
     await load(); render();
     setTimeout(() => { note = ""; const el = document.getElementById("sent"); if (el) el.textContent = ""; }, 4000);
   };

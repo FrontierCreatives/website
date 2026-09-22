@@ -9,7 +9,7 @@ spacing, coral only on what you can act on. Dark is the only surfaced mode; add 
 to any page for a washed-out projector or print.
 
 ## Files
-| File | What it is |
+| File | What it's for |
 |---|---|
 | `index.html` | **Phone.** Ask a question, upvote others. Always open. |
 | `present.html` | **Big screen.** Join QR, the board, the one on the floor, the wrap. Read-only. |
@@ -30,7 +30,7 @@ Open `present.html` on the projector and `moderate.html` on a phone or laptop.
 **Phones can ask and vote the whole time**, in every state except End. The screen shows
 one of four things, picked by the moderator:
 
-| Screen shows | What it is |
+| Screen shows | What it's for |
 |---|---|
 | Join screen | The QR and the ask, on the cardioid. Doors and the talks. |
 | The board | The live leaderboard, most votes first, with a small QR. During the break before the panel. |

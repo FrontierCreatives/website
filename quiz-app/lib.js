@@ -96,12 +96,48 @@ function fcMountQR(el, url, size) {
   el.appendChild(mark);
 }
 
+// ---- The animated mark (standalone treatment: full weight, full opacity) ----
+// The loop lives in assets/logo. Video first (smooth), GIF if video can't play.
+function fcAnimatedMark() {
+  return '<video class="animark" autoplay muted loop playsinline preload="auto" aria-hidden="true">' +
+    '<source src="../assets/logo/fc-mark-animated-800.mp4" type="video/mp4" onerror="fcMarkFallback(this)" />' +
+    '</video>';
+}
+// Swap to the GIF when the browser can't play the mp4 (or blocks autoplay).
+function fcMarkFallback(src) {
+  const v = src.closest ? src.closest("video") : src;
+  if (!v || !v.parentNode) return;
+  const img = document.createElement("img");
+  img.className = "animark"; img.alt = ""; img.src = "../assets/logo/fc-mark-animated-800.gif";
+  v.replaceWith(img);
+}
+function fcWatchMark(root) {
+  (root || document).querySelectorAll("video.animark").forEach((v) => {
+    const p = v.play && v.play();
+    if (p && p.catch) p.catch(() => fcMarkFallback(v));
+    setTimeout(() => { if (v.isConnected && (v.readyState === 0 || v.paused)) fcMarkFallback(v); }, 2500);
+  });
+}
+
 // ---- Text --------------------------------------------------
 // House rule: no em-dashes on any surface. Whatever the source (a
 // phone's autocorrect, old copy), a dash becomes a comma before it renders.
 function fcClean(s) { return String(s).replace(/\s*[—–]\s*/g, ", ").replace(/,\s*([.,;:!?])/g, "$1"); }
 function fcEsc(s) { return fcClean(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 function fcEmpty(msg) { return '<p class="empty">' + (msg || "Nothing yet") + '</p>'; }
+
+// ---- Blocklist ---------------------------------------------
+// Whole-word match, case-insensitive, after collapsing the usual
+// dodges (spacing, punctuation between letters, repeated letters).
+function fcBlocked(text) {
+  const words = (window.FC_CONFIG && window.FC_CONFIG.BLOCKED_WORDS) || [];
+  if (!words.length) return false;
+  const norm = String(text).toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/(.)\1+/g, "$1");
+  return words.some((w) => {
+    const spaced = w.toLowerCase().replace(/(.)\1+/g, "$1").split("").join("\\s*");
+    return new RegExp("\\b" + spaced + "s?\\b").test(norm);
+  });
+}
 
 // ---- Audience question status vocabulary -------------------
 // pending → queued → live → asked, or dismissed. Only one is live.
@@ -134,7 +170,7 @@ function fcGate(onUnlock) {
       if (pw.value && pw.value === (window.FC_CONFIG.MODERATOR_PASSWORD || "")) {
         try { sessionStorage.setItem("fc-mod-ok", "1"); } catch (e) {}
         onUnlock();
-      } else { draw("That password did not match."); }
+      } else { draw("That password didn&rsquo;t match."); }
     };
     document.getElementById("pwBtn").onclick = tryit;
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") tryit(); });
