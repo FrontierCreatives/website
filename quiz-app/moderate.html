@@ -19,6 +19,13 @@
   .util .sp { flex: 1; }
   .rowi .acts .btn.sm { padding: 8px 12px; }
   a.btn { text-decoration: none; }
+  /* Focus: the presenter remote */
+  .focus .live-q { font-size: clamp(28px, 5vw, 44px); margin-top: 6px; }
+  .focus .big-acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
+  .focus .big-acts .btn { padding: 18px 26px; font-size: 17px; }
+  .focus .next .rowi { padding: 12px 0; }
+  .focus .next .rowi .ttl { font-size: 17px; }
+  .modes { display: flex; gap: 6px; }
 </style>
 </head>
 <body>
@@ -42,6 +49,7 @@ function startModerator() {
   const view = document.getElementById("view");
   const sb = FC.client;
   let state = null, aq = [], confirmReset = false;
+  let focus = (() => { try { return sessionStorage.getItem("fc-mod-focus") === "1"; } catch (e) { return false; } })();
 
   async function load() {
     const { data: st } = await sb.from("quiz_state").select("*").eq("id", 1).single();
@@ -66,6 +74,20 @@ function startModerator() {
     }
     await refresh();
   }
+  // Focus helpers: the board order is votes desc, queued before new.
+  function nextUp() {
+    const open = aq.filter((a) => a.status === "queued" || a.status === "pending");
+    return open.sort((a, b) => (a.status === "queued" ? 0 : 1) - (b.status === "queued" ? 0 : 1) || b.votes - a.votes)[0] || null;
+  }
+  async function markDone(id) { await sb.from("audience_questions").update({ status: "asked" }).eq("id", id); }
+  window.doneNext = async function (id) {
+    if (id) await markDone(id);
+    await load();
+    const n = nextUp();
+    if (n) { await setAQ(n.id, "live"); } else { await refresh(); }
+  };
+  window.doneOnly = async function (id) { await markDone(id); await refresh(); };
+  window.setFocus = (on) => { focus = !!on; try { sessionStorage.setItem("fc-mod-focus", focus ? "1" : "0"); } catch (e) {} render(); };
   async function doReset() {
     const { error } = await sb.rpc("reset_session");
     confirmReset = false;
@@ -93,12 +115,42 @@ function startModerator() {
         '<button class="btn sm ghost" onclick="resetNo()">Cancel</button>'
       : '<button class="btn sm ghost" onclick="resetAsk()">Reset for next event</button>';
 
+    const modes = '<div class="modes"><button class="btn sm' + (focus ? "" : " on") + '" onclick="setFocus(false)">List</button>' +
+      '<button class="btn sm' + (focus ? " on" : "") + '" onclick="setFocus(true)">Focus</button></div>';
+
+    if (focus) {
+      const open = aq.filter((a) => a.status === "queued" || a.status === "pending")
+        .sort((a, b) => (a.status === "queued" ? 0 : 1) - (b.status === "queued" ? 0 : 1) || b.votes - a.votes);
+      view.innerHTML =
+        '<section class="focus"><div class="spread"><span class="eyebrow" style="margin:0">' + fcEsc(fcTitle()) + '</span>' + modes + '</div>' +
+          '<span class="marker' + (live ? " on" : "") + '" style="display:block;margin-top:22px">On the floor</span>' +
+          (live
+            ? '<div class="live-q">' + fcEsc(live.text) + '</div>' +
+              '<div class="live-by">' + (live.author ? fcEsc(live.author) + ' · ' : '') + live.votes + (live.votes === 1 ? ' vote' : ' votes') + '</div>' +
+              '<div class="big-acts">' +
+                '<button class="btn primary" onclick="doneNext(\'' + live.id + '\')">Discussed, next one</button>' +
+                '<button class="btn" onclick="doneOnly(\'' + live.id + '\')">Discussed, pause</button>' +
+              '</div>'
+            : '<div class="live-q" style="color:var(--text-3)">Nothing on the floor.</div>' +
+              '<div class="big-acts"><button class="btn primary" onclick="doneNext(null)"' + (open.length ? '' : ' disabled') + '>Start with the top question</button></div>') +
+          (state.phase !== "panel" ? '<p class="small" style="margin-top:14px">The screen is on ' + PHASES.find((x) => x[0] === state.phase)[1].toLowerCase() + '. Putting a question on the floor switches it.</p>' : '') +
+        '</section>' +
+        '<section class="block next"><div class="spread"><span class="eyebrow muted" style="margin:0">Up next</span><span class="small">' + open.length + ' waiting</span></div>' +
+          '<div class="rows mt">' + (open.length ? open.map((it) =>
+            '<div class="rowi' + (it.status === "queued" ? "" : "") + '"><span class="lead num">' + it.votes + '</span>' +
+            '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div><div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') + '<span class="marker">' + fcStatusLabel(it.status) + '</span></div></div>' +
+            '<div class="acts"><button class="btn sm" onclick="setAQ(\'' + it.id + '\',\'live\')">Take this</button>' +
+            '<button class="btn sm ghost" onclick="setAQ(\'' + it.id + '\',\'dismissed\')">Dismiss</button></div></div>'
+          ).join("") : fcEmpty("The board is empty.")) + '</div></section>';
+      return;
+    }
+
     const order = ["live", "queued", "pending", "asked", "dismissed"];
     const sorted = aq.slice().sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status) || b.votes - a.votes);
 
     view.innerHTML =
-      '<section class="now"><span class="eyebrow">' + fcEsc(fcTitle()) + '</span>' +
-        '<span class="marker' + (live ? " on" : "") + '">On the floor</span>' +
+      '<section class="now"><div class="spread"><span class="eyebrow" style="margin:0">' + fcEsc(fcTitle()) + '</span>' + modes + '</div>' +
+        '<span class="marker' + (live ? " on" : "") + '" style="display:block;margin-top:22px">On the floor</span>' +
         '<div class="live-q">' + (live ? fcEsc(live.text) : '<span style="color:var(--text-3)">Nothing yet. Put a question on screen below.</span>') + '</div>' +
         (live && live.author ? '<div class="live-by">' + fcEsc(live.author) + '</div>' : '') +
         (live ? '<div class="row mt"><button class="btn" onclick="setAQ(\'' + live.id + '\',\'asked\')">Done, mark asked</button></div>' : '') +

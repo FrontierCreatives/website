@@ -45,7 +45,7 @@ if (fcRequireConfig()) {
   async function load() {
     const { data } = await sb.from("quiz_state").select("*").eq("id", 1).single();
     state = data;
-    aq = await fcLoadQuestions(sb, state && state.active_quiz_id, ["pending", "queued", "live", "asked"]);
+    aq = await fcLoadQuestions(sb, state && state.active_quiz_id, ["pending", "queued", "live"]);
   }
 
   function liveBlock() {
@@ -58,8 +58,8 @@ if (fcRequireConfig()) {
   function askBlock() {
     return '<section class="block ask"><span class="eyebrow">' + fcEsc(fcTitle()) + '</span>' +
       '<h1>Ask the panel</h1>' +
-      '<p class="hint">Type a question, or vote up the ones you want answered. The board on screen updates as you tap.</p>' +
-      '<div class="mt"><textarea id="qText" rows="2" maxlength="240" placeholder="What would you ask?"></textarea></div>' +
+      '<p class="hint">Ask a question, or vote for the ones you want answered. The board updates as you tap.</p>' +
+      '<div class="mt"><textarea id="qText" rows="2" maxlength="240" placeholder="Got a question?"></textarea></div>' +
       '<div class="row mt"><input id="qName" type="text" maxlength="40" placeholder="Your name (optional)" style="flex:1;min-width:160px" />' +
       '<button class="btn primary" id="sendBtn" onclick="askQ()">Send</button></div>' +
       '<div class="sent" id="sent">' + fcEsc(note) + '</div></section>';

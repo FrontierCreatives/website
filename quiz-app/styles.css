@@ -205,6 +205,7 @@ button.rowi:hover .ttl { color: var(--acc); }
   .btn, .rowi { transition: none; }
 }
 @media (max-width: 600px) {
-  .rowi { gap: 12px; }
-  .rowi .acts { justify-content: flex-start; width: 100%; }
+  .rowi { gap: 12px; flex-wrap: wrap; }
+  .rowi .body { flex: 1 1 200px; }
+  .rowi .acts { justify-content: flex-start; width: 100%; padding-left: 46px; }
 }

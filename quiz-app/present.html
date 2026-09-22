@@ -92,7 +92,7 @@ if (fcRequireConfig()) {
   async function load() {
     const { data } = await sb.from("quiz_state").select("*").eq("id", 1).single();
     state = data;
-    aq = await fcLoadQuestions(sb, state && state.active_quiz_id, ["pending", "queued", "live", "asked"]);
+    aq = await fcLoadQuestions(sb, state && state.active_quiz_id, ["pending", "queued", "live"]);
   }
 
   const setStatus = (t) => { document.getElementById("statusPill").textContent = t; };
@@ -153,7 +153,7 @@ if (fcRequireConfig()) {
         '<div class="url">' + fcEsc(joinText) + '</div></div>' +
         '<div class="qrwrap">' + qrSlot(Math.round(Math.min(380, Math.max(220, innerWidth * .2)))) + '</div></section>';
       mountQRs();
-      setBg("cardioid", { scale: 1.45, rot: -20, cx: 1480, cy: 560 });
+      setBg(null);
       return;
     }
     // board: the live leaderboard
@@ -161,9 +161,7 @@ if (fcRequireConfig()) {
     setBg(null);
     const live = aq.filter((i) => i.status === "live");
     const open = aq.filter((i) => i.status === "queued" || i.status === "pending");
-    const asked = aq.filter((i) => i.status === "asked");
-    const rows = live.map((it) => qRow(it, "on")).concat(open.map((it) => qRow(it))).slice(0, 7)
-      .concat(asked.slice(0, Math.max(0, 8 - Math.min(7, live.length + open.length))).map((it) => qRow(it, "past")));
+    const rows = live.map((it) => qRow(it, "on")).concat(open.map((it) => qRow(it))).slice(0, 8);
     view.innerHTML = '<section class="screen board"><div><span class="eyebrow">' + title + '</span>' +
       '<div class="rows">' + rows.join("") + '</div></div>' +
       '<div class="side"><span class="eyebrow muted">Ask or vote</span>' + qrSlot(170) +
