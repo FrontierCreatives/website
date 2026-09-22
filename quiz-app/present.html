@@ -56,7 +56,10 @@
   .panel { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px, 5vw, 96px); align-items: start; padding-top: clamp(8px, 4vh, 48px); }
   .panel .side { display: flex; flex-direction: column; gap: clamp(20px, 4vh, 44px); }
   .panel .side .eyebrow { margin-bottom: 8px; }
-  .panel .live-q { font-size: clamp(32px, 4vw, 72px); }
+  .panel .live-q { font-size: clamp(32px, 4vw, 72px); overflow-wrap: anywhere; }
+  .panel .live-q.long { font-size: clamp(26px, 3vw, 54px); }
+  .panel .live-q.xlong { font-size: clamp(22px, 2.4vw, 42px); line-height: 1.14; }
+  .panel .live-by { overflow-wrap: anywhere; }
   .panel .next .rowi { padding: 10px 0; align-items: baseline; }
   .panel .next .rowi .ttl { font-size: clamp(18px, 1.6vw, 28px); font-weight: 500; color: var(--text-2); }
   .panel .next .rowi .lead { min-width: 2.2em; font-size: clamp(14px, 1.1vw, 20px); padding-top: 0; }
@@ -149,7 +152,7 @@ if (fcRequireConfig()) {
       const next = aq.filter((i) => i.status === "queued" || i.status === "pending").slice(0, 4);
       view.innerHTML = '<section class="screen panel"><div>' +
         '<span class="eyebrow">On the floor</span>' +
-        (live ? '<div class="live-q">' + fcEsc(live.text) + '</div>' + (live.author ? '<div class="live-by">' + fcEsc(live.author) + '</div>' : '')
+        (live ? '<div class="live-q' + (live.text.length > 200 ? " xlong" : live.text.length > 110 ? " long" : "") + '">' + fcEsc(live.text) + '</div>' + (live.author ? '<div class="live-by">' + fcEsc(live.author) + '</div>' : '')
               : '<div class="live-q" style="color:var(--text-2)">Picking the next question.</div>') +
         '</div><div class="side">' +
         '<div class="next"><span class="eyebrow muted">Up next</span>' +
@@ -190,6 +193,13 @@ if (fcRequireConfig()) {
       const list = lists.find((l) => l.children.length > 1);
       if (!list) break;
       list.lastElementChild.remove();
+    }
+    const lq = view.querySelector(".live-q");
+    let steps = 8;
+    while (lq && steps-- && document.documentElement.scrollHeight > innerHeight + 2) {
+      const cur = parseFloat(getComputedStyle(lq).fontSize);
+      if (cur <= 20) break;
+      lq.style.fontSize = (cur * .9).toFixed(1) + "px";
     }
   }
   async function refresh() { await load(); render(); fit(); }

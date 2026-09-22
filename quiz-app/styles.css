@@ -161,8 +161,8 @@ textarea { resize: vertical; min-height: 84px; }
 .rowi .lead { font-family: var(--fd); font-weight: 600; font-size: 14px; color: var(--text-3); min-width: 34px; padding-top: 3px; font-variant-numeric: tabular-nums; }
 .rowi.on .lead { color: var(--acc); }
 .rowi .body { flex: 1; min-width: 0; }
-.rowi .ttl { font-family: var(--fd); font-weight: 600; font-size: 18px; line-height: 1.3; }
-.rowi .sub { font-size: 14px; color: var(--text-3); margin-top: 4px; }
+.rowi .ttl { font-family: var(--fd); font-weight: 600; font-size: 18px; line-height: 1.3; overflow-wrap: anywhere; }
+.rowi .sub { font-size: 14px; color: var(--text-3); margin-top: 4px; overflow-wrap: anywhere; }
 .rowi .acts { display: flex; flex-wrap: wrap; gap: 4px 6px; justify-content: flex-end; }
 .rowi.past .ttl { color: var(--text-2); }
 .rowi.past .sub { color: var(--text-3); }
@@ -180,7 +180,7 @@ button.rowi:hover .ttl { color: var(--acc); }
 .vote.mine { color: var(--acc); cursor: default; }
 
 /* Live question on the big screen and the phone */
-.live-q { font-family: var(--fd); font-weight: 700; letter-spacing: -.02em; line-height: 1.08; font-size: clamp(24px, 3.6vw, 56px); text-wrap: balance; }
+.live-q { font-family: var(--fd); font-weight: 700; letter-spacing: -.02em; line-height: 1.08; font-size: clamp(24px, 3.6vw, 56px); text-wrap: balance; overflow-wrap: anywhere; }
 .live-by { color: var(--text-3); margin-top: 14px; font-size: clamp(15px, 1.2vw, 20px); }
 
 /* Figures as texture: placed masters, field stroke */
