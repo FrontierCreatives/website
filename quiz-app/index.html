@@ -40,8 +40,8 @@ if (fcRequireConfig()) {
   let state = null, aq = [], note = "";
 
   const votedKey = (id) => "fc-voted-" + id;
-  const mine = (() => { try { return new Set(JSON.parse(localStorage.getItem("fc-mine") || "[]")); } catch (e) { return new Set(); } })();
-  const rememberMine = (id) => { mine.add(id); try { localStorage.setItem("fc-mine", JSON.stringify([...mine])); } catch (e) {} };
+  const mineSet = (() => { try { return new Set(JSON.parse(localStorage.getItem("fc-mine") || "[]")); } catch (e) { return new Set(); } })();
+  const rememberMine = (id) => { mineSet.add(id); try { localStorage.setItem("fc-mine", JSON.stringify([...mineSet])); } catch (e) {} };
   const savedName = (() => { try { return localStorage.getItem("fc-name") || ""; } catch (e) { return ""; } })();
   const hasVoted = (id) => { try { return !!localStorage.getItem(votedKey(id)); } catch (e) { return false; } };
 
@@ -78,7 +78,7 @@ if (fcRequireConfig()) {
             '<span class="n">' + it.votes + '</span><span class="l">votes</span></button>' +
           '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
           '<div class="sub">' + (it.author ? fcEsc(it.author) : '') +
-          (mine.has(it.id) ? (it.author ? ' · ' : '') + '<span class="marker on">Yours</span>' : '') + '</div></div></div>';
+          (mineSet.has(it.id) ? (it.author ? ' · ' : '') + '<span class="marker on">Yours</span>' : '') + '</div></div></div>';
       }).join("") : fcEmpty("No questions yet. Yours could be first.")) + '</div></section>';
   }
 
