@@ -2,7 +2,7 @@
 -- One-click reset  ·  run once in the Supabase SQL Editor
 -- Adds a function the moderator's "Reset" button calls. It clears
 -- all answers and audience questions for the ACTIVE quiz and drops
--- the room back to the lobby — the quiz and its questions stay put.
+-- the room back to the lobby; the quiz and its questions stay put.
 -- ============================================================
 
 create or replace function reset_session()

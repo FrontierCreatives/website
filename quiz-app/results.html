@@ -1,22 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives — Results</title>
+<title>Frontier Creatives · Results</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
+<style>
+  :root { --maxw: 820px; }
+  .q h3 { margin-top: 4px; }
+  .q .chart { margin-top: 18px; }
+</style>
 </head>
 <body>
+<div class="wash sand"></div>
 <div id="app" class="wrap">
-  <div class="mast">
-    <div class="brand"><span class="mark">Frontier <b>Creatives</b></span><span class="tag">Results</span></div>
-    <button id="themeToggle" class="theme-toggle">◑ Light</button>
-  </div>
-  <div id="view"></div>
+  <header class="top">
+    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
+    <span class="ctx">Results</span>
+  </header>
+  <main id="view"></main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -53,37 +60,36 @@ function startResults() {
 
   function render() {
     if (!quiz) {
-      view.innerHTML = '<div class="card"><p class="eyebrow">No active quiz</p><h2>Nothing to export yet</h2>' +
-        '<p class="hint">Load a quiz with <b>seed.sql</b> first.</p></div>';
+      view.innerHTML = '<span class="eyebrow">No active quiz</span><h2>Nothing to export yet</h2>' +
+        '<p class="hint">Load a quiz with <b>seed.sql</b> first.</p>';
       return;
     }
     const totalPeople = new Set([].concat(...questions.map((q) => byQ[q.id].map((r) => r.participant_id)))).size;
-    let html = '<div class="card"><div class="spread"><div><p class="eyebrow" style="margin:0">' + fcEsc(quiz.title) + '</p>' +
-      '<h2 style="margin:.3rem 0 0">Results</h2><p class="hint">' + totalPeople + ' participants · exported ' + stamp + '</p></div>' +
-      '<button class="btn sm ghost" onclick="reloadR()">↻ Refresh</button></div>' +
+    let html = '<section><span class="eyebrow">' + fcEsc(quiz.title) + '</span>' +
+      '<h2>Results</h2><p class="hint">' + totalPeople + ' participants · exported ' + stamp + '</p>' +
       '<div class="row mt">' +
-        '<button class="btn primary" onclick="dlRaw()">⤓ Raw answers (CSV)</button>' +
-        '<button class="btn" onclick="dlSummary()">⤓ Summary (CSV)</button>' +
-        '<button class="btn" onclick="dlMd()">⤓ Report (Markdown)</button>' +
-      '</div></div>';
+        '<button class="btn primary" onclick="dlRaw()">Raw answers (CSV)</button>' +
+        '<button class="btn" onclick="dlSummary()">Summary (CSV)</button>' +
+        '<button class="btn" onclick="dlMd()">Report (Markdown)</button>' +
+        '<button class="btn ghost" onclick="reloadR()">Refresh</button>' +
+      '</div></section>';
 
     // On-page summary
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i], rows = byQ[q.id], n = respondents(rows);
       const wi = fcWriteIns(rows);
       const wiBlock = wi.length
-        ? '<div class="mt" style="padding-top:12px;border-top:1px solid var(--line)">' +
-            '<p class="hint" style="margin:0 0 6px"><b>&ldquo;Other&rdquo; write-ins (' + wi.length + ')</b></p>' +
-            wi.map((w) => '<div class="hint">• ' + fcEsc(w.text) + '</div>').join("") + '</div>'
+        ? '<div class="writeins"><span class="eyebrow muted">Write-ins (' + wi.length + ')</span>' +
+            wi.map((w) => '<div class="wi">' + fcEsc(w.text) + '</div>').join("") + '</div>'
         : '';
-      html += '<div class="card mt"><p class="eyebrow">Question ' + (i + 1) + ' · ' + n + ' answered</p>' +
-        '<h3 style="margin:.2rem 0 0">' + fcEsc(q.prompt) + '</h3><div id="c' + i + '" class="mt"></div>' + wiBlock + '</div>';
+      html += '<section class="block q"><span class="eyebrow">Question ' + (i + 1) + ' · ' + n + ' answered</span>' +
+        '<h3>' + fcEsc(q.prompt) + '</h3><div id="c' + i + '" class="chart"></div>' + wiBlock + '</section>';
     }
     if (aq.length) {
-      html += '<div class="card mt"><p class="eyebrow">Audience questions (' + aq.length + ')</p><div class="qlist">' +
-        aq.map((it) => '<div class="qitem"><div class="vote"><span class="n">' + it.votes + '</span><span class="hint sm">votes</span></div>' +
-          '<div class="txt">' + fcEsc(it.text) + (it.author ? '<div class="who">— ' + fcEsc(it.author) + '</div>' : '') +
-          '<span class="pill ' + it.status + '">' + it.status + '</span></div></div>').join("") + '</div></div>';
+      html += '<section class="block"><span class="eyebrow">Audience questions (' + aq.length + ')</span><div class="rows">' +
+        aq.map((it) => '<div class="rowi' + (it.status === "dismissed" ? " off" : "") + '"><span class="lead num">' + it.votes + '</span>' +
+          '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
+          '<div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') + '<span class="marker">' + fcStatusLabel(it.status) + '</span></div></div></div>').join("") + '</div></section>';
     }
     view.innerHTML = html;
     for (let i = 0; i < questions.length; i++) {
@@ -116,19 +122,19 @@ function startResults() {
     return lines.join("\n");
   }
   function buildMarkdown() {
-    let m = "# " + quiz.title + " — Results\n\n_Exported " + stamp + "_\n";
+    let m = "# " + quiz.title + ": results\n\n_Exported " + stamp + "_\n";
     questions.forEach((q, i) => {
       const n = respondents(byQ[q.id]);
       m += "\n## " + (i + 1) + ". " + q.prompt + "\n\n_" + n + " answered" + (q.type === "multi" ? " · pick any" : "") + "_\n\n";
       const data = fcTally(q, byQ[q.id]);
       if (!data.length) { m += "- (no answers)\n"; return; }
-      data.forEach((d) => { const pct = n ? Math.round((d.count / n) * 100) : 0; m += "- " + d.label + " — " + d.count + " (" + pct + "%)\n"; });
+      data.forEach((d) => { const pct = n ? Math.round((d.count / n) * 100) : 0; m += "- " + d.label + ": " + d.count + " (" + pct + "%)\n"; });
       const wi = fcWriteIns(byQ[q.id]);
       if (wi.length) { m += "\n_“Other” write-ins:_\n"; wi.forEach((w) => { m += "- " + w.text + "\n"; }); }
     });
     if (aq.length) {
       m += "\n## Audience questions\n\n";
-      aq.forEach((it) => { m += "- **(" + it.votes + " votes)** " + it.text + (it.author ? " — " + it.author : "") + " _[" + it.status + "]_\n"; });
+      aq.forEach((it) => { m += "- **(" + it.votes + " votes)** " + it.text + (it.author ? ", " + it.author : "") + " _[" + it.status + "]_\n"; });
     }
     return m;
   }

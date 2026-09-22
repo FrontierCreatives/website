@@ -1,50 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives — Join the Quiz</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet" />
+<title>Frontier Creatives · Join the room</title>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="styles.css" />
 <style>
-  :root{ --coral:#E76F51; --ink:#17120E; --sand:#F3EDE3; --surface:#FBF7F0; --muted:#8A7D6D; --line:rgba(23,18,14,.12); }
-  *{box-sizing:border-box;} html,body{margin:0;}
-  body{ background:#e6ddd0; font-family:"Montserrat",system-ui,sans-serif; color:var(--ink);
-        min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px; }
-  .poster{ width:680px; max-width:100%; aspect-ratio:17/22; background:var(--sand);
-           border-radius:26px; box-shadow:0 24px 70px rgba(20,12,6,.22); overflow:hidden;
-           display:flex; flex-direction:column; position:relative; }
-  .accent{ height:14px; background:linear-gradient(90deg,var(--coral),#F0987F); }
-  .inner{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center;
-          padding:48px 54px 40px; }
-  .brand{ font-family:"EB Garamond",Georgia,serif; font-size:34px; letter-spacing:.3px; }
-  .brand b{ color:var(--coral); font-weight:600; }
-  .brand .live{ display:inline-block; margin-left:8px; font-family:"Montserrat"; font-size:12px;
-                letter-spacing:.22em; color:var(--muted); vertical-align:middle; }
-  .eyebrow{ margin-top:34px; font-size:13px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--coral); }
-  h1{ font-family:"EB Garamond",Georgia,serif; font-weight:600; font-size:50px; line-height:1.05; margin:10px 0 0; }
-  .qrwrap{ margin:36px 0 8px; background:#fff; padding:22px; border-radius:20px; box-shadow:0 8px 26px rgba(20,12,6,.12); }
-  .qrwrap img{ display:block; width:100%; }
-  .how{ font-size:17px; color:var(--ink); margin-top:6px; }
-  .url{ margin-top:auto; font-weight:600; font-size:18px; color:var(--coral); letter-spacing:.01em; }
-  .foot{ font-size:12.5px; color:var(--muted); margin-top:8px; letter-spacing:.04em; }
-  @media print{ body{background:#fff;padding:0;} .poster{box-shadow:none;border:1px solid var(--line);} @page{margin:12mm;} }
+  /* A print piece, so it uses the light variant: warm paper, gray figure. */
+  body { display: flex; align-items: center; justify-content: center; padding: 40px; background: #EFEAE1; }
+  .poster { width: 680px; max-width: 100%; aspect-ratio: 17 / 22; background: var(--bg); position: relative; overflow: hidden;
+            display: flex; flex-direction: column; box-shadow: var(--shadow); }
+  .poster .inner { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; padding: 56px 60px 48px; }
+  .poster .wordmark { font-size: 20px; }
+  .poster .wordmark img { width: 30px; height: 30px; }
+  .poster .eyebrow { margin-top: 64px; }
+  .poster h1 { font-size: 60px; }
+  .poster .lede { font-size: 21px; max-width: 24ch; }
+  .poster .qr { margin-top: 40px; padding: 18px; box-shadow: none; align-self: flex-start; }
+  .poster .qr img { width: 250px; height: 250px; }
+  .poster .url { margin-top: auto; font-family: var(--fd); font-weight: 600; font-size: 22px; letter-spacing: -.01em; color: var(--text); }
+  .poster .foot { color: var(--text-3); font-size: 15px; margin-top: 6px; }
+  @media print { body { background: #fff; padding: 0; } .poster { box-shadow: none; } @page { margin: 12mm; } }
 </style>
 </head>
 <body>
-  <div class="poster">
-    <div class="accent"></div>
+  <div class="poster" id="poster">
     <div class="inner">
-      <div class="brand">Frontier <b>Creatives</b><span class="live">LIVE</span></div>
-      <div class="eyebrow">Quiz of the day</div>
+      <a class="wordmark" href="../"><img src="../assets/logo/fc-mark-light-bg.svg" alt="" /><span>Frontier Creatives</span></a>
+      <span class="eyebrow">Vol. 04 · Designing with AI</span>
       <h1>Scan to join</h1>
-      <div class="qrwrap"><img src="K5Aa80.png" alt="QR code to join the quiz" /></div>
-      <div class="how">Point your phone camera at the code.<br/>No app needed.</div>
+      <p class="lede">Point your phone camera at the code. No app, no login.</p>
+      <div class="qr"><img src="K5Aa80.png" alt="QR code to join" /></div>
       <div class="url">frontiercreatives.design/quiz-app</div>
-      <div class="foot">Answer a few questions &middot; watch the results live</div>
+      <div class="foot">Answer a few questions, ask the panel, watch the room live.</div>
     </div>
   </div>
+<script src="lib.js"></script>
+<script>
+  document.documentElement.setAttribute("data-theme", "light");
+  fcField(document.getElementById("poster"), "cardioid", { box: [680, 880], scale: .95, rot: -20, cx: 780, cy: 470 });
+</script>
 </body>
 </html>

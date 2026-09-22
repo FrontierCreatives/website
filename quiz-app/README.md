@@ -1,64 +1,72 @@
-# Frontier Creatives — Live Quiz & Q&A
+# Frontier Creatives · Live quiz and panel
 
 A Slido-style live audience app. Phones scan a QR code, answer questions, and results
-animate on the big screen (pie / bar / word cloud). A Q&A mode lets the audience submit
-questions for the moderator to curate. Three static pages + Supabase, no server.
+animate on the big screen (bar / pie / word cloud). A Q&A mode lets the audience submit and
+upvote questions, and a panel mode puts one question at a time "on the floor" behind the
+panelists with the room's live answers beside it. Static pages plus Supabase, no server.
+
+Styled on the brand guide v1.3 (`/brand`): true black, Inter over Krub, hierarchy from
+spacing, coral only on what you can act on. Dark is the only surfaced mode; add `?light`
+to any page for a washed-out projector or print.
 
 ## Files
 | File | What it is |
 |---|---|
-| `index.html` | **Participant** page — the QR target. Answer + Q&A on your phone. |
-| `present.html` | **Big screen** — live results, join QR, pie/bar/cloud. Read-only. |
-| `moderate.html` | **Moderator** control panel (keep this URL private). |
-| `schema.sql` | Database structure + realtime + access rules. Run once. |
-| `seed.sql` | Loads the placeholder quiz and makes it active. |
-| `quiz.json` | The editable source for your quiz. |
-| `make-seed.html` | Reads `quiz.json` and hands you paste-ready seed SQL (no terminal). |
-| `config.js` | Where you paste your two Supabase keys. |
+| `index.html` | **Participant** page, the QR target. Answer, ask, upvote on your phone. |
+| `present.html` | **Big screen**. Lobby QR, live results, audience questions, the panel view. Read-only. |
+| `moderate.html` | **Moderator** control panel (password in `config.js`; keep the URL quiet). |
+| `results.html` | Live summary plus CSV and Markdown exports (same password). |
+| `join-poster.html` | Printable "scan to join" poster (light variant). |
+| `schema.sql` | Tables, realtime, access rules. Run once. |
+| `reset.sql` | The one-click reset the moderator uses. Run once. |
+| `panel.sql` | Atomic upvotes and "put on screen". Run once. |
+| `quiz.json` | The editable quiz. |
+| `seed.sql` | Generated from `quiz.json`; loads the quiz and makes it active. |
+| `make-seed.html` | Reads `quiz.json` and hands you paste-ready seed SQL. |
+| `config.js` | Supabase URL, anon key, moderator password. |
+| `lib.js`, `styles.css` | Shared theme, figures, charts, gate. |
 
-## One-time setup (about 10 minutes)
+## One-time setup
 
-1. **Create a Supabase project** at supabase.com (free). Give it a name, pick a region, wait for it to spin up.
-2. **Run the schema.** In the project, open **SQL Editor → New query**, paste all of `schema.sql`, and Run. Then do the same with `seed.sql`, and once more with `reset.sql` (adds the one-click reset the moderator uses).
-3. **Paste your keys.** In Supabase go to **Settings → API**. Copy the **Project URL** and the **anon public** key into `config.js`.
-4. **Deploy.** Drag this whole folder onto Netlify (same as the Speakers Gallery). You'll get a URL like `your-quiz.netlify.app`.
+1. Create a Supabase project (free).
+2. SQL editor: run `schema.sql`, then `reset.sql`, then `panel.sql`, then `seed.sql`.
+3. Paste the Project URL and anon key into `config.js`. Change `MODERATOR_PASSWORD`.
+4. Push to `main`; Vercel deploys `/quiz-app/`.
 
-That's it. Open `present.html` on the projector, share the QR, and drive it from `moderate.html`.
+## Running a Volume
 
-## Running a session
-- Open **`/present.html`** on the big screen — it shows a join QR.
-- Open **`/moderate.html`** on your laptop/phone (private link).
-- Use the moderator panel: **Next** to advance questions, **Voting open / Show results** to control the room, and **Bar / Pie / Cloud** to change the visualization live.
-- Switch to **Q & A** phase when it's question time; **Queue** the questions you want the presenters to see on screen, **Mark asked** as you go.
+Open `present.html` on the projector, `moderate.html` on a laptop or phone.
 
-## Moderator password
-The moderator page asks for a password. Set it in `config.js` as `MODERATOR_PASSWORD` before you
-deploy. This is a light gate to stop casual/accidental access — it isn't hardened security (a
-determined person could read it in the page source), so keep the moderator URL private too. Real
-login is a later upgrade via Supabase Auth.
+**The room is in** one of six states, set from the moderator page:
 
-## Reset between events
-On the moderator page, **↺ Reset for next event** (bottom of the top card) clears all answers and
-audience questions for the active quiz and drops the room back to the lobby — the quiz and its
-questions stay put. It needs `reset.sql` to have been run once (setup step 2). Note: phones that
-already answered remember it in their own browser, so a reset is meant for a *fresh* audience; to
-fully reset for the *same* crowd, re-run `seed.sql` (new question IDs let everyone answer again).
+| State | Phone shows | Screen shows |
+|---|---|---|
+| Lobby | "You're in" | Scan to join, with the QR on the cardioid |
+| Voting | The current question | The question and live tally |
+| Results | The tally | The tally, plus any "Other" write-ins |
+| Q&A | Ask, upvote, see the queue | Queued questions, the live one first |
+| Panel | The question on the floor, the current poll, ask and upvote | Two columns: the live question and what's up next; the room's answers to the current question |
+| End | "That's a wrap" | Same, with the star |
 
-## Saving / exporting results
-Open **`/results.html`** (same password as the moderator, and there's a **⤓ Export results** link on
-the moderator page). It shows a live summary and three download buttons:
+**Audience questions** move `new → queued → on the floor → asked`, or `dismissed`.
+"Put on screen" promotes a question and marks whatever was on the floor as asked;
+only one question is ever live. For the panel, a moderator (Madison) drives from a phone
+while the screen shows the room what is being discussed.
 
-- **Raw answers (CSV)** — one row per answer: question, answer, participant, timestamp.
-- **Summary (CSV)** — per-question tallies: option, votes, % of respondents.
-- **Report (Markdown)** — a readable write-up of every question's results plus the audience questions.
+**Screen shows** picks bar, pie or cloud for the current question. One-word questions
+always render a cloud. Bar reads best from the back; use pie for three options or fewer.
 
-Export *before* you reset or reseed, since those clear the data. (Zero-code fallback: Supabase's
-Table Editor can also export any table to CSV directly.)
+## Before an event
+- Reseed (`make-seed.html` → copy → run in Supabase). New question ids let every phone
+  answer again; **Reset** alone clears answers but phones that already answered remember it.
+- Export first if you want last time's data (`results.html`).
 
 ## Changing the quiz
-Edit `quiz.json`, open **`/make-seed.html`** on the deployed site, click **Copy SQL**, and run it in the Supabase SQL Editor. (Or hand `quiz.json` to Claude and ask for fresh `seed.sql`.)
+Edit `quiz.json`, open `make-seed.html` on the deployed site, Copy SQL, run it in the
+Supabase SQL editor. Types: `single`, `multi`, `word` (one-word open text; renders a cloud).
+An option starting with "Other" gets a write-in field. No em-dashes in prompts or options.
 
-## Security note (v1)
-For classroom scale, the moderator page is protected by its unguessable URL rather than a
-login, and the anonymous key allows submitting answers/questions. That's the deliberate v1
-tradeoff. A later phase can add moderator login and lock the control table down.
+## Security note
+The moderator page is a light gate (password in page source), and the anonymous key can
+insert answers and questions. Fine for a room of 50; keep the moderator URL private. Real
+login via Supabase Auth is the later upgrade.

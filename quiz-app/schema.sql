@@ -1,8 +1,8 @@
 -- ============================================================
--- Frontier Creatives — Live Quiz & Q&A  ·  Database schema (v1)
+-- Frontier Creatives · Live quiz and panel · Database schema (v1)
 -- Paste this whole file into the Supabase SQL Editor and run it.
 -- It creates the tables, turns on realtime, and sets access rules.
--- Run seed.sql afterwards to load the placeholder quiz.
+-- Then run reset.sql and panel.sql (helper functions), then seed.sql.
 -- ============================================================
 
 -- ---- Tables ------------------------------------------------
@@ -39,7 +39,7 @@ create table if not exists audience_questions (
   text       text not null,
   author     text,
   votes      int  not null default 0,
-  -- status: 'pending' | 'queued' | 'asked' | 'dismissed'
+  -- status: 'pending' | 'queued' | 'live' | 'asked' | 'dismissed'  (one 'live' at a time; see panel.sql)
   status     text not null default 'pending',
   created_at timestamptz not null default now()
 );
@@ -49,7 +49,7 @@ create table if not exists quiz_state (
   id                  int primary key default 1,
   active_quiz_id      uuid references quizzes(id) on delete set null,
   current_question_id uuid references questions(id) on delete set null,
-  -- phase: 'lobby' | 'question' | 'results' | 'qa' | 'ended'
+  -- phase: 'lobby' | 'question' | 'results' | 'qa' | 'panel' | 'ended'
   phase               text not null default 'lobby',
   -- display_mode: 'bar' | 'pie' | 'cloud'
   display_mode        text not null default 'bar',

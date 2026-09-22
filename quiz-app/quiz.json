@@ -1,43 +1,64 @@
 {
-  "title": "Frontier Creatives — Quiz of the Day",
+  "title": "Vol. 04 · Designing with AI",
   "questions": [
     {
       "type": "single",
-      "prompt": "Which best describes your professional identity?",
+      "prompt": "Which best describes what you do?",
       "options": [
-        "Graphic / Visual Designer",
-        "UX / Product Designer",
-        "Front-end Development",
-        "Software Developer",
-        "Product Manager",
-        "Marketing / Advertising",
-        "Photo / Video",
-        "3D / Motion",
-        "Entrepreneur / Founder",
+        "Graphic or visual design",
+        "UX or product design",
+        "Front-end development",
+        "Software development",
+        "Product management",
+        "Marketing or advertising",
+        "Photo or video",
+        "3D or motion",
+        "Founder",
+        "Other"
+      ]
+    },
+    {
+      "type": "word",
+      "prompt": "One word for how AI changed your process this year"
+    },
+    {
+      "type": "multi",
+      "prompt": "Which of these do you actually use in your work?",
+      "options": [
+        "Claude",
+        "ChatGPT",
+        "Figma Make or similar",
+        "Cursor, Claude Code or another coding agent",
+        "Midjourney, Runway or another image and video model",
+        "None yet",
+        "Other"
+      ]
+    },
+    {
+      "type": "word",
+      "prompt": "One word for what still worries you about it"
+    },
+    {
+      "type": "multi",
+      "prompt": "Which speakers would you like to see us feature?",
+      "options": [
+        "Industry experts and thought leaders",
+        "Real people from the trenches, like me",
+        "Founders and the business crowd",
+        "Diverse representation; enough tech bros",
+        "Marketing and advertising people using AI",
         "Other"
       ]
     },
     {
       "type": "multi",
-      "prompt": "Which sort of speakers would you like to see us feature?",
-      "options": [
-        "Industry experts / thought leaders",
-        "Real people from the trenches, just like me",
-        "Startups / founders — the business crowd",
-        "Diverse, equitable representation. I've seen enough tech bros",
-        "The marketing & advertising people using AI",
-        "Other"
-      ]
-    },
-    {
-      "type": "multi",
-      "prompt": "Which other sorts of events would you like to see in the future?",
+      "prompt": "Which other kinds of events would you come to?",
       "options": [
         "Classes and workshops, laptops open",
-        "Networking — professional 'speed dating'",
-        "Mastermind groups refined to subject matter",
-        "Hackathons — group build or competition",
-        "Social mixers, coffeeshop or bar",
+        "Networking, professional speed dating",
+        "Mastermind groups by subject",
+        "Hackathons, group build or competition",
+        "Social mixers at a coffee shop or bar",
         "Other"
       ]
     }

@@ -1,7 +1,9 @@
 -- ============================================================
--- Frontier Creatives quiz seed  ·  run AFTER schema.sql
--- Generated from quiz.json. Replaces the current quiz of the day
--- and makes it active. Re-runnable.
+-- Frontier Creatives quiz seed. Run after schema.sql.
+-- Generated from quiz.json (or open make-seed.html on the site).
+-- Replaces the quiz with this title, makes it active, and puts
+-- the room in the lobby. Re-runnable. New question ids mean
+-- every phone can answer again, which is the full reset.
 -- ============================================================
 
 do $$
@@ -9,16 +11,20 @@ declare
   q_id uuid;
   first_q uuid;
 begin
-  delete from quizzes where title = 'Frontier Creatives — Quiz of the Day';
+  delete from quizzes where title = 'Vol. 04 · Designing with AI';
+  update quizzes set is_active = false where is_active;
 
   insert into quizzes (title, is_active)
-  values ('Frontier Creatives — Quiz of the Day', true)
+  values ('Vol. 04 · Designing with AI', true)
   returning id into q_id;
 
   insert into questions (quiz_id, sort_order, prompt, type, options) values
-    (q_id, 1, 'Which best describes your professional identity?', 'single', '["Graphic / Visual Designer","UX / Product Designer","Front-end Development","Software Developer","Product Manager","Marketing / Advertising","Photo / Video","3D / Motion","Entrepreneur / Founder","Other"]'::jsonb),
-    (q_id, 2, 'Which sort of speakers would you like to see us feature?', 'multi', '["Industry experts / thought leaders","Real people from the trenches, just like me","Startups / founders — the business crowd","Diverse, equitable representation. I''ve seen enough tech bros","The marketing & advertising people using AI","Other"]'::jsonb),
-    (q_id, 3, 'Which other sorts of events would you like to see in the future?', 'multi', '["Classes and workshops, laptops open","Networking — professional ''speed dating''","Mastermind groups refined to subject matter","Hackathons — group build or competition","Social mixers, coffeeshop or bar","Other"]'::jsonb);
+    (q_id, 1, 'Which best describes what you do?', 'single', '["Graphic or visual design", "UX or product design", "Front-end development", "Software development", "Product management", "Marketing or advertising", "Photo or video", "3D or motion", "Founder", "Other"]'::jsonb),
+    (q_id, 2, 'One word for how AI changed your process this year', 'word', '[]'::jsonb),
+    (q_id, 3, 'Which of these do you actually use in your work?', 'multi', '["Claude", "ChatGPT", "Figma Make or similar", "Cursor, Claude Code or another coding agent", "Midjourney, Runway or another image and video model", "None yet", "Other"]'::jsonb),
+    (q_id, 4, 'One word for what still worries you about it', 'word', '[]'::jsonb),
+    (q_id, 5, 'Which speakers would you like to see us feature?', 'multi', '["Industry experts and thought leaders", "Real people from the trenches, like me", "Founders and the business crowd", "Diverse representation; enough tech bros", "Marketing and advertising people using AI", "Other"]'::jsonb),
+    (q_id, 6, 'Which other kinds of events would you come to?', 'multi', '["Classes and workshops, laptops open", "Networking, professional speed dating", "Mastermind groups by subject", "Hackathons, group build or competition", "Social mixers at a coffee shop or bar", "Other"]'::jsonb);
 
   select id into first_q from questions where quiz_id = q_id order by sort_order limit 1;
 

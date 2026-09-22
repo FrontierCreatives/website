@@ -1,50 +1,86 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives — On Screen</title>
+<title>Frontier Creatives · On screen</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
 <style>
-  :root { --maxw: 1400px; }
-  body { display: flex; flex-direction: column; min-height: 100vh; }
-  .screen { flex: 1; display: flex; flex-direction: column; }
-  .bigprompt { font-family: var(--serif); font-weight: 600; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.08; margin: 0 0 8px; }
-  .join { display: flex; align-items: center; gap: 20px; }
-  .qr { background: #fff; padding: 12px; border-radius: 12px; }
-  .qr img, .qr canvas { display: block; }
-  .count { font-family: var(--serif); color: var(--coral); }
-  .footbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px clamp(18px,4vw,40px); border-top: 1px solid var(--line); color: var(--muted); }
-  .qa-big { display: grid; gap: 16px; }
-  .qa-big .qcard { padding: 22px 26px; border-left: 4px solid var(--coral); }
-  .qa-big .qcard.asked { border-left-color: var(--faint); opacity: .6; }
-  .qa-big .qtext { font-family: var(--serif); font-size: clamp(1.4rem, 3vw, 2.2rem); line-height: 1.2; }
+  :root { --maxw: 1640px; }
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; }
+  .wrap { flex: 1; display: flex; flex-direction: column; width: 100%; padding-bottom: 24px; }
+  .top { margin-bottom: clamp(20px, 3vh, 40px); }
+  .wordmark { font-size: 20px; }
+  .wordmark img { width: 32px; height: 32px; }
+  .ctx { font-size: 13px; }
+  #view { flex: 1; display: flex; flex-direction: column; }
+  .screen { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .screen h1 { font-size: clamp(32px, 4.2vw, 68px); }
+  .screen .eyebrow { font-size: clamp(13px, 1vw, 17px); margin-bottom: clamp(12px, 1.6vh, 22px); }
+  .screen .lede { font-size: clamp(18px, 1.6vw, 28px); }
+  .foot { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; color: var(--text-3); font-size: clamp(14px, 1.1vw, 19px); padding: 12px clamp(16px, 4vw, 40px) 22px; position: relative; z-index: 1; }
+  .foot b { color: var(--text-2); font-family: var(--fd); font-weight: 500; }
+  .foot .n { color: var(--text); }
+
+  /* chrome stays left so the figure owns the right edge */
+  .top { justify-content: flex-start; gap: 18px; }
+  .foot { justify-content: flex-start; gap: 28px; }
+
+  /* lobby: words left, QR on the cardioid right */
+  .lobby { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 4vw, 80px); align-items: center; min-height: 60vh; }
+  .lobby .qrwrap { display: flex; justify-content: center; align-items: center; min-height: 420px; }
+  .field.bg { position: fixed; z-index: 0; }
+  .lobby .url { font-family: var(--fd); font-weight: 600; font-size: clamp(18px, 1.6vw, 28px); margin-top: 22px; color: var(--text); letter-spacing: -.01em; }
+
+  /* question */
+  .q .chart { margin-top: clamp(18px, 3vh, 40px); }
+  .q.two { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 72px); align-items: start; }
+
+  /* audience Q&A */
+  .qa .rowi { padding: clamp(12px, 1.6vh, 22px) 0; gap: clamp(16px, 2vw, 32px); }
+  .qa .rowi .lead { font-size: clamp(14px, 1.1vw, 19px); min-width: 3.4em; padding-top: .3em; }
+  .qa .rowi .ttl { font-size: clamp(20px, 2vw, 34px); font-weight: 600; }
+  .qa .rowi .sub { font-size: clamp(14px, 1.1vw, 19px); }
+
+  /* panel: the live question left, the room's pulse right */
+  .panel { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(28px, 5vw, 96px); align-items: center; }
+  .panel .side .cloud { justify-content: flex-start; }
+  .panel .side .cloud .w { font-size: min(var(--fs), 3.4rem) !important; }
+  .panel .live-q { font-size: clamp(30px, 3.6vw, 62px); }
+  .panel .next { margin-top: clamp(28px, 5vh, 64px); }
+  .panel .next .rowi { padding: 10px 0; }
+  .panel .next .rowi .ttl { font-size: clamp(16px, 1.4vw, 24px); font-weight: 500; color: var(--text-2); }
+  .panel .next .rowi .lead { min-width: 2.4em; }
+  .panel .side h2 { font-size: clamp(20px, 1.9vw, 32px); }
+  .panel .side .chart { margin-top: clamp(14px, 2vh, 28px); }
+  .panel .side .qr { margin-top: 18px; }
+
+  @media (max-width: 1000px) {
+    .lobby, .q.two, .panel { grid-template-columns: 1fr; }
+    .lobby .qrwrap { min-height: 0; justify-content: flex-start; }
+  }
 </style>
 </head>
 <body>
-<div class="screen">
-  <div class="wrap" style="width:100%">
-    <div class="mast">
-      <div class="brand">
-        <span class="mark" style="font-size:2rem">Frontier <b>Creatives</b></span>
-        <span class="tag">Live</span>
-      </div>
-      <div class="row" style="align-items:center">
-        <span id="statusPill" class="pill"></span>
-        <button id="themeToggle" class="theme-toggle">◑ Light</button>
-      </div>
-    </div>
-    <div id="view"></div>
-  </div>
+<div class="wash"></div>
+<div class="field bg" id="bgField" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
+    <span class="ctx" id="statusPill"></span>
+  </header>
+  <main id="view"></main>
 </div>
-<div class="footbar">
+<footer class="foot">
   <span>Join at <b id="joinUrl"></b></span>
-  <span><span id="respCount" class="count">0</span> responses</span>
-</div>
+  <span><span id="respCount" class="n num">0</span> <span id="respLabel">answers</span></span>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -55,14 +91,14 @@ fcInitTheme();
 if (fcRequireConfig()) {
   const view = document.getElementById("view");
   const sb = FC.client;
-  const joinURL = new URL("index.html", location.href).href;
-  document.getElementById("joinUrl").textContent = joinURL.replace(/^https?:\/\//, "");
-  let state = null, questions = [], q = null, rows = [];
+  const joinURL = new URL("./", location.href).href;
+  document.getElementById("joinUrl").textContent = joinURL.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  let state = null, quiz = null, questions = [], q = null, rows = [], aq = [];
 
   function makeQR(size) {
     const holder = document.createElement("div");
     holder.className = "qr";
-    new QRCode(holder, { text: joinURL, width: size, height: size, colorDark: "#0B0A09", colorLight: "#ffffff" });
+    if (window.QRCode) new QRCode(holder, { text: joinURL, width: size, height: size, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
     return holder.outerHTML;
   }
 
@@ -70,9 +106,10 @@ if (fcRequireConfig()) {
     const { data } = await sb.from("quiz_state").select("*").eq("id", 1).single();
     state = data;
     if (state && state.active_quiz_id) {
+      if (!quiz || quiz.id !== state.active_quiz_id) quiz = (await sb.from("quizzes").select("*").eq("id", state.active_quiz_id).single()).data;
       const { data: qs } = await sb.from("questions").select("*").eq("quiz_id", state.active_quiz_id).order("sort_order");
       questions = qs || [];
-    } else questions = [];
+    } else { quiz = null; questions = []; }
     q = questions.find((x) => x.id === state?.current_question_id) || null;
   }
   async function loadRows() {
@@ -80,80 +117,120 @@ if (fcRequireConfig()) {
     const { data } = await sb.from("responses").select("id,answer").eq("question_id", q.id);
     rows = data || [];
   }
+  async function loadAQ() {
+    if (!state || !state.active_quiz_id) { aq = []; return; }
+    const { data } = await sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
+      .in("status", ["queued", "live", "asked"]).order("votes", { ascending: false }).order("created_at");
+    aq = data || [];
+  }
 
-  function setStatus(txt, cls) {
-    const p = document.getElementById("statusPill");
-    p.textContent = txt; p.className = "pill " + (cls || "");
+  const setStatus = (t) => { document.getElementById("statusPill").textContent = t; };
+  let bgName = null;
+  function setBg(name, o) {
+    const host = document.getElementById("bgField");
+    if (!name) { host.innerHTML = ""; bgName = null; return; }
+    if (bgName === name) return;
+    bgName = name;
+    fcField(host, name, Object.assign({ box: [1920, 1080] }, o));
+  }
+  const vol = () => quiz ? fcEsc(quiz.title) : "Frontier Creatives";
+
+  function setCount() {
+    document.getElementById("respCount").textContent = rows.length;
+    document.getElementById("respLabel").textContent = rows.length === 1 ? "answer" : "answers";
+  }
+
+  function chartBlock(cls) {
+    const idx = questions.findIndex((x) => x.id === q.id) + 1;
+    return '<section class="screen q ' + (cls || "") + '"><div><span class="eyebrow">Question ' + idx + ' of ' + questions.length +
+      (state.phase === "question" ? " · voting open" : "") + '</span>' +
+      '<h1>' + fcEsc(q.prompt) + '</h1></div><div><div id="chart" class="chart"></div><div id="wi"></div></div></section>';
+  }
+  function mountChart(opts = {}) {
+    const el = document.getElementById("chart");
+    if (!el || !q) return;
+    const mode = q.type === "word" ? "cloud" : state.display_mode;
+    fcRenderChart(mode, el, q, rows, { big: true, two: opts.small ? false : undefined });
+    if (state.phase === "results" || state.phase === "panel") fcRenderWriteIns(document.getElementById("wi"), rows, { limit: opts.small ? 5 : 10, inline: true });
+    else { const w = document.getElementById("wi"); if (w) w.innerHTML = ""; }
+  }
+  function qRow(it, cls) {
+    return '<div class="rowi ' + cls + '"><span class="lead num">' + it.votes + ' ' + (it.votes === 1 ? "vote" : "votes") + '</span>' +
+      '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
+      '<div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') + '<span class="marker' + (cls === "on" ? " on" : "") + '">' + fcStatusLabel(it.status) + '</span></div></div></div>';
   }
 
   function render() {
-    document.getElementById("respCount").textContent = rows.length;
+    setCount();
     if (!state) return;
     const phase = state.phase;
 
-    if (phase === "lobby" || !q) {
+    if (phase === "lobby" || (!q && phase !== "qa" && phase !== "panel" && phase !== "ended")) {
       setStatus("Lobby");
-      view.innerHTML = '<div class="card" style="display:flex;gap:40px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:48px">' +
-        '<div><p class="eyebrow">Quiz of the day</p>' +
-        '<h1 class="bigprompt">Scan to join</h1>' +
-        '<p class="hint" style="font-size:1.3rem">Point your phone camera at the code — no app needed.</p></div>' +
-        '<div class="join">' + makeQR(220) + '</div></div>';
+      view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + vol() + '</span>' +
+        '<h1>Scan to join</h1><p class="lede">Point your phone camera at the code. No app, no login.</p>' +
+        '<div class="url">' + fcEsc(joinURL.replace(/^https?:\/\//, "").replace(/\/$/, "")) + '</div></div>' +
+        '<div class="qrwrap">' + makeQR(Math.round(Math.min(360, Math.max(220, innerWidth * .19)))) + '</div></section>';
+      setBg("cardioid", { scale: 1.45, rot: -20, cx: 1480, cy: 560 });
       return;
     }
     if (phase === "ended") {
       setStatus("Ended");
-      view.innerHTML = '<div class="card center" style="padding:64px 24px"><p class="eyebrow">Thank you</p>' +
-        '<h1 class="bigprompt">That\'s a wrap</h1></div>';
+      view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + vol() + '</span>' +
+        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for playing. Stay for the room.</p></div><div></div></section>';
+      setBg("star", { scale: 1.5, rot: -20, cx: 1440, cy: 540 });
       return;
     }
-    if (phase === "qa") { renderQA(); return; }
+    if (phase === "qa") {
+      setStatus("Audience questions");
+      setBg(null);
+      const live = aq.filter((i) => i.status === "live"), queued = aq.filter((i) => i.status === "queued"), asked = aq.filter((i) => i.status === "asked");
+      view.innerHTML = '<section class="screen qa"><div><span class="eyebrow">' + vol() + '</span><h1>Audience questions</h1>' +
+        '<div class="rows mt">' +
+          live.map((it) => qRow(it, "on")).join("") +
+          (queued.length ? queued.map((it) => qRow(it, "")).join("") : (live.length ? "" : '<p class="empty" style="font-size:1.3em">Waiting for the moderator to queue a question.</p>')) +
+          asked.slice(0, 4).map((it) => qRow(it, "past")).join("") +
+        '</div></div></section>';
+      return;
+    }
+    if (phase === "panel") {
+      setStatus("Panel");
+      setBg(null);
+      const live = aq.find((i) => i.status === "live");
+      const queued = aq.filter((i) => i.status === "queued").slice(0, 3);
+      const left =
+        '<div class="main"><span class="eyebrow">On the floor</span>' +
+        (live ? '<div class="live-q">' + fcEsc(live.text) + '</div>' + (live.author ? '<div class="live-by">' + fcEsc(live.author) + '</div>' : '')
+              : '<div class="live-q" style="color:var(--text-2)">Ask the panel from your phone.</div>') +
+        (queued.length ? '<div class="next"><span class="eyebrow muted">Up next</span><div class="rows">' +
+          queued.map((it) => '<div class="rowi"><span class="lead num">' + it.votes + '</span><div class="body"><div class="ttl">' + fcEsc(it.text) + '</div></div></div>').join("") +
+          '</div></div>' : '') + '</div>';
+      const right = q
+        ? '<div class="side"><span class="eyebrow">The room</span><h2>' + fcEsc(q.prompt) + '</h2><div id="chart" class="chart"></div><div id="wi"></div></div>'
+        : '<div class="side"><span class="eyebrow">Join in</span><h2>Scan to ask a question</h2>' + makeQR(200) + '</div>';
+      view.innerHTML = '<section class="screen panel">' + left + right + '</section>';
+      mountChart({ small: true });
+      return;
+    }
 
-    setStatus(phase === "results" ? "Results" : "Voting open", phase === "results" ? "" : "queued");
-    const idx = questions.findIndex((x) => x.id === q.id) + 1;
-    view.innerHTML = '<div class="card" style="padding:clamp(24px,4vw,44px)">' +
-      '<p class="eyebrow">Question ' + idx + ' of ' + questions.length + '</p>' +
-      '<h1 class="bigprompt">' + fcEsc(q.prompt) + '</h1>' +
-      '<div id="chart" class="mt"></div></div>';
-    const mode = q.type === "word" ? "cloud" : state.display_mode;
-    fcRenderChart(mode, document.getElementById("chart"), q, rows, { big: true });
+    setStatus(phase === "results" ? "Results" : "Voting open");
+      setBg(null);
+    view.innerHTML = chartBlock();
+    mountChart();
   }
 
-  function renderQA() {
-    setStatus("Q & A");
-    sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
-      .in("status", ["queued", "asked"]).order("status").order("votes", { ascending: false })
-      .then(({ data }) => {
-        const items = (data || []);
-        const queued = items.filter((i) => i.status === "queued");
-        const asked = items.filter((i) => i.status === "asked");
-        view.innerHTML = '<div class="card" style="padding:clamp(24px,4vw,44px)">' +
-          '<p class="eyebrow">Audience questions</p>' +
-          '<h1 class="bigprompt" style="font-size:clamp(1.8rem,4vw,3rem)">On deck</h1>' +
-          '<div class="qa-big mt">' +
-            (queued.length ? queued.map((it) => qcard(it)).join("")
-                           : '<p class="hint" style="font-size:1.4rem">Waiting for the moderator to queue questions…</p>') +
-            asked.map((it) => qcard(it)).join("") +
-          '</div></div>';
-      });
-  }
-  function qcard(it) {
-    return '<div class="card qcard ' + (it.status === "asked" ? "asked" : "") + '">' +
-      '<div class="qtext">' + fcEsc(it.text) + '</div>' +
-      (it.author ? '<div class="who" style="margin-top:8px;color:var(--faint)">— ' + fcEsc(it.author) + ' · ' + it.votes + ' votes</div>'
-                 : '<div class="who" style="margin-top:8px;color:var(--faint)">' + it.votes + ' votes</div>') + '</div>';
-  }
-
-  async function refresh() { await loadState(); await loadRows(); render(); }
+  async function refresh() { await loadState(); await loadRows(); await loadAQ(); render(); }
 
   sb.channel("p_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
   sb.channel("p_resp").on("postgres_changes", { event: "INSERT", schema: "public", table: "responses" }, (p) => {
     if (q && p.new && p.new.question_id === q.id) {
       if (!rows.some((r) => r.id === p.new.id)) rows.push({ id: p.new.id, answer: p.new.answer });
-      render();
+      setCount();
+      if (state.phase === "panel") mountChart({ small: true }); else mountChart();
     }
   }).subscribe();
-  sb.channel("p_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, () => {
-    if (state && state.phase === "qa") renderQA();
+  sb.channel("p_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, async () => {
+    if (state && (state.phase === "qa" || state.phase === "panel")) { await loadAQ(); render(); }
   }).subscribe();
 
   refresh();

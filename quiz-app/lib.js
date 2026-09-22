@@ -1,6 +1,7 @@
 /* ============================================================
-   Frontier Creatives — Live Quiz  ·  shared library
-   Supabase client, theme, tally + chart renderers (no deps).
+   Frontier Creatives · Live quiz and panel · shared library
+   Supabase client, theme, figures, tally + chart renderers.
+   No dependencies beyond supabase-js.
    ============================================================ */
 
 // ---- Supabase client ---------------------------------------
@@ -9,7 +10,6 @@ const FC = (function () {
   const configured =
     cfg.SUPABASE_URL && !cfg.SUPABASE_URL.startsWith("PASTE") &&
     cfg.SUPABASE_ANON_KEY && !cfg.SUPABASE_ANON_KEY.startsWith("PASTE");
-
   let client = null;
   if (configured && window.supabase) {
     client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
@@ -17,39 +17,21 @@ const FC = (function () {
   return { client, configured };
 })();
 
-// Show a friendly banner if keys aren't set yet.
 function fcRequireConfig() {
   if (FC.configured) return true;
-  const el = document.getElementById("app") || document.body;
+  const el = document.getElementById("view") || document.body;
   el.innerHTML =
-    '<div class="wrap"><div class="card"><p class="eyebrow">Setup needed</p>' +
-    '<h2>Add your Supabase keys</h2>' +
-    '<p class="hint">Open <b>config.js</b> and paste your project URL and anon key ' +
-    '(Supabase → Settings → API). Then reload this page.</p></div></div>';
+    '<span class="eyebrow">Setup needed</span><h2>Add the Supabase keys</h2>' +
+    '<p class="hint">Open <b>config.js</b> and paste the project URL and anon key ' +
+    '(Supabase, Settings, API). Then reload this page.</p>';
   return false;
 }
 
 // ---- Theme -------------------------------------------------
+// Dark is the only surfaced mode. ?light is the projector / print fallback.
 function fcInitTheme() {
-  const saved = (() => { try { return localStorage.getItem("fc-theme"); } catch (e) { return null; } })();
-  if (saved) document.documentElement.setAttribute("data-theme", saved);
-  const btn = document.getElementById("themeToggle");
-  if (btn) {
-    const paint = () => {
-      const cur = document.documentElement.getAttribute("data-theme")
-        || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-      btn.textContent = cur === "light" ? "◐ Dark" : "◑ Light";
-    };
-    paint();
-    btn.onclick = () => {
-      const cur = document.documentElement.getAttribute("data-theme")
-        || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-      const next = cur === "light" ? "dark" : "light";
-      document.documentElement.setAttribute("data-theme", next);
-      try { localStorage.setItem("fc-theme", next); } catch (e) {}
-      paint();
-    };
-  }
+  const light = new URLSearchParams(location.search).has("light");
+  document.documentElement.setAttribute("data-theme", light ? "light" : "dark");
 }
 
 // ---- Participant identity ----------------------------------
@@ -63,12 +45,59 @@ function fcParticipantId() {
   }
 }
 
-// ---- Color ramp (coral-led, restrained) --------------------
-const FC_RAMP = ["#E76F51", "#F0987F", "#C2B5A1", "#7FA6A0", "#A9866E", "#8A7D6D", "#D9B26A"];
-function fcColor(i) { return FC_RAMP[i % FC_RAMP.length]; }
+// ---- Figures as texture ------------------------------------
+// Places a master SVG from assets/textures under a similarity
+// transform (scale, rotation, centre), never regenerated. Field
+// stroke comes from CSS (.field svg line).
+const FC_FIGURES = {};
+function fcFigure(name) {
+  if (!FC_FIGURES[name]) {
+    FC_FIGURES[name] = fetch("../assets/textures/fc-figure-" + name + ".svg")
+      .then((r) => r.ok ? r.text() : "")
+      .then((t) => { const m = t.match(/<line[^>]*>/g); return m ? m.join("") : ""; })
+      .catch(() => "");
+  }
+  return FC_FIGURES[name];
+}
+// opts: { scale, rot, cx, cy } in the host element's pixel space, plus
+// an optional `box` [w,h] the coordinates were designed against; the
+// field is scaled to the host on render.
+async function fcField(host, name, opts) {
+  const lines = await fcFigure(name);
+  if (!lines || !host || !host.isConnected) return;
+  const box = opts.box || [1600, 900];
+  const s = opts.scale || 1, r = opts.rot || 0, cx = opts.cx ?? box[0] * .75, cy = opts.cy ?? box[1] * .5;
+  let layer = host.classList.contains("field") ? host : host.querySelector(":scope > .field");
+  if (!layer) { layer = document.createElement("div"); layer.className = "field"; host.classList.add("has-field"); host.prepend(layer); }
+  layer.innerHTML =
+    '<svg viewBox="0 0 ' + box[0] + ' ' + box[1] + '" preserveAspectRatio="xMidYMid slice" ' +
+      'style="left:0;top:0;width:100%;height:100%" aria-hidden="true">' +
+      '<g fill="none" stroke-linecap="round" transform="translate(' + cx + ' ' + cy + ') rotate(' + r + ') scale(' + s + ') translate(-400 -400)">' +
+        lines + '</g></svg>';
+}
+
+// ---- Chart color: one coral, the rest a neutral ramp by rank -
+// The leading option takes the accent; everything else recedes
+// through the text tokens. No category coding, per the guide.
+function fcRampColor(rank, n, isMax, count) {
+  if (count === 0) return "var(--border)";
+  if (isMax) return "var(--coral)";
+  const stops = ["#C4BBB0", "#A69C92", "#877E74", "#6A625B", "#4C443C", "#3E362F"];
+  const light = document.documentElement.getAttribute("data-theme") === "light";
+  const stopsL = ["#4C443C", "#6A625B", "#877E74", "#A69C92", "#C8C0B5", "#E5DED4"];
+  const arr = light ? stopsL : stops;
+  const t = n <= 2 ? 0 : (rank - 1) / (n - 2);
+  return arr[Math.min(arr.length - 1, Math.round(t * (arr.length - 1)))];
+}
+function fcColors(data) {
+  const max = Math.max(0, ...data.map((d) => d.count));
+  const order = data.map((d, i) => i).sort((a, b) => data[b].count - data[a].count || a - b);
+  const rank = new Array(data.length);
+  order.forEach((idx, r) => { rank[idx] = r; });
+  return data.map((d, i) => fcRampColor(rank[i], data.length, max > 0 && d.count === max, d.count));
+}
 
 // ---- Tally helpers -----------------------------------------
-// Turn a set of response rows into ordered {label,count} for a question.
 function fcTally(question, rows) {
   const counts = new Map();
   if (question.type === "word") {
@@ -77,17 +106,12 @@ function fcTally(question, rows) {
       if (!w) continue;
       counts.set(w, (counts.get(w) || 0) + 1);
     }
-    return [...counts.entries()]
-      .map(([label, count]) => ({ label, count }))
-      .sort((a, b) => b.count - a.count);
+    return [...counts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count);
   }
-  // single / multi: seed with the defined options so zero-vote bars still show
   const opts = Array.isArray(question.options) ? question.options : [];
   for (const o of opts) counts.set(o, 0);
   for (const r of rows) {
-    // multi answers are stored one row per choice, so this works for both
     let a = r.answer;
-    // free-text "Other: their words" folds back onto the "Other" option for the chart
     if (!counts.has(a)) {
       const i = a.indexOf(": ");
       if (i > -1 && counts.has(a.slice(0, i))) a = a.slice(0, i);
@@ -96,8 +120,6 @@ function fcTally(question, rows) {
   }
   return opts.map((label) => ({ label, count: counts.get(label) || 0 }));
 }
-
-// Extract free-text write-ins (answers stored as "Option: their words").
 function fcWriteIns(rows) {
   const out = [];
   for (const r of rows || []) {
@@ -107,70 +129,55 @@ function fcWriteIns(rows) {
   return out;
 }
 
-// ---- Chart renderers (inline SVG / DOM, theme-aware) -------
+// ---- Chart renderers ---------------------------------------
 function fcRenderBar(el, data, opts = {}) {
   const total = data.reduce((s, d) => s + d.count, 0);
   const max = Math.max(1, ...data.map((d) => d.count));
-  const big = opts.big;
-  el.innerHTML = data.map((d, i) => {
+  const cols = fcColors(data);
+  el.classList.toggle("big", !!opts.big);
+  const two = opts.two != null ? opts.two : (opts.big && data.length >= 7);
+  el.innerHTML = data.length ? '<div class="bars' + (two ? " two" : "") + '">' + data.map((d, i) => {
     const pct = Math.round((d.count / max) * 100);
     const share = total ? Math.round((d.count / total) * 100) : 0;
-    return (
-      '<div style="margin:' + (big ? "18px" : "12px") + ' 0">' +
-        '<div class="spread" style="margin-bottom:6px">' +
-          '<span style="font-weight:600;font-size:' + (big ? "1.4rem" : "1rem") + '">' + fcEsc(d.label) + '</span>' +
-          '<span class="hint" style="font-size:' + (big ? "1.2rem" : ".9rem") + '">' + d.count + ' · ' + share + '%</span>' +
-        '</div>' +
-        '<div style="height:' + (big ? "26px" : "16px") + ';background:var(--surface-2);border-radius:8px;overflow:hidden">' +
-          '<div style="height:100%;width:' + pct + '%;background:' + fcColor(i) + ';border-radius:8px;transition:width .5s cubic-bezier(.2,.7,.2,1)"></div>' +
-        '</div>' +
-      '</div>'
-    );
-  }).join("") || fcEmpty();
+    return '<div class="bar"><div class="lab"><span class="t">' + fcEsc(d.label) + '</span>' +
+      '<span class="v">' + d.count + ' · ' + share + '%</span></div>' +
+      '<div class="track"><div class="fill" style="width:' + pct + '%;background:' + cols[i] + '"></div></div></div>';
+  }).join("") + '</div>' : fcEmpty();
 }
 
 function fcRenderPie(el, data, opts = {}) {
   const total = data.reduce((s, d) => s + d.count, 0);
-  const big = opts.big;
-  const R = 100, C = 2 * Math.PI * R;
+  el.classList.toggle("big", !!opts.big);
   if (!total) { el.innerHTML = fcEmpty(); return; }
+  const cols = fcColors(data);
+  const R = 100, C = 2 * Math.PI * R;
   let acc = 0;
   const rings = data.map((d, i) => {
-    const frac = d.count / total;
-    const dash = frac * C;
-    const seg = '<circle r="' + R + '" cx="0" cy="0" fill="none" stroke="' + fcColor(i) +
-      '" stroke-width="' + (big ? 70 : 60) + '" stroke-dasharray="' + dash + ' ' + (C - dash) +
+    const dash = (d.count / total) * C;
+    const seg = '<circle r="' + R + '" cx="0" cy="0" fill="none" stroke="' + cols[i] +
+      '" stroke-width="' + (opts.big ? 64 : 56) + '" stroke-dasharray="' + dash + ' ' + (C - dash) +
       '" stroke-dashoffset="' + (-acc) + '" transform="rotate(-90)"></circle>';
     acc += dash;
     return seg;
   }).join("");
-  const size = big ? 360 : 260;
+  const size = opts.big ? "clamp(240px, 26vw, 400px)" : "240px";
   el.innerHTML =
-    '<div style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;justify-content:center">' +
-      '<svg viewBox="-140 -140 280 280" width="' + size + '" height="' + size + '">' + rings + '</svg>' +
-      '<div class="legend" style="flex-direction:column;gap:10px">' +
-        data.map((d, i) => {
-          const share = Math.round((d.count / total) * 100);
-          return '<span class="key" style="font-size:' + (big ? "1.15rem" : ".95rem") + '">' +
-            '<span class="sw" style="background:' + fcColor(i) + '"></span>' +
-            fcEsc(d.label) + ' — ' + d.count + ' (' + share + '%)</span>';
-        }).join("") +
-      '</div>' +
-    '</div>';
+    '<div class="pie"><svg viewBox="-135 -135 270 270" style="width:' + size + ';height:auto">' + rings + '</svg>' +
+      '<div class="legend">' + data.map((d, i) =>
+        '<span class="key"><span class="sw" style="background:' + cols[i] + '"></span>' +
+        '<b>' + fcEsc(d.label) + '</b><span>' + d.count + ' · ' + Math.round((d.count / total) * 100) + '%</span></span>'
+      ).join("") + '</div></div>';
 }
 
 function fcRenderCloud(el, data, opts = {}) {
-  const big = opts.big;
+  el.classList.toggle("big", !!opts.big);
   if (!data.length) { el.innerHTML = fcEmpty("No words yet"); return; }
   const max = Math.max(...data.map((d) => d.count));
-  const min = big ? 1.1 : 0.9, span = big ? 4.6 : 2.6;
+  const min = opts.big ? 1.4 : 1.0, span = opts.big ? 4.2 : 2.2;
   el.innerHTML = '<div class="cloud">' + data.map((d, i) => {
     const size = (min + (d.count / max) * span).toFixed(2);
-    const weight = d.count === max ? 600 : 500;
-    const col = i < 3 ? "var(--coral)" : "var(--ink)";
-    const op = 0.55 + 0.45 * (d.count / max);
-    return '<span class="w" style="font-size:' + size + 'rem;font-weight:' + weight +
-      ';color:' + col + ';opacity:' + op.toFixed(2) + '">' + fcEsc(d.label) + '</span>';
+    const op = (0.55 + 0.45 * (d.count / max)).toFixed(2);
+    return '<span class="w' + (i < 3 ? " top" : "") + '" style="--fs:' + size + 'rem;font-size:' + size + 'rem;opacity:' + op + '">' + fcEsc(d.label) + '</span>';
   }).join("") + '</div>';
 }
 
@@ -180,27 +187,40 @@ function fcRenderChart(mode, el, question, rows, opts = {}) {
   if (mode === "pie") return fcRenderPie(el, data, opts);
   return fcRenderBar(el, data, opts);
 }
+function fcRenderWriteIns(el, rows, opts = {}) {
+  const wi = fcWriteIns(rows);
+  if (!wi.length) { el.innerHTML = ""; return; }
+  const items = wi.slice(0, opts.limit || 12);
+  el.innerHTML = opts.inline
+    ? '<div class="writeins inline"><span class="marker">Write-ins</span> <span class="wi">' + items.map((w) => fcEsc(w.text)).join('<span class="sep"> · </span>') + '</span></div>'
+    : '<div class="writeins"><span class="eyebrow muted">Write-ins</span>' + items.map((w) => '<div class="wi">' + fcEsc(w.text) + '</div>').join("") + '</div>';
+}
 
-function fcEmpty(msg) { return '<p class="hint center" style="padding:24px 0">' + (msg || "Waiting for responses…") + '</p>'; }
+function fcEmpty(msg) { return '<p class="empty">' + (msg || "Waiting for answers") + '</p>'; }
 function fcEsc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
-// ---- Moderator password gate (shared by moderate + results) ----
+// ---- Audience question status vocabulary -------------------
+// pending → queued → live → asked, or dismissed. Only one is live.
+const FC_STATUS = { pending: "New", queued: "Queued", live: "On the floor", asked: "Asked", dismissed: "Dismissed" };
+function fcStatusLabel(s) { return FC_STATUS[s] || s; }
+
+// ---- Moderator password gate -------------------------------
 function fcGate(onUnlock) {
   const ok = (() => { try { return sessionStorage.getItem("fc-mod-ok") === "1"; } catch (e) { return false; } })();
   if (ok) { onUnlock(); return; }
   const view = document.getElementById("view");
   const draw = (msg) => {
-    view.innerHTML = '<div class="card" style="max-width:420px;margin:8vh auto 0">' +
-      '<p class="eyebrow">Moderator access</p><h2 style="margin:.3rem 0 0">Enter password</h2>' +
-      '<input id="pw" type="password" class="mt" placeholder="Password" autocomplete="off" />' +
-      (msg ? '<p class="err mt">' + msg + '</p>' : '') +
-      '<button class="btn primary mt" style="width:100%" id="pwBtn">Unlock</button></div>';
+    view.innerHTML = '<div style="max-width:380px">' +
+      '<span class="eyebrow">Moderator</span><h2>Enter the password</h2>' +
+      '<input id="pw" type="password" class="mt" placeholder="Password" autocomplete="current-password" />' +
+      (msg ? '<p class="hint err">' + msg + '</p>' : '') +
+      '<button class="btn primary wide mt" id="pwBtn">Unlock</button></div>';
     const pw = document.getElementById("pw"); pw.focus();
     const tryit = () => {
       if (pw.value && pw.value === (window.FC_CONFIG.MODERATOR_PASSWORD || "")) {
         try { sessionStorage.setItem("fc-mod-ok", "1"); } catch (e) {}
         onUnlock();
-      } else { draw("That password didn't match. Try again."); }
+      } else { draw("That password did not match."); }
     };
     document.getElementById("pwBtn").onclick = tryit;
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") tryit(); });
@@ -208,7 +228,7 @@ function fcGate(onUnlock) {
   draw();
 }
 
-// ---- Download helper (works on the deployed site) ----
+// ---- Download helpers --------------------------------------
 function fcDownload(filename, text, mime) {
   const blob = new Blob([text], { type: (mime || "text/plain") + ";charset=utf-8" });
   const url = URL.createObjectURL(blob);

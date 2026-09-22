@@ -1,22 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives — Moderator</title>
+<title>Frontier Creatives · Moderator</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
+<style>
+  :root { --maxw: 820px; }
+  .ctl { margin-top: 26px; }
+  .ctl .lab { display: block; font-family: var(--fd); font-weight: 600; font-size: 13px; color: var(--text-3); margin-bottom: 8px; }
+  .now h2 { margin-top: 6px; }
+  .count { color: var(--text-3); font-size: 15px; }
+  .count b { color: var(--text); font-family: var(--fd); font-weight: 600; }
+  .util { margin-top: clamp(36px, 7vw, 64px); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .util .sp { flex: 1; }
+  .rowi .acts .btn.sm { padding: 8px 12px; }
+  a.btn { text-decoration: none; }
+</style>
 </head>
 <body>
+<div class="wash sand"></div>
 <div id="app" class="wrap">
-  <div class="mast">
-    <div class="brand"><span class="mark">Frontier <b>Creatives</b></span><span class="tag">Moderator</span></div>
-    <button id="themeToggle" class="theme-toggle">◑ Light</button>
-  </div>
-  <div id="view"></div>
+  <header class="top">
+    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
+    <span class="ctx">Moderator</span>
+  </header>
+  <main id="view"></main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -26,7 +40,6 @@
 fcInitTheme();
 if (fcRequireConfig()) fcGate(startModerator);
 
-// ---- Moderator app ----
 function startModerator() {
   const view = document.getElementById("view");
   const sb = FC.client;
@@ -36,19 +49,16 @@ function startModerator() {
     const { data: st } = await sb.from("quiz_state").select("*").eq("id", 1).single();
     state = st;
     if (state?.active_quiz_id) {
-      const { data: qz } = await sb.from("quizzes").select("*").eq("id", state.active_quiz_id).single();
-      quiz = qz;
-      const { data: qs } = await sb.from("questions").select("*").eq("quiz_id", state.active_quiz_id).order("sort_order");
-      questions = qs || [];
+      quiz = (await sb.from("quizzes").select("*").eq("id", state.active_quiz_id).single()).data;
+      questions = (await sb.from("questions").select("*").eq("quiz_id", state.active_quiz_id).order("sort_order")).data || [];
       q = questions.find((x) => x.id === state.current_question_id) || null;
       const { count: c } = q
         ? await sb.from("responses").select("*", { count: "exact", head: true }).eq("question_id", q.id)
         : { count: 0 };
       count = c || 0;
-      const { data: a } = await sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
-        .order("votes", { ascending: false }).order("created_at");
-      aq = a || [];
-    }
+      aq = (await sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
+        .order("votes", { ascending: false }).order("created_at")).data || [];
+    } else { quiz = null; questions = []; q = null; aq = []; }
   }
 
   async function setState(patch) {
@@ -56,81 +66,96 @@ function startModerator() {
     await sb.from("quiz_state").update(patch).eq("id", 1);
     await refresh();
   }
-  const goTo = (qid) => setState({ current_question_id: qid, phase: "question" });
+  const goTo = (qid) => setState({ current_question_id: qid, phase: state.phase === "panel" ? "panel" : "question" });
   function step(d) {
     const i = questions.findIndex((x) => x.id === q?.id);
     const n = questions[Math.max(0, Math.min(questions.length - 1, i + d))];
     if (n) goTo(n.id);
   }
-  async function setAQ(id, status) { await sb.from("audience_questions").update({ status }).eq("id", id); await refresh(); }
-
+  async function setAQ(id, status) {
+    if (status === "live") {
+      const { error } = await sb.rpc("set_live_question", { qid: id });
+      if (error) {
+        // Fallback without the RPC: demote the current live one, then promote.
+        await sb.from("audience_questions").update({ status: "asked" }).eq("quiz_id", state.active_quiz_id).eq("status", "live");
+        await sb.from("audience_questions").update({ status: "live" }).eq("id", id);
+      }
+    } else {
+      await sb.from("audience_questions").update({ status }).eq("id", id);
+    }
+    await refresh();
+  }
   async function doReset() {
     const { error } = await sb.rpc("reset_session");
     confirmReset = false;
-    if (error) { alert("Reset failed — did you run reset.sql in Supabase? (" + error.message + ")"); }
+    if (error) alert("Reset failed. Has reset.sql been run in Supabase? (" + error.message + ")");
     await refresh();
   }
 
+  const PHASES = [["lobby", "Lobby"], ["question", "Voting"], ["results", "Results"], ["qa", "Q&A"], ["panel", "Panel"], ["ended", "End"]];
+  const MODES = [["bar", "Bar"], ["pie", "Pie"], ["cloud", "Cloud"]];
+
   function render() {
-    if (!state) { view.innerHTML = '<div class="card"><p class="hint">Loading…</p></div>'; return; }
+    if (!state) { view.innerHTML = '<p class="empty">Loading</p>'; return; }
     if (!quiz) {
-      view.innerHTML = '<div class="card"><p class="eyebrow">No active quiz</p><h2>Nothing is live yet</h2>' +
-        '<p class="hint">Run <b>seed.sql</b> in Supabase to load a quiz, then reload.</p></div>';
+      view.innerHTML = '<span class="eyebrow">No active quiz</span><h2>Nothing is live yet</h2>' +
+        '<p class="hint">Run <b>seed.sql</b> in Supabase to load a quiz, then reload.</p>';
       return;
     }
     const idx = questions.findIndex((x) => x.id === q?.id);
     const phase = state.phase, mode = state.display_mode;
-    const pBtn = (p, label) => '<button class="btn ' + (phase === p ? "primary" : "ghost") + ' sm" onclick="ph(\'' + p + '\')">' + label + '</button>';
-    const dBtn = (m, label) => '<button class="btn ' + (mode === m ? "primary" : "ghost") + ' sm" onclick="dm(\'' + m + '\')">' + label + '</button>';
+    const seg = (items, cur, fn) => '<div class="seg">' + items.map(([k, label]) =>
+      '<button class="btn' + (cur === k ? " on" : "") + '" onclick="' + fn + '(\'' + k + '\')">' + label + '</button>').join("") + '</div>';
 
     const resetCtl = confirmReset
-      ? '<span class="hint" style="align-self:center">Clear all answers &amp; questions?</span>' +
+      ? '<span class="small">Clear every answer and audience question?</span>' +
         '<button class="btn sm primary" onclick="resetYes()">Yes, reset</button>' +
         '<button class="btn sm ghost" onclick="resetNo()">Cancel</button>'
-      : '<button class="btn sm ghost" onclick="resetAsk()">↺ Reset for next event</button>';
+      : '<button class="btn sm ghost" onclick="resetAsk()">Reset for next event</button>';
+
+    const live = aq.filter((a) => a.status === "live").length;
+    const pending = aq.filter((a) => a.status === "pending").length;
+    const queued = aq.filter((a) => a.status === "queued").length;
 
     view.innerHTML =
-      '<div class="card"><div class="spread"><p class="eyebrow" style="margin:0">' + fcEsc(quiz.title) + '</p>' +
-        '<span class="hint">' + count + ' responses to this question</span></div>' +
-        '<h2 class="prompt" style="font-size:1.5rem;margin:.4rem 0">' +
-          (q ? (idx + 1) + '. ' + fcEsc(q.prompt) : 'No question selected') + '</h2>' +
+      '<section class="now"><span class="eyebrow">' + fcEsc(quiz.title) + '</span>' +
+        '<h2>' + (q ? (idx + 1) + '. ' + fcEsc(q.prompt) : 'No question selected') + '</h2>' +
+        '<p class="count"><b id="respCount">' + count + '</b> ' + (count === 1 ? "answer" : "answers") + ' to this question</p>' +
         '<div class="row mt">' +
-          '<button class="btn" onclick="step(-1)" ' + (idx <= 0 ? "disabled" : "") + '>‹ Prev</button>' +
-          '<button class="btn primary" onclick="step(1)" ' + (idx >= questions.length - 1 ? "disabled" : "") + '>Next ›</button>' +
+          '<button class="btn" onclick="step(-1)" ' + (idx <= 0 ? "disabled" : "") + '>Previous</button>' +
+          '<button class="btn primary" onclick="step(1)" ' + (idx >= questions.length - 1 ? "disabled" : "") + '>Next question</button>' +
         '</div>' +
-        '<div class="mt"><span class="hint">Phase</span><div class="row" style="margin-top:6px">' +
-          pBtn("lobby", "Lobby") + pBtn("question", "Voting open") + pBtn("results", "Show results") +
-          pBtn("qa", "Q & A") + pBtn("ended", "End") + '</div></div>' +
-        '<div class="mt"><span class="hint">Screen shows</span><div class="row" style="margin-top:6px">' +
-          dBtn("bar", "▦ Bar") + dBtn("pie", "◕ Pie") + dBtn("cloud", "❋ Cloud") +
-          '<span class="hint sm" style="align-self:center">(word questions always show a cloud)</span></div></div>' +
-        '<div class="mt" style="padding-top:14px;border-top:1px solid var(--line)"><div class="row">' + resetCtl +
-          '<a class="btn sm ghost" href="results.html" target="_blank" rel="noopener" style="margin-left:auto;text-decoration:none;align-self:center">⤓ Export results</a>' +
-        '</div></div>' +
-      '</div>' +
+        '<div class="ctl"><span class="lab">The room is in</span>' + seg(PHASES, phase, "ph") + '</div>' +
+        '<div class="ctl"><span class="lab">Screen shows</span>' + seg(MODES, mode, "dm") +
+          '<p class="small" style="margin:8px 0 0">One-word questions always show a cloud.</p></div>' +
+      '</section>' +
 
-      '<div class="card mt"><p class="eyebrow">Questions</p><div class="qlist">' +
+      '<section class="block"><span class="eyebrow">Questions</span><div class="rows">' +
         questions.map((x, i) =>
-          '<button class="opt ' + (x.id === q?.id ? "chosen" : "") + '" onclick="goTo(\'' + x.id + '\')">' +
-          '<span class="dot"></span><span>' + (i + 1) + '. ' + fcEsc(x.prompt) + '</span>' +
-          '<span class="pill" style="margin-left:auto">' + x.type + '</span></button>'
-        ).join("") + '</div></div>' +
+          '<button class="rowi' + (x.id === q?.id ? " on" : "") + '" onclick="goTo(\'' + x.id + '\')">' +
+          '<span class="lead">' + (i + 1) + '</span><div class="body"><div class="ttl">' + fcEsc(x.prompt) + '</div>' +
+          '<div class="sub">' + ({ single: "Pick one", multi: "Pick many", word: "One word" }[x.type] || x.type) + '</div></div></button>'
+        ).join("") + '</div></section>' +
 
-      '<div class="card mt"><div class="spread"><p class="eyebrow" style="margin:0">Audience Q & A</p>' +
-        '<span class="hint">' + aq.filter((a)=>a.status==="pending").length + ' pending · ' +
-        aq.filter((a)=>a.status==="queued").length + ' queued</span></div>' +
-        '<div class="qlist">' + (aq.length ? aq.map((it) =>
-          '<div class="qitem">' +
-            '<div class="vote"><span class="n">' + it.votes + '</span><span class="hint sm">votes</span></div>' +
-            '<div class="txt">' + fcEsc(it.text) +
-              (it.author ? '<div class="who">— ' + fcEsc(it.author) + '</div>' : '') +
-              '<span class="pill ' + it.status + '">' + it.status + '</span></div>' +
-            '<div class="stack" style="gap:6px">' +
-              (it.status !== "queued" ? '<button class="btn sm primary" onclick="setAQ(\'' + it.id + '\',\'queued\')">Queue</button>' : '') +
-              (it.status !== "asked"  ? '<button class="btn sm" onclick="setAQ(\'' + it.id + '\',\'asked\')">Mark asked</button>' : '') +
-              (it.status !== "dismissed" ? '<button class="btn sm ghost" onclick="setAQ(\'' + it.id + '\',\'dismissed\')">Dismiss</button>' : '') +
-            '</div></div>'
-        ).join("") : '<p class="hint">No audience questions yet.</p>') + '</div></div>';
+      '<section class="block"><div class="spread"><span class="eyebrow" style="margin:0">Audience questions</span>' +
+        '<span class="small">' + pending + ' new · ' + queued + ' queued' + (live ? ' · 1 on the floor' : '') + '</span></div>' +
+        '<div class="rows mt">' + (aq.length ? aq.map((it) => {
+          const cls = it.status === "live" ? "on" : it.status === "asked" ? "past" : it.status === "dismissed" ? "off" : "";
+          const acts =
+            (it.status !== "live" && it.status !== "dismissed" ? '<button class="btn sm' + (it.status === "queued" ? " primary" : "") + '" onclick="setAQ(\'' + it.id + '\',\'live\')">Put on screen</button>' : '') +
+            (it.status === "pending" ? '<button class="btn sm" onclick="setAQ(\'' + it.id + '\',\'queued\')">Queue</button>' : '') +
+            (it.status === "live" || it.status === "queued" ? '<button class="btn sm" onclick="setAQ(\'' + it.id + '\',\'asked\')">Asked</button>' : '') +
+            (it.status !== "dismissed" ? '<button class="btn sm ghost" onclick="setAQ(\'' + it.id + '\',\'dismissed\')">Dismiss</button>'
+                                       : '<button class="btn sm ghost" onclick="setAQ(\'' + it.id + '\',\'pending\')">Restore</button>');
+          return '<div class="rowi ' + cls + '"><span class="lead num">' + it.votes + '</span>' +
+            '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
+            '<div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') + '<span class="marker' + (it.status === "live" ? " on" : "") + '">' + fcStatusLabel(it.status) + '</span></div></div>' +
+            '<div class="acts">' + acts + '</div></div>';
+        }).join("") : '<p class="empty">No audience questions yet.</p>') + '</div></section>' +
+
+      '<div class="util">' + resetCtl + '<span class="sp"></span>' +
+        '<a class="btn sm" href="present.html" target="_blank" rel="noopener">Open the screen</a>' +
+        '<a class="btn sm" href="results.html" target="_blank" rel="noopener">Export results</a></div>';
   }
 
   window.step = step; window.goTo = goTo; window.setAQ = setAQ;
@@ -144,7 +169,7 @@ function startModerator() {
 
   sb.channel("m_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
   sb.channel("m_resp").on("postgres_changes", { event: "INSERT", schema: "public", table: "responses" }, (p) => {
-    if (q && p.new && p.new.question_id === q.id) { count++; const el = view.querySelector(".hint"); if (el) el.textContent = count + " responses to this question"; }
+    if (q && p.new && p.new.question_id === q.id) { count++; const el = document.getElementById("respCount"); if (el) el.textContent = count; }
   }).subscribe();
   sb.channel("m_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, refresh).subscribe();
 

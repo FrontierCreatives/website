@@ -1,25 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives — Live Quiz</title>
+<title>Frontier Creatives · Live</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
+<style>
+  :root { --maxw: 560px; }
+  .lobby { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; }
+  .live-now { padding: 0 0 8px; }
+  .live-now .live-q { font-size: clamp(22px, 6vw, 30px); }
+</style>
 </head>
 <body>
+<div class="wash"></div>
 <div id="app" class="wrap">
-  <div class="mast">
-    <div class="brand">
-      <span class="mark">Frontier <b>Creatives</b></span>
-      <span class="tag">Live</span>
-    </div>
-    <button id="themeToggle" class="theme-toggle">◑ Light</button>
-  </div>
-  <div id="view"></div>
+  <header class="top">
+    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
+    <span class="ctx">Live</span>
+  </header>
+  <main id="view"></main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -31,36 +36,46 @@ if (fcRequireConfig()) {
   const view = document.getElementById("view");
   const sb = FC.client;
   const pid = fcParticipantId();
-  let state = null, questions = [], q = null, rows = [], selection = new Set();
+  let state = null, quiz = null, questions = [], q = null, rows = [], aq = [], selection = new Set();
 
   const answeredKey = (qid) => "fc-ans-" + qid;
   const hasAnswered = (qid) => { try { return !!localStorage.getItem(answeredKey(qid)); } catch (e) { return false; } };
   const markAnswered = (qid) => { try { localStorage.setItem(answeredKey(qid), "1"); } catch (e) {} };
+  const votedKey = (id) => "fc-voted-" + id;
+  const hasVoted = (id) => { try { return !!localStorage.getItem(votedKey(id)); } catch (e) { return false; } };
 
   async function loadState() {
     const { data } = await sb.from("quiz_state").select("*").eq("id", 1).single();
     state = data;
     if (state && state.active_quiz_id) {
-      const { data: qs } = await sb.from("questions").select("*")
-        .eq("quiz_id", state.active_quiz_id).order("sort_order");
+      if (!quiz || quiz.id !== state.active_quiz_id) {
+        quiz = (await sb.from("quizzes").select("*").eq("id", state.active_quiz_id).single()).data;
+      }
+      const { data: qs } = await sb.from("questions").select("*").eq("quiz_id", state.active_quiz_id).order("sort_order");
       questions = qs || [];
-    } else { questions = []; }
+    } else { quiz = null; questions = []; }
     q = questions.find((x) => x.id === state?.current_question_id) || null;
   }
-
   async function loadRows() {
     if (!q) { rows = []; return; }
     const { data } = await sb.from("responses").select("id,answer").eq("question_id", q.id);
     rows = data || [];
+  }
+  async function loadAQ() {
+    if (!state || !state.active_quiz_id) { aq = []; return; }
+    const { data } = await sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
+      .in("status", ["pending", "queued", "live", "asked"]).order("votes", { ascending: false }).order("created_at");
+    aq = data || [];
   }
 
   async function submit() {
     if (!q || hasAnswered(q.id)) return;
     let answers = [];
     if (q.type === "word") {
-      const v = document.getElementById("wordInput").value.trim();
-      if (!v) return;
-      answers = [v.slice(0, 40)];
+      const v = (document.getElementById("wordInput") || {}).value || "";
+      const w = v.trim().replace(/\s+/g, " ");
+      if (!w) return;
+      answers = [w.slice(0, 40)];
     } else {
       answers = [...selection];
       if (!answers.length) return;
@@ -70,94 +85,106 @@ if (fcRequireConfig()) {
     }
     const payload = answers.map((a) => ({ question_id: q.id, participant_id: pid, answer: a }));
     const { error } = await sb.from("responses").insert(payload);
-    if (error) { alert("Could not submit — try again."); return; }
+    if (error) { const e = document.getElementById("formErr"); if (e) e.textContent = "That did not go through. Try again."; return; }
     markAnswered(q.id);
     selection.clear();
     await loadRows();
     render();
   }
 
-  function render() {
-    if (!state) { view.innerHTML = '<div class="card center"><p class="hint">Connecting…</p></div>'; return; }
-    const phase = state.phase;
-
-    if (phase === "lobby" || !q) {
-      view.innerHTML = '<div class="card center stack" style="padding:48px 24px">' +
-        '<p class="eyebrow">Get ready</p>' +
-        '<h2 style="font-size:1.8rem;margin:0">The quiz is about to begin</h2>' +
-        '<p class="hint">Keep this page open — questions will appear here.</p></div>';
-      return;
-    }
-
-    if (phase === "ended") {
-      view.innerHTML = '<div class="card center stack" style="padding:48px 24px">' +
-        '<p class="eyebrow">That\'s a wrap</p>' +
-        '<h2 style="font-size:1.8rem;margin:0">Thanks for playing</h2>' +
-        '<p class="hint">See the screen for final results.</p></div>';
-      return;
-    }
-
-    if (phase === "qa") { renderQA(); return; }
-
-    // question / results
+  // ---- Pieces ----
+  function questionBlock(opts = {}) {
+    if (!q) return "";
     const answered = hasAnswered(q.id);
-    const locked = answered || phase === "results";
+    const locked = answered || state.phase === "results";
     const idx = questions.findIndex((x) => x.id === q.id) + 1;
-
+    const eyebrow = opts.eyebrow || ("Question " + idx + " of " + questions.length);
     if (!locked) {
       let body;
       if (q.type === "word") {
-        body = '<input id="wordInput" type="text" maxlength="40" placeholder="Type one word…" autocomplete="off" />' +
-          '<button class="btn primary mt" style="width:100%" onclick="submit()">Send</button>';
+        body = '<div class="mt"><input id="wordInput" type="text" maxlength="40" placeholder="One word" autocomplete="off" autocapitalize="none" /></div>' +
+          '<button class="btn primary wide mt" onclick="submit()">Send</button>';
       } else {
         const multi = q.type === "multi";
         const hasOther = q.options.some((o) => o.toLowerCase().startsWith("other"));
         body = '<div class="options">' + q.options.map((o, i) =>
-          '<button class="opt" data-o="' + fcEsc(o) + '" onclick="pick(this)"><span class="dot"></span>' + fcEsc(o) + '</button>'
+          '<button class="opt" data-o="' + fcEsc(o) + '" onclick="pick(this)"><span class="lead">' + String.fromCharCode(65 + i) + '</span><span>' + fcEsc(o) + '</span></button>'
         ).join("") + '</div>' +
-          (hasOther ? '<div id="otherWrap" class="hide" style="margin-top:12px">' +
-            '<input id="otherInput" type="text" maxlength="60" placeholder="Please specify…" autocomplete="off" />' +
-            (multi ? '' : '<button class="btn primary mt" style="width:100%" onclick="submit()">Send</button>') +
+          (hasOther ? '<div id="otherWrap" class="hide mt">' +
+            '<input id="otherInput" type="text" maxlength="60" placeholder="Say more" autocomplete="off" />' +
+            (multi ? '' : '<button class="btn primary wide mt" onclick="submit()">Send</button>') +
           '</div>' : '') +
-          (multi ? '<button class="btn primary mt" style="width:100%" onclick="submit()">Submit choices</button>'
-                 : '<p class="hint center mt">Tap an answer to lock it in.</p>');
+          (multi ? '<p class="hint">Pick as many as you like.</p><button class="btn primary wide mt" onclick="submit()">Send my picks</button>'
+                 : '<p class="hint">Tap one to lock it in.</p>');
       }
-      view.innerHTML = '<div class="card">' +
-        '<p class="eyebrow">Question ' + idx + ' of ' + questions.length + '</p>' +
-        '<h2 class="prompt">' + fcEsc(q.prompt) + '</h2>' + body + '</div>';
-      const oi = document.getElementById("otherInput");
-      if (oi && q.type !== "multi") oi.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
-    } else {
-      view.innerHTML = '<div class="card">' +
-        '<p class="eyebrow">' + (phase === "results" ? "Results" : "Locked in") + '</p>' +
-        '<h2 class="prompt">' + fcEsc(q.prompt) + '</h2>' +
-        (phase === "results" ? "" : '<p class="hint">Your answer is in — watch the big screen.</p>') +
-        '<div id="mini" class="mt"></div></div>';
-      fcRenderChart(q.type === "word" ? "cloud" : "bar", document.getElementById("mini"), q, rows);
+      return '<section class="block"><span class="eyebrow">' + eyebrow + '</span><h1>' + fcEsc(q.prompt) + '</h1>' + body + '<p id="formErr" class="hint err"></p></section>';
     }
+    return '<section class="block"><span class="eyebrow">' + (state.phase === "results" ? "Results" : "Locked in") + '</span>' +
+      '<h1>' + fcEsc(q.prompt) + '</h1>' +
+      (state.phase === "results" ? "" : '<p class="hint">Your answer is in. Watch the screen.</p>') +
+      '<div id="mini" class="mt"></div><div id="wi"></div></section>';
+  }
+  function mountChart() {
+    const mini = document.getElementById("mini");
+    if (!mini || !q) return;
+    fcRenderChart(q.type === "word" ? "cloud" : "bar", mini, q, rows);
+    if (state.phase === "results" || state.phase === "panel") fcRenderWriteIns(document.getElementById("wi"), rows, { limit: 6 });
   }
 
-  function renderQA() {
-    sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
-      .in("status", ["pending", "queued", "asked"]).order("votes", { ascending: false })
-      .order("created_at").then(({ data }) => {
-        const items = data || [];
-        view.innerHTML = '<div class="card">' +
-          '<p class="eyebrow">Ask the presenters</p>' +
-          '<h2 class="prompt" style="font-size:1.6rem">Your questions</h2>' +
-          '<textarea id="qText" rows="2" maxlength="240" placeholder="Type your question…"></textarea>' +
-          '<div class="row mt"><input id="qName" type="text" placeholder="Your name (optional)" style="flex:1" />' +
-          '<button class="btn primary" onclick="askQ()">Send</button></div>' +
-          '<div class="qlist" id="qlist">' + items.map((it) =>
-            '<div class="qitem">' +
-              '<button class="vote btn ghost sm" onclick="upvote(\'' + it.id + '\',' + it.votes + ')">' +
-                '<span>▲</span><span class="n">' + it.votes + '</span></button>' +
-              '<div class="txt">' + fcEsc(it.text) +
-                (it.author ? '<div class="who">— ' + fcEsc(it.author) + '</div>' : '') +
-                (it.status !== "pending" ? '<span class="pill ' + it.status + '">' + it.status + '</span>' : '') +
-              '</div></div>'
-          ).join("") + '</div></div>';
-      });
+  function qaBlock(opts = {}) {
+    const items = aq.filter((it) => it.status !== "live" || !opts.hideLive);
+    return '<section class="block"><span class="eyebrow">' + (opts.eyebrow || "Ask the panel") + '</span>' +
+      '<h2>Your questions</h2>' +
+      '<div class="mt"><textarea id="qText" rows="2" maxlength="240" placeholder="What would you ask?"></textarea></div>' +
+      '<div class="row mt"><input id="qName" type="text" maxlength="40" placeholder="Your name (optional)" style="flex:1;min-width:160px" />' +
+      '<button class="btn primary" onclick="askQ()">Send</button></div>' +
+      '<div class="rows mt" id="qlist">' + (items.length ? items.map((it) => {
+        const mine = hasVoted(it.id);
+        const cls = it.status === "live" ? "on" : (it.status === "asked" ? "past" : "");
+        return '<div class="rowi ' + cls + '">' +
+          '<button class="vote' + (mine ? " mine" : "") + '" onclick="upvote(\'' + it.id + '\')" aria-label="Upvote"><span class="n">' + it.votes + '</span><span class="l">votes</span></button>' +
+          '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
+          '<div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') +
+          '<span class="marker' + (it.status === "live" ? " on" : "") + '">' + fcStatusLabel(it.status) + '</span></div></div></div>';
+      }).join("") : '<p class="empty">No questions yet. Yours could be first.</p>') + '</div></section>';
+  }
+
+  function liveBlock() {
+    const live = aq.find((it) => it.status === "live");
+    if (!live) return '<section class="block live-now"><span class="eyebrow">On the floor</span><p class="hint" style="margin-top:0">Waiting for the first question.</p></section>';
+    return '<section class="block live-now"><span class="eyebrow">On the floor</span>' +
+      '<div class="live-q">' + fcEsc(live.text) + '</div>' +
+      (live.author ? '<div class="live-by">' + fcEsc(live.author) + '</div>' : '') + '</section>';
+  }
+
+  // ---- Render ----
+  function render() {
+    if (!state) { view.innerHTML = '<p class="empty">Connecting</p>'; return; }
+    const phase = state.phase;
+    const vol = quiz ? fcEsc(quiz.title) : "Frontier Creatives";
+
+    if (phase === "ended") {
+      view.innerHTML = '<section class="lobby"><span class="eyebrow">' + vol + '</span>' +
+        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for playing. Stay for the room.</p></section>';
+      return;
+    }
+    if (phase === "lobby" || (!q && phase !== "qa" && phase !== "panel")) {
+      view.innerHTML = '<section class="lobby"><span class="eyebrow">' + vol + '</span>' +
+        '<h1>You&rsquo;re in</h1><p class="lede">Keep this page open. Questions show up here when we start.</p></section>';
+      return;
+    }
+    if (phase === "qa") { view.innerHTML = qaBlock(); return; }
+    if (phase === "panel") {
+      view.innerHTML = liveBlock() + (q ? questionBlock({ eyebrow: "While you listen" }) : "") + qaBlock({ eyebrow: "Ask the panel" });
+      mountChart();
+      return;
+    }
+    view.innerHTML = questionBlock();
+    const oi = document.getElementById("otherInput");
+    if (oi && q.type !== "multi") oi.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+    const wi = document.getElementById("wordInput");
+    if (wi) wi.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+    mountChart();
   }
 
   function toggleOther(show) {
@@ -187,27 +214,33 @@ if (fcRequireConfig()) {
     if (!t) return;
     const name = document.getElementById("qName").value.trim() || null;
     await sb.from("audience_questions").insert([{ quiz_id: state.active_quiz_id, text: t.slice(0, 240), author: name }]);
-    document.getElementById("qText").value = "";
-    renderQA();
+    await loadAQ(); render();
   };
-  window.upvote = async function (id, cur) {
-    const key = "fc-voted-" + id;
-    try { if (localStorage.getItem(key)) return; localStorage.setItem(key, "1"); } catch (e) {}
-    await sb.from("audience_questions").update({ votes: cur + 1 }).eq("id", id);
-    renderQA();
+  window.upvote = async function (id) {
+    if (hasVoted(id)) return;
+    try { localStorage.setItem(votedKey(id), "1"); } catch (e) {}
+    const { error } = await sb.rpc("upvote_question", { qid: id });
+    if (error) await sb.from("audience_questions").update({ votes: (aq.find((a) => a.id === id)?.votes || 0) + 1 }).eq("id", id);
+    await loadAQ(); render();
   };
 
-  async function refresh() { await loadState(); await loadRows(); render(); }
+  async function refresh() { await loadState(); await loadRows(); await loadAQ(); render(); }
 
   sb.channel("state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
   sb.channel("resp").on("postgres_changes", { event: "INSERT", schema: "public", table: "responses" }, (p) => {
     if (q && p.new && p.new.question_id === q.id) {
       if (!rows.some((r) => r.id === p.new.id)) rows.push({ id: p.new.id, answer: p.new.answer });
-      if (hasAnswered(q.id) || state.phase === "results") render();
+      if (hasAnswered(q.id) || state.phase === "results") mountChart();
     }
   }).subscribe();
-  sb.channel("aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, () => {
-    if (state && state.phase === "qa") renderQA();
+  sb.channel("aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, async () => {
+    if (state && (state.phase === "qa" || state.phase === "panel")) {
+      const draft = document.getElementById("qText"), name = document.getElementById("qName");
+      const keep = { t: draft ? draft.value : "", n: name ? name.value : "" };
+      await loadAQ(); render();
+      const d2 = document.getElementById("qText"), n2 = document.getElementById("qName");
+      if (d2) d2.value = keep.t; if (n2) n2.value = keep.n;
+    }
   }).subscribe();
 
   refresh();

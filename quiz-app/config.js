@@ -1,6 +1,6 @@
 // ============================================================
 // Supabase connection  ·  Frontier Creatives Live Quiz
-// The publishable/anon key is safe to expose in a public site —
+// The publishable/anon key is safe to expose in a public site;
 // access is controlled by the Row Level Security rules in schema.sql.
 // ============================================================
 window.FC_CONFIG = {
