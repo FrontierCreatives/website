@@ -18,8 +18,7 @@
   .poster .eyebrow { margin-top: 64px; }
   .poster h1 { font-size: 60px; }
   .poster .lede { font-size: 21px; max-width: 24ch; }
-  .poster .qr { margin-top: 40px; padding: 18px; box-shadow: none; align-self: flex-start; }
-  .poster .qr img { width: 250px; height: 250px; }
+  .poster .qr { margin-top: 40px; box-shadow: none; align-self: flex-start; outline: 14px solid #fff; }
   .poster .url { margin-top: auto; font-family: var(--fd); font-weight: 600; font-size: 22px; letter-spacing: -.01em; color: var(--text); }
   .poster .foot { color: var(--text-3); font-size: 15px; margin-top: 6px; }
   @media print { body { background: #fff; padding: 0; } .poster { box-shadow: none; } @page { margin: 12mm; } }
@@ -30,16 +29,18 @@
     <div class="inner">
       <a class="wordmark" href="../"><img src="../assets/logo/fc-mark-light-bg.svg" alt="" /><span>Frontier Creatives</span></a>
       <span class="eyebrow">Vol. 04 · Interactive panel</span>
-      <h1>Scan to join</h1>
-      <p class="lede">Point your phone camera at the code. No app, no login.</p>
-      <div class="qr"><img src="K5Aa80.png" alt="QR code to join" /></div>
+      <h1>Ask the panel</h1>
+      <p class="lede">Scan, send a question, vote for the ones you want answered. No app, no login.</p>
+      <div id="posterQR" aria-label="QR code to join"></div>
       <div class="url">frontiercreatives.design/quiz-app</div>
-      <div class="foot">Ask the panel, answer a few questions, watch the room live.</div>
+      <div class="foot">Most votes go first. The board on screen updates as you tap.</div>
     </div>
   </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="lib.js"></script>
 <script>
   document.documentElement.setAttribute("data-theme", "light");
+  fcMountQR(document.getElementById("posterQR"), "https://www.frontiercreatives.design/quiz-app/", 250);
   fcField(document.getElementById("poster"), "cardioid", { box: [680, 880], scale: .95, rot: -20, cx: 780, cy: 470 });
 </script>
 </body>

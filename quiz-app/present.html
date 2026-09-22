@@ -15,55 +15,46 @@
   html, body { height: 100%; }
   body { display: flex; flex-direction: column; }
   .wrap { flex: 1; display: flex; flex-direction: column; width: 100%; padding-bottom: 24px; }
-  .top { margin-bottom: clamp(20px, 3vh, 40px); }
-  .wordmark { font-size: 20px; }
-  .wordmark img { width: 32px; height: 32px; }
+  .top { margin-bottom: clamp(12px, 2vh, 28px); justify-content: flex-start; }
   .ctx { font-size: 13px; }
+  .field.bg { position: fixed; z-index: 0; }
   #view { flex: 1; display: flex; flex-direction: column; }
   .screen { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .screen h1 { font-size: clamp(32px, 4.2vw, 68px); }
   .screen .eyebrow { font-size: clamp(13px, 1vw, 17px); margin-bottom: clamp(12px, 1.6vh, 22px); }
   .screen .lede { font-size: clamp(18px, 1.6vw, 28px); }
-  .foot { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; color: var(--text-3); font-size: clamp(14px, 1.1vw, 19px); padding: 12px clamp(16px, 4vw, 40px) 22px; position: relative; z-index: 1; }
+  .foot { display: flex; justify-content: flex-start; align-items: baseline; gap: 28px; color: var(--text-3); font-size: clamp(14px, 1.1vw, 19px); padding: 12px clamp(16px, 4vw, 40px) 22px; position: relative; z-index: 1; }
   .foot b { color: var(--text-2); font-family: var(--fd); font-weight: 500; }
   .foot .n { color: var(--text); }
-
-  /* chrome stays left so the figure owns the right edge */
-  .top { justify-content: flex-start; gap: 18px; }
-  .foot { justify-content: flex-start; gap: 28px; }
 
   /* lobby: words left, QR on the cardioid right */
   .lobby { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 4vw, 80px); align-items: center; min-height: 60vh; }
   .lobby .qrwrap { display: flex; justify-content: center; align-items: center; min-height: 420px; }
-  .field.bg { position: fixed; z-index: 0; }
   .lobby .url { font-family: var(--fd); font-weight: 600; font-size: clamp(18px, 1.6vw, 28px); margin-top: 22px; color: var(--text); letter-spacing: -.01em; }
 
-  /* question */
-  .q .chart { margin-top: clamp(18px, 3vh, 40px); }
-  .q.two { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 72px); align-items: start; }
+  /* the board: a live leaderboard, with a small QR to keep the door open */
+  .board { display: grid; grid-template-columns: 1fr auto; gap: clamp(24px, 4vw, 80px); align-items: start; }
+  .board .rowi { padding: clamp(10px, 1.4vh, 20px) 0; gap: clamp(16px, 2vw, 32px); align-items: baseline; transition: transform .4s var(--ease); }
+  .board .rowi .lead { font-size: clamp(18px, 1.6vw, 30px); min-width: 2.2em; color: var(--text-2); padding-top: 0; }
+  .board .rowi:first-child .lead { color: var(--acc); }
+  .board .rowi .ttl { font-size: clamp(20px, 1.9vw, 34px); font-weight: 600; }
+  .board .rowi .sub { font-size: clamp(14px, 1.1vw, 19px); }
+  .board .rowi.past .ttl { color: var(--text-3); font-weight: 500; }
+  .board .side { text-align: left; padding-top: 6px; }
+  .board .side .small { display: block; margin-top: 12px; max-width: 220px; line-height: 1.4; }
 
-  /* audience Q&A */
-  .qa .rowi { padding: clamp(12px, 1.6vh, 22px) 0; gap: clamp(16px, 2vw, 32px); }
-  .qa .rowi .lead { font-size: clamp(14px, 1.1vw, 19px); min-width: 3.4em; padding-top: .3em; }
-  .qa .rowi .ttl { font-size: clamp(20px, 2vw, 34px); font-weight: 600; }
-  .qa .rowi .sub { font-size: clamp(14px, 1.1vw, 19px); }
-
-  /* panel: the live question left, the room's pulse right */
-  .panel { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(28px, 5vw, 96px); align-items: center; }
-  .panel .side .cloud { justify-content: flex-start; }
-  .panel .side .cloud .w { font-size: min(var(--fs), 3.4rem) !important; }
-  .panel .live-q { font-size: clamp(30px, 3.6vw, 62px); }
-  .panel .next { margin-top: clamp(28px, 5vh, 64px); }
-  .panel .next .rowi { padding: 10px 0; }
-  .panel .next .rowi .ttl { font-size: clamp(16px, 1.4vw, 24px); font-weight: 500; color: var(--text-2); }
-  .panel .next .rowi .lead { min-width: 2.4em; }
-  .panel .side h2 { font-size: clamp(20px, 1.9vw, 32px); }
-  .panel .side .chart { margin-top: clamp(14px, 2vh, 28px); }
+  /* panel: the one on the floor, and what is coming */
+  .panel { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px, 5vw, 96px); align-items: center; }
+  .panel .live-q { font-size: clamp(32px, 4vw, 72px); }
+  .panel .next .rowi { padding: 10px 0; align-items: baseline; }
+  .panel .next .rowi .ttl { font-size: clamp(18px, 1.6vw, 28px); font-weight: 500; color: var(--text-2); }
+  .panel .next .rowi .lead { min-width: 2.2em; font-size: clamp(14px, 1.1vw, 20px); padding-top: 0; }
   .panel .side .qr { margin-top: 18px; }
 
   @media (max-width: 1000px) {
-    .lobby, .q.two, .panel { grid-template-columns: 1fr; }
+    .lobby, .board, .panel { grid-template-columns: 1fr; }
     .lobby .qrwrap { min-height: 0; justify-content: flex-start; }
+    .board .side { display: none; }
   }
 </style>
 </head>
@@ -72,14 +63,13 @@
 <div class="field bg" id="bgField" aria-hidden="true"></div>
 <div class="wrap">
   <header class="top">
-    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
     <span class="ctx" id="statusPill"></span>
   </header>
   <main id="view"></main>
 </div>
 <footer class="foot">
-  <span>Join at <b id="joinUrl"></b></span>
-  <span><span id="respCount" class="n num">0</span> <span id="respLabel">answers</span></span>
+  <span>Ask at <b id="joinUrl"></b></span>
+  <span><span id="qCount" class="n num">0</span> <span id="qLabel">questions</span></span>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -92,36 +82,17 @@ if (fcRequireConfig()) {
   const view = document.getElementById("view");
   const sb = FC.client;
   const joinURL = new URL("./", location.href).href;
-  document.getElementById("joinUrl").textContent = joinURL.replace(/^https?:\/\//, "").replace(/\/$/, "");
-  let state = null, quiz = null, questions = [], q = null, rows = [], aq = [];
+  const joinText = joinURL.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  document.getElementById("joinUrl").textContent = joinText;
+  let state = null, aq = [];
 
-  function makeQR(size) {
-    const holder = document.createElement("div");
-    holder.className = "qr";
-    if (window.QRCode) new QRCode(holder, { text: joinURL, width: size, height: size, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
-    return holder.outerHTML;
-  }
-
-  async function loadState() {
+  // Placeholder the QR mounts into after innerHTML is set (a canvas cannot be serialized).
+  const qrSlot = (size) => '<div class="qrslot" data-size="' + size + '"></div>';
+  function mountQRs() { view.querySelectorAll(".qrslot").forEach((el) => fcMountQR(el, joinURL, parseInt(el.dataset.size, 10))); }
+  async function load() {
     const { data } = await sb.from("quiz_state").select("*").eq("id", 1).single();
     state = data;
-    if (state && state.active_quiz_id) {
-      if (!quiz || quiz.id !== state.active_quiz_id) quiz = (await sb.from("quizzes").select("*").eq("id", state.active_quiz_id).single()).data;
-      const { data: qs } = await sb.from("questions").select("*").eq("quiz_id", state.active_quiz_id).order("sort_order");
-      questions = qs || [];
-    } else { quiz = null; questions = []; }
-    q = questions.find((x) => x.id === state?.current_question_id) || null;
-  }
-  async function loadRows() {
-    if (!q) { rows = []; return; }
-    const { data } = await sb.from("responses").select("id,answer").eq("question_id", q.id);
-    rows = data || [];
-  }
-  async function loadAQ() {
-    if (!state || !state.active_quiz_id) { aq = []; return; }
-    const { data } = await sb.from("audience_questions").select("*").eq("quiz_id", state.active_quiz_id)
-      .in("status", ["queued", "live", "asked"]).order("votes", { ascending: false }).order("created_at");
-    aq = data || [];
+    aq = await fcLoadQuestions(sb, state && state.active_quiz_id, ["pending", "queued", "live", "asked"]);
   }
 
   const setStatus = (t) => { document.getElementById("statusPill").textContent = t; };
@@ -133,106 +104,86 @@ if (fcRequireConfig()) {
     bgName = name;
     fcField(host, name, Object.assign({ box: [1920, 1080] }, o));
   }
-  const vol = () => fcEsc(window.FC_CONFIG.EVENT_TITLE || (quiz ? quiz.title : "Frontier Creatives"));
-
   function setCount() {
-    document.getElementById("respCount").textContent = rows.length;
-    document.getElementById("respLabel").textContent = rows.length === 1 ? "answer" : "answers";
-  }
-
-  function chartBlock(cls) {
-    const idx = questions.findIndex((x) => x.id === q.id) + 1;
-    return '<section class="screen q ' + (cls || "") + '"><div><span class="eyebrow">Question ' + idx + ' of ' + questions.length +
-      (state.phase === "question" ? " · voting open" : "") + '</span>' +
-      '<h1>' + fcEsc(q.prompt) + '</h1></div><div><div id="chart" class="chart"></div><div id="wi"></div></div></section>';
-  }
-  function mountChart(opts = {}) {
-    const el = document.getElementById("chart");
-    if (!el || !q) return;
-    const mode = q.type === "word" ? "cloud" : state.display_mode;
-    fcRenderChart(mode, el, q, rows, { big: true, two: opts.small ? false : undefined });
-    if (state.phase === "results" || state.phase === "panel") fcRenderWriteIns(document.getElementById("wi"), rows, { limit: opts.small ? 5 : 10, inline: true });
-    else { const w = document.getElementById("wi"); if (w) w.innerHTML = ""; }
+    const n = aq.filter((i) => i.status !== "dismissed").length;
+    document.getElementById("qCount").textContent = n;
+    document.getElementById("qLabel").textContent = n === 1 ? "question" : "questions";
   }
   function qRow(it, cls) {
-    return '<div class="rowi ' + cls + '"><span class="lead num">' + it.votes + ' ' + (it.votes === 1 ? "vote" : "votes") + '</span>' +
+    return '<div class="rowi ' + (cls || "") + '" data-id="' + it.id + '"><span class="lead num">' + it.votes + '</span>' +
       '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
-      '<div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') + '<span class="marker' + (cls === "on" ? " on" : "") + '">' + fcStatusLabel(it.status) + '</span></div></div></div>';
+      (it.author || it.status === "asked" ? '<div class="sub">' + (it.author ? fcEsc(it.author) : '') +
+        (it.status === "asked" ? (it.author ? ' · ' : '') + '<span class="marker">Asked</span>' : '') + '</div>' : '') +
+      '</div></div>';
   }
 
   function render() {
     setCount();
     if (!state) return;
     const phase = state.phase;
+    const title = fcEsc(fcTitle());
 
-    if (phase === "lobby" || (!q && phase !== "qa" && phase !== "panel" && phase !== "ended")) {
-      setStatus("Lobby");
-      view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + vol() + '</span>' +
-        '<h1>Scan to join</h1><p class="lede">Point your phone camera at the code. No app, no login.</p>' +
-        '<div class="url">' + fcEsc(joinURL.replace(/^https?:\/\//, "").replace(/\/$/, "")) + '</div></div>' +
-        '<div class="qrwrap">' + makeQR(Math.round(Math.min(360, Math.max(220, innerWidth * .19)))) + '</div></section>';
-      setBg("cardioid", { scale: 1.45, rot: -20, cx: 1480, cy: 560 });
-      return;
-    }
     if (phase === "ended") {
       setStatus("Ended");
-      view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + vol() + '</span>' +
-        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for playing. Stay for the room.</p></div><div></div></section>';
+      view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + title + '</span>' +
+        '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p></div><div></div></section>';
       setBg("star", { scale: 1.5, rot: -20, cx: 1440, cy: 540 });
       return;
     }
-    if (phase === "qa") {
-      setStatus("Audience questions");
-      setBg(null);
-      const live = aq.filter((i) => i.status === "live"), queued = aq.filter((i) => i.status === "queued"), asked = aq.filter((i) => i.status === "asked");
-      view.innerHTML = '<section class="screen qa"><div><span class="eyebrow">' + vol() + '</span><h1>Audience questions</h1>' +
-        '<div class="rows mt">' +
-          live.map((it) => qRow(it, "on")).join("") +
-          (queued.length ? queued.map((it) => qRow(it, "")).join("") : (live.length ? "" : '<p class="empty" style="font-size:1.3em">Waiting for the moderator to queue a question.</p>')) +
-          asked.slice(0, 4).map((it) => qRow(it, "past")).join("") +
-        '</div></div></section>';
-      return;
-    }
     if (phase === "panel") {
-      setStatus("Panel");
+      setStatus("On the floor");
       setBg(null);
       const live = aq.find((i) => i.status === "live");
-      const queued = aq.filter((i) => i.status === "queued").slice(0, 3);
-      const left =
-        '<div class="main"><span class="eyebrow">On the floor</span>' +
+      const next = aq.filter((i) => i.status === "queued" || i.status === "pending").slice(0, 4);
+      view.innerHTML = '<section class="screen panel"><div>' +
+        '<span class="eyebrow">On the floor</span>' +
         (live ? '<div class="live-q">' + fcEsc(live.text) + '</div>' + (live.author ? '<div class="live-by">' + fcEsc(live.author) + '</div>' : '')
-              : '<div class="live-q" style="color:var(--text-2)">Ask the panel from your phone.</div>') +
-        (queued.length ? '<div class="next"><span class="eyebrow muted">Up next</span><div class="rows">' +
-          queued.map((it) => '<div class="rowi"><span class="lead num">' + it.votes + '</span><div class="body"><div class="ttl">' + fcEsc(it.text) + '</div></div></div>').join("") +
-          '</div></div>' : '') + '</div>';
-      const right = q
-        ? '<div class="side"><span class="eyebrow">The room</span><h2>' + fcEsc(q.prompt) + '</h2><div id="chart" class="chart"></div><div id="wi"></div></div>'
-        : '<div class="side"><span class="eyebrow">Join in</span><h2>Scan to ask a question</h2>' + makeQR(200) + '</div>';
-      view.innerHTML = '<section class="screen panel">' + left + right + '</section>';
-      mountChart({ small: true });
+              : '<div class="live-q" style="color:var(--text-2)">Picking the next question.</div>') +
+        '</div><div class="side">' +
+        (next.length ? '<div class="next"><span class="eyebrow muted">Up next</span><div class="rows">' + next.map((it) => qRow(it)).join("") + '</div></div>' : '') +
+        '<span class="eyebrow muted" style="margin-top:28px">Add yours</span>' + qrSlot(150) +
+        '</div></section>';
+      mountQRs();
       return;
     }
-
-    setStatus(phase === "results" ? "Results" : "Voting open");
-      setBg(null);
-    view.innerHTML = chartBlock();
-    mountChart();
+    if (phase === "lobby" || !aq.length) {
+      setStatus("Open");
+      view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + title + '</span>' +
+        '<h1>What do you want to ask the panel?</h1><p class="lede">Scan to send a question, then vote for the ones you want answered. Most votes go first.</p>' +
+        '<div class="url">' + fcEsc(joinText) + '</div></div>' +
+        '<div class="qrwrap">' + qrSlot(Math.round(Math.min(380, Math.max(220, innerWidth * .2)))) + '</div></section>';
+      mountQRs();
+      setBg("cardioid", { scale: 1.45, rot: -20, cx: 1480, cy: 560 });
+      return;
+    }
+    // board: the live leaderboard
+    setStatus("The board");
+    setBg(null);
+    const live = aq.filter((i) => i.status === "live");
+    const open = aq.filter((i) => i.status === "queued" || i.status === "pending");
+    const asked = aq.filter((i) => i.status === "asked");
+    const rows = live.map((it) => qRow(it, "on")).concat(open.map((it) => qRow(it))).slice(0, 7)
+      .concat(asked.slice(0, Math.max(0, 8 - Math.min(7, live.length + open.length))).map((it) => qRow(it, "past")));
+    view.innerHTML = '<section class="screen board"><div><span class="eyebrow">' + title + '</span>' +
+      '<div class="rows">' + rows.join("") + '</div></div>' +
+      '<div class="side"><span class="eyebrow muted">Ask or vote</span>' + qrSlot(170) +
+      '<span class="small">' + fcEsc(joinText) + '</span></div></section>';
+    mountQRs();
   }
 
-  async function refresh() { await loadState(); await loadRows(); await loadAQ(); render(); }
-
-  sb.channel("p_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
-  sb.channel("p_resp").on("postgres_changes", { event: "INSERT", schema: "public", table: "responses" }, (p) => {
-    if (q && p.new && p.new.question_id === q.id) {
-      if (!rows.some((r) => r.id === p.new.id)) rows.push({ id: p.new.id, answer: p.new.answer });
-      setCount();
-      if (state.phase === "panel") mountChart({ small: true }); else mountChart();
+  // A projector does not scroll: drop rows from the bottom until the page fits.
+  function fit() {
+    const lists = [...view.querySelectorAll(".rows")];
+    let guard = 40;
+    while (guard-- && document.documentElement.scrollHeight > innerHeight + 2) {
+      const list = lists.find((l) => l.children.length > 1);
+      if (!list) break;
+      list.lastElementChild.remove();
     }
-  }).subscribe();
-  sb.channel("p_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, async () => {
-    if (state && (state.phase === "qa" || state.phase === "panel")) { await loadAQ(); render(); }
-  }).subscribe();
-
+  }
+  async function refresh() { await load(); render(); fit(); }
+  sb.channel("p_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
+  sb.channel("p_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, refresh).subscribe();
   refresh();
 }
 </script>

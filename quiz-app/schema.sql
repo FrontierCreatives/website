@@ -1,5 +1,7 @@
 -- ============================================================
--- Frontier Creatives · Live quiz and panel · Database schema (v1)
+-- Frontier Creatives · Interactive panel · Database schema (v1)
+-- The quizzes/questions/responses tables remain from the v1 quiz build;
+-- the panel tool uses quizzes as the event container and audience_questions.
 -- Paste this whole file into the Supabase SQL Editor and run it.
 -- It creates the tables, turns on realtime, and sets access rules.
 -- Then run reset.sql and panel.sql (helper functions), then seed.sql.
@@ -49,7 +51,7 @@ create table if not exists quiz_state (
   id                  int primary key default 1,
   active_quiz_id      uuid references quizzes(id) on delete set null,
   current_question_id uuid references questions(id) on delete set null,
-  -- phase: 'lobby' | 'question' | 'results' | 'qa' | 'panel' | 'ended'
+  -- phase (what the screen shows): 'lobby' (join QR) | 'qa' (the board) | 'panel' (on the floor) | 'ended'
   phase               text not null default 'lobby',
   -- display_mode: 'bar' | 'pie' | 'cloud'
   display_mode        text not null default 'bar',

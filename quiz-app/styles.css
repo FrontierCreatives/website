@@ -1,5 +1,5 @@
 /* ============================================================
-   Frontier Creatives · Live quiz and panel · shared UI
+   Frontier Creatives · Interactive panel · shared UI
    Built on the brand guide v1.3 (frontiercreatives.design/brand).
    Dark is the only surfaced mode; ?light is the projector /
    print fallback. Hierarchy from spacing, never from boxes.
@@ -138,27 +138,12 @@ h3 { font-weight: 600; font-size: 20px; line-height: 1.25; }
 .btn:disabled { opacity: .4; cursor: default; transform: none; }
 .btn:disabled:hover { background: var(--surface); }
 .btn.primary:disabled:hover { background: var(--brand); }
-.btn:focus-visible, .opt:focus-visible, input:focus-visible, textarea:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(233,128,94,.42); }
+.btn:focus-visible, .vote:focus-visible, input:focus-visible, textarea:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(233,128,94,.42); }
 
 /* Segmented control: the active step is the only coral */
 .seg { display: flex; flex-wrap: wrap; gap: 8px; }
 .seg .btn { font-size: 14px; padding: 10px 16px; }
 .seg .btn.on { background: var(--brand); color: var(--on-brand); }
-
-/* Answer options on the phone */
-.options { display: grid; gap: 10px; margin-top: 24px; }
-.opt {
-  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
-  font-family: var(--fd); font-weight: 500; font-size: 17px; line-height: 1.3;
-  padding: 16px 18px; border: none; border-radius: var(--radius); cursor: pointer;
-  background: var(--surface); color: var(--text);
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
-}
-.opt:hover { background: var(--border); }
-.opt:active { transform: translateY(1px); }
-.opt.chosen { background: var(--brand); color: var(--on-brand); }
-.opt .lead { font-family: var(--fd); font-weight: 600; font-size: 13px; color: var(--text-3); min-width: 1.4em; }
-.opt.chosen .lead { color: rgba(255,255,255,.75); }
 
 /* Inputs: recessed wells */
 input[type="text"], input[type="password"], textarea {
@@ -187,51 +172,12 @@ button.rowi:hover .ttl { color: var(--acc); }
 
 /* Upvote: a quiet count that warms when it is yours */
 .vote { display: inline-flex; flex-direction: column; align-items: center; gap: 0; min-width: 44px; padding: 6px 4px; border: none; background: none; cursor: pointer; color: var(--text-2); font-family: var(--fd); border-radius: 10px; }
+.vote .chev { display: block; margin-bottom: 2px; }
+.vote.mine .chev { stroke-width: 2.5; }
 .vote .n { font-weight: 600; font-size: 18px; line-height: 1; font-variant-numeric: tabular-nums; }
 .vote .l { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin-top: 3px; }
 .vote:hover { color: var(--acc); }
 .vote.mine { color: var(--acc); cursor: default; }
-
-/* Charts */
-.chart { width: 100%; }
-.bar { margin: 14px 0; }
-.bar .lab { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 6px; }
-.bar .lab .t { font-family: var(--fd); font-weight: 500; font-size: 17px; line-height: 1.3; }
-.bar .lab .v { color: var(--text-3); font-size: 15px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.bar .track { height: 14px; border-radius: 7px; background: var(--surface); overflow: hidden; }
-.bar .fill { height: 100%; border-radius: 7px; transition: width .55s var(--ease); }
-.big .bar { margin: 22px 0; }
-.big .bar .lab .t { font-size: clamp(20px, 1.7vw, 28px); }
-.big .bar .lab .v { font-size: clamp(16px, 1.3vw, 22px); }
-.big .bar .track { height: 24px; border-radius: 12px; }
-.big .bar .fill { border-radius: 12px; }
-.bars.two { display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(32px, 4vw, 72px); }
-.bars.two .bar { margin: 12px 0; }
-.bars.two .bar .lab .t { font-size: clamp(17px, 1.35vw, 24px); }
-.bars.two .bar .track { height: 18px; }
-@media (max-width: 1000px) { .bars.two { grid-template-columns: 1fr; } }
-
-.pie { display: flex; gap: clamp(24px, 4vw, 56px); flex-wrap: wrap; align-items: center; justify-content: center; }
-.pie svg { flex: 0 0 auto; }
-.legend { display: grid; gap: 10px; }
-.legend .key { display: flex; align-items: center; gap: 12px; font-size: 16px; color: var(--text-2); }
-.legend .key .sw { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
-.legend .key b { color: var(--text); font-family: var(--fd); font-weight: 500; }
-.big .legend .key { font-size: clamp(18px, 1.5vw, 26px); gap: 14px; }
-.big .legend .key .sw { width: 16px; height: 16px; }
-
-.cloud { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline; justify-content: center; padding: 10px 0; }
-.cloud .w { font-family: var(--fd); font-weight: 500; line-height: 1; color: var(--text); letter-spacing: -.01em; }
-.cloud .w.top { color: var(--acc); font-weight: 700; }
-
-.writeins { margin-top: 28px; }
-.writeins .wi { color: var(--text-2); font-size: 16px; margin: 6px 0; }
-.writeins.inline { margin-top: 18px; display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
-.writeins.inline .wi { margin: 0; display: inline; }
-.writeins.inline .sep { color: var(--text-3); }
-.big .writeins .wi { font-size: clamp(16px, 1.3vw, 22px); }
-
-.empty { color: var(--text-3); padding: 24px 0; }
 
 /* Live question on the big screen and the phone */
 .live-q { font-family: var(--fd); font-weight: 700; letter-spacing: -.02em; line-height: 1.08; font-size: clamp(24px, 3.6vw, 56px); text-wrap: balance; }
@@ -245,15 +191,18 @@ button.rowi:hover .ttl { color: var(--acc); }
 .has-field > :not(.field) { position: relative; z-index: 1; }
 
 /* QR tile: white is functional here, the one hard edge we allow */
-.qr { background: var(--qr-tile, #fff); padding: 14px; border-radius: var(--radius); display: inline-block; line-height: 0; box-shadow: var(--shadow); }
-.qr canvas, .qr img { display: block; }
+/* QR: white tile with a real quiet zone, the star in the middle (EC level H) */
+.qr { position: relative; background: #fff; padding: 14px; border-radius: var(--radius); display: inline-block; line-height: 0; box-shadow: var(--shadow); }
+.qr canvas { display: none; }
+.qr > img { display: block !important; }
+.qr .qr-mark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; border-radius: 50%; padding: 5px; box-sizing: content-box; }
 
 .err { color: var(--acc); }
 .hide { display: none !important; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 @media (prefers-reduced-motion: reduce) {
-  .bar .fill, .btn, .opt { transition: none; }
+  .btn, .rowi { transition: none; }
 }
 @media (max-width: 600px) {
   .rowi { gap: 12px; }

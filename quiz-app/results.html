@@ -4,24 +4,20 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives · Results</title>
+<title>Frontier Creatives · Export</title>
 <meta name="robots" content="noindex" />
 <link rel="icon" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="styles.css" />
-<style>
-  :root { --maxw: 820px; }
-  .q h3 { margin-top: 4px; }
-  .q .chart { margin-top: 18px; }
-</style>
+<style> :root { --maxw: 820px; } </style>
 </head>
 <body>
 <div class="wash sand"></div>
 <div id="app" class="wrap">
   <header class="top">
     <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
-    <span class="ctx">Results</span>
+    <span class="ctx">Export</span>
   </header>
   <main id="view"></main>
 </div>
@@ -36,114 +32,37 @@ if (fcRequireConfig()) fcGate(startResults);
 function startResults() {
   const view = document.getElementById("view");
   const sb = FC.client;
-  let quiz = null, questions = [], byQ = {}, aq = [], stamp = "";
-
-  function dateStr() { const d = new Date(); return d.toISOString().slice(0, 10); }
+  let aq = [], stamp = "";
 
   async function load() {
     const { data: st } = await sb.from("quiz_state").select("active_quiz_id").eq("id", 1).single();
-    const qid = st && st.active_quiz_id;
-    if (!qid) return false;
-    quiz = (await sb.from("quizzes").select("*").eq("id", qid).single()).data;
-    questions = (await sb.from("questions").select("*").eq("quiz_id", qid).order("sort_order")).data || [];
-    const ids = questions.map((q) => q.id);
-    let resp = [];
-    if (ids.length) resp = (await sb.from("responses").select("id,question_id,participant_id,answer,created_at").in("question_id", ids)).data || [];
-    byQ = {};
-    for (const q of questions) byQ[q.id] = resp.filter((r) => r.question_id === q.id);
-    aq = (await sb.from("audience_questions").select("*").eq("quiz_id", qid).order("votes", { ascending: false }).order("created_at")).data || [];
-    stamp = dateStr();
-    return true;
+    aq = await fcLoadQuestions(sb, st && st.active_quiz_id);
+    stamp = new Date().toISOString().slice(0, 10);
   }
-
-  const respondents = (rows) => new Set(rows.map((r) => r.participant_id)).size;
-
   function render() {
-    if (!quiz) {
-      view.innerHTML = '<span class="eyebrow">No active quiz</span><h2>Nothing to export yet</h2>' +
-        '<p class="hint">Load a quiz with <b>seed.sql</b> first.</p>';
-      return;
-    }
-    const totalPeople = new Set([].concat(...questions.map((q) => byQ[q.id].map((r) => r.participant_id)))).size;
-    let html = '<section><span class="eyebrow">' + fcEsc(window.FC_CONFIG.EVENT_TITLE || quiz.title) + '</span>' +
-      '<h2>Results</h2><p class="hint">' + totalPeople + ' participants · exported ' + stamp + '</p>' +
-      '<div class="row mt">' +
-        '<button class="btn primary" onclick="dlRaw()">Raw answers (CSV)</button>' +
-        '<button class="btn" onclick="dlSummary()">Summary (CSV)</button>' +
-        '<button class="btn" onclick="dlMd()">Report (Markdown)</button>' +
-        '<button class="btn ghost" onclick="reloadR()">Refresh</button>' +
-      '</div></section>';
-
-    // On-page summary
-    for (let i = 0; i < questions.length; i++) {
-      const q = questions[i], rows = byQ[q.id], n = respondents(rows);
-      const wi = fcWriteIns(rows);
-      const wiBlock = wi.length
-        ? '<div class="writeins"><span class="eyebrow muted">Write-ins (' + wi.length + ')</span>' +
-            wi.map((w) => '<div class="wi">' + fcEsc(w.text) + '</div>').join("") + '</div>'
-        : '';
-      html += '<section class="block q"><span class="eyebrow">Question ' + (i + 1) + ' · ' + n + ' answered</span>' +
-        '<h3>' + fcEsc(q.prompt) + '</h3><div id="c' + i + '" class="chart"></div>' + wiBlock + '</section>';
-    }
-    if (aq.length) {
-      html += '<section class="block"><span class="eyebrow">Audience questions (' + aq.length + ')</span><div class="rows">' +
-        aq.map((it) => '<div class="rowi' + (it.status === "dismissed" ? " off" : "") + '"><span class="lead num">' + it.votes + '</span>' +
-          '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
-          '<div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') + '<span class="marker">' + fcStatusLabel(it.status) + '</span></div></div></div>').join("") + '</div></section>';
-    }
-    view.innerHTML = html;
-    for (let i = 0; i < questions.length; i++) {
-      const q = questions[i];
-      fcRenderChart(q.type === "word" ? "cloud" : "bar", document.getElementById("c" + i), q, byQ[q.id]);
-    }
+    view.innerHTML = '<section><span class="eyebrow">' + fcEsc(fcTitle()) + '</span>' +
+      '<h2>Audience questions</h2><p class="hint">' + aq.length + ' questions · ' + aq.reduce((s, a) => s + a.votes, 0) + ' votes · ' + stamp + '</p>' +
+      '<div class="row mt"><button class="btn primary" onclick="dlCsv()">CSV</button>' +
+      '<button class="btn" onclick="dlMd()">Markdown</button><button class="btn ghost" onclick="reloadR()">Refresh</button></div></section>' +
+      '<section class="block"><div class="rows">' + (aq.length ? aq.map((it) =>
+        '<div class="rowi' + (it.status === "dismissed" ? " off" : "") + '"><span class="lead num">' + it.votes + '</span>' +
+        '<div class="body"><div class="ttl">' + fcEsc(it.text) + '</div>' +
+        '<div class="sub">' + (it.author ? fcEsc(it.author) + ' · ' : '') + '<span class="marker">' + fcStatusLabel(it.status) + '</span></div></div></div>'
+      ).join("") : fcEmpty("No questions yet.")) + '</div></section>';
   }
-
-  // ---- Builders ----
-  function buildRawCsv() {
-    const head = ["question_no", "question", "type", "answer", "participant_id", "submitted_at"];
-    const lines = [head.join(",")];
-    questions.forEach((q, i) => {
-      byQ[q.id].slice().sort((a, b) => a.created_at.localeCompare(b.created_at)).forEach((r) => {
-        lines.push([i + 1, q.prompt, q.type, r.answer, r.participant_id, r.created_at].map(fcCsvCell).join(","));
-      });
-    });
+  function buildCsv() {
+    const lines = [["votes", "question", "author", "status", "submitted_at"].join(",")];
+    aq.forEach((it) => lines.push([it.votes, fcClean(it.text), it.author || "", it.status, it.created_at].map(fcCsvCell).join(",")));
     return lines.join("\n");
   }
-  function buildSummaryCsv() {
-    const head = ["question_no", "question", "option", "votes", "pct_of_respondents"];
-    const lines = [head.join(",")];
-    questions.forEach((q, i) => {
-      const n = respondents(byQ[q.id]);
-      fcTally(q, byQ[q.id]).forEach((d) => {
-        const pct = n ? Math.round((d.count / n) * 100) : 0;
-        lines.push([i + 1, q.prompt, d.label, d.count, pct + "%"].map(fcCsvCell).join(","));
-      });
-    });
-    return lines.join("\n");
-  }
-  function buildMarkdown() {
-    let m = "# " + quiz.title + ": results\n\n_Exported " + stamp + "_\n";
-    questions.forEach((q, i) => {
-      const n = respondents(byQ[q.id]);
-      m += "\n## " + (i + 1) + ". " + q.prompt + "\n\n_" + n + " answered" + (q.type === "multi" ? " · pick any" : "") + "_\n\n";
-      const data = fcTally(q, byQ[q.id]);
-      if (!data.length) { m += "- (no answers)\n"; return; }
-      data.forEach((d) => { const pct = n ? Math.round((d.count / n) * 100) : 0; m += "- " + d.label + ": " + d.count + " (" + pct + "%)\n"; });
-      const wi = fcWriteIns(byQ[q.id]);
-      if (wi.length) { m += "\n_“Other” write-ins:_\n"; wi.forEach((w) => { m += "- " + w.text + "\n"; }); }
-    });
-    if (aq.length) {
-      m += "\n## Audience questions\n\n";
-      aq.forEach((it) => { m += "- **(" + it.votes + " votes)** " + it.text + (it.author ? ", " + it.author : "") + " _[" + it.status + "]_\n"; });
-    }
+  function buildMd() {
+    let m = "# " + fcTitle() + ": audience questions\n\n_Exported " + stamp + "_\n\n";
+    aq.forEach((it) => { m += "- **" + it.votes + "** " + fcClean(it.text) + (it.author ? " (" + it.author + ")" : "") + " _[" + fcStatusLabel(it.status) + "]_\n"; });
     return m;
   }
-
-  window.dlRaw = () => fcDownload("fc-quiz-raw-" + stamp + ".csv", buildRawCsv(), "text/csv");
-  window.dlSummary = () => fcDownload("fc-quiz-summary-" + stamp + ".csv", buildSummaryCsv(), "text/csv");
-  window.dlMd = () => fcDownload("fc-quiz-results-" + stamp + ".md", buildMarkdown(), "text/markdown");
+  window.dlCsv = () => fcDownload("fc-panel-questions-" + stamp + ".csv", buildCsv(), "text/csv");
+  window.dlMd = () => fcDownload("fc-panel-questions-" + stamp + ".md", buildMd(), "text/markdown");
   window.reloadR = async () => { await load(); render(); };
-
   load().then(render);
 }
 </script>
