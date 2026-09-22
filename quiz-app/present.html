@@ -34,11 +34,10 @@
   /* lobby: words left, QR on the cardioid right */
   .lobby { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 4vw, 80px); align-items: center; min-height: 60vh; }
   .lobby .qrwrap { display: flex; justify-content: center; align-items: center; min-height: 420px; }
-  /* the wrap: words up top, the morph band bleeding across the rest */
-  .wrapup { justify-content: flex-start; }
-  .wrapup .words { padding-top: clamp(8px, 3vh, 40px); }
-  .wrapup .band { flex: 0 0 auto; height: min(58vh, 32vw); margin: clamp(16px, 3vh, 40px) calc(-1 * clamp(16px, 4vw, 40px)) 0; display: flex; align-items: center; overflow: hidden; }
-  .wrapup .band video, .wrapup .band img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  /* the wrap: words left, the loop as big as the screen allows on the right */
+  .wrapup { grid-template-columns: 1fr auto; }
+  .wrapup .markwrap { display: flex; justify-content: flex-end; align-items: center; margin-right: calc(-1 * clamp(16px, 4vw, 40px)); }
+  .wrapup .markwrap video, .wrapup .markwrap img { width: min(76vh, 46vw); height: auto; display: block; }
   .lobby .url { font-family: var(--fd); font-weight: 600; font-size: clamp(18px, 1.6vw, 28px); margin-top: 22px; color: var(--text); letter-spacing: -.01em; }
 
   /* the board: a live leaderboard, with a small QR to keep the door open */
@@ -138,9 +137,9 @@ if (fcRequireConfig()) {
 
     if (phase === "ended") {
       setStatus("Ended");
-      view.innerHTML = '<section class="screen wrapup"><div class="words"><span class="eyebrow">' + title + '</span>' +
+      view.innerHTML = '<section class="screen lobby wrapup"><div><span class="eyebrow">' + title + '</span>' +
         '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p></div>' +
-        '<div class="band">' + fcAnimatedMark("band") + '</div></section>';
+        '<div class="markwrap">' + fcAnimatedMark() + '</div></section>';
       fcWatchMark(view);
       setBg(null);
       return;
@@ -188,6 +187,7 @@ if (fcRequireConfig()) {
   // A projector does not scroll: drop rows from the bottom until the page fits.
   function fit() {
     const lists = [...view.querySelectorAll(".rows")];
+    view.querySelectorAll(".live-q").forEach((el) => { el.style.fontSize = ""; });
     let guard = 40;
     while (guard-- && document.documentElement.scrollHeight > innerHeight + 2) {
       const list = lists.find((l) => l.children.length > 1);
@@ -202,7 +202,9 @@ if (fcRequireConfig()) {
       lq.style.fontSize = (cur * .9).toFixed(1) + "px";
     }
   }
-  async function refresh() { await load(); render(); fit(); }
+  async function refresh() { await load(); render(); fit(); setTimeout(fit, 400); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { render(); fit(); });
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { render(); fit(); }, 150); });
   sb.channel("p_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
   sb.channel("p_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, refresh).subscribe();
   refresh();
