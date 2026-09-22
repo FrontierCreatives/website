@@ -95,6 +95,7 @@ body {
 .wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-family: var(--fd); font-weight: 600; font-size: 17px; letter-spacing: -.005em; }
 .wordmark img { width: 26px; height: 26px; display: block; }
 .ctx { font-family: var(--fd); font-weight: 600; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+.ctx.on { color: var(--acc); }
 
 /* Type */
 h1, h2, h3 { font-family: var(--fd); color: var(--text); margin: 0; text-wrap: balance; }
