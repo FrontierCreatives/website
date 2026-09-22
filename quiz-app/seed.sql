@@ -11,11 +11,11 @@ declare
   q_id uuid;
   first_q uuid;
 begin
-  delete from quizzes where title = 'Vol. 04 · Designing with AI';
+  delete from quizzes where title = 'Vol. 04 · Interactive panel';
   update quizzes set is_active = false where is_active;
 
   insert into quizzes (title, is_active)
-  values ('Vol. 04 · Designing with AI', true)
+  values ('Vol. 04 · Interactive panel', true)
   returning id into q_id;
 
   insert into questions (quiz_id, sort_order, prompt, type, options) values

@@ -197,7 +197,10 @@ function fcRenderWriteIns(el, rows, opts = {}) {
 }
 
 function fcEmpty(msg) { return '<p class="empty">' + (msg || "Waiting for answers") + '</p>'; }
-function fcEsc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+// House rule: no em-dashes on any surface. Whatever the source (old seed
+// copy, a phone's autocorrect), a dash becomes a comma before it renders.
+function fcClean(s) { return String(s).replace(/\s*[\u2014\u2013]\s*/g, ", ").replace(/,\s*([.,;:!?])/g, "$1"); }
+function fcEsc(s) { return fcClean(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
 // ---- Audience question status vocabulary -------------------
 // pending → queued → live → asked, or dismissed. Only one is live.

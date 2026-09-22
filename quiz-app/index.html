@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives · Live</title>
+<title>Frontier Creatives · Vol. 04 panel</title>
 <meta name="robots" content="noindex" />
 <link rel="icon" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -161,7 +161,7 @@ if (fcRequireConfig()) {
   function render() {
     if (!state) { view.innerHTML = '<p class="empty">Connecting</p>'; return; }
     const phase = state.phase;
-    const vol = quiz ? fcEsc(quiz.title) : "Frontier Creatives";
+    const vol = fcEsc(window.FC_CONFIG.EVENT_TITLE || (quiz ? quiz.title : "Frontier Creatives"));
 
     if (phase === "ended") {
       view.innerHTML = '<section class="lobby"><span class="eyebrow">' + vol + '</span>' +
@@ -170,7 +170,7 @@ if (fcRequireConfig()) {
     }
     if (phase === "lobby" || (!q && phase !== "qa" && phase !== "panel")) {
       view.innerHTML = '<section class="lobby"><span class="eyebrow">' + vol + '</span>' +
-        '<h1>You&rsquo;re in</h1><p class="lede">Keep this page open. Questions show up here when we start.</p></section>';
+        '<h1>You&rsquo;re in</h1><p class="lede">Keep this page open. Questions for you, and from you, show up here when the panel starts.</p></section>';
       return;
     }
     if (phase === "qa") { view.innerHTML = qaBlock(); return; }

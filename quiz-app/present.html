@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <base href="/quiz-app/" />
-<title>Frontier Creatives · On screen</title>
+<title>Frontier Creatives · Vol. 04 panel · screen</title>
 <meta name="robots" content="noindex" />
 <link rel="icon" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -133,7 +133,7 @@ if (fcRequireConfig()) {
     bgName = name;
     fcField(host, name, Object.assign({ box: [1920, 1080] }, o));
   }
-  const vol = () => quiz ? fcEsc(quiz.title) : "Frontier Creatives";
+  const vol = () => fcEsc(window.FC_CONFIG.EVENT_TITLE || (quiz ? quiz.title : "Frontier Creatives"));
 
   function setCount() {
     document.getElementById("respCount").textContent = rows.length;

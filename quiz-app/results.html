@@ -65,7 +65,7 @@ function startResults() {
       return;
     }
     const totalPeople = new Set([].concat(...questions.map((q) => byQ[q.id].map((r) => r.participant_id)))).size;
-    let html = '<section><span class="eyebrow">' + fcEsc(quiz.title) + '</span>' +
+    let html = '<section><span class="eyebrow">' + fcEsc(window.FC_CONFIG.EVENT_TITLE || quiz.title) + '</span>' +
       '<h2>Results</h2><p class="hint">' + totalPeople + ' participants · exported ' + stamp + '</p>' +
       '<div class="row mt">' +
         '<button class="btn primary" onclick="dlRaw()">Raw answers (CSV)</button>' +

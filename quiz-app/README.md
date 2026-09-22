@@ -1,4 +1,4 @@
-# Frontier Creatives · Live quiz and panel
+# Frontier Creatives · Interactive panel (live quiz and Q&A)
 
 A Slido-style live audience app. Phones scan a QR code, answer questions, and results
 animate on the big screen (bar / pie / word cloud). A Q&A mode lets the audience submit and

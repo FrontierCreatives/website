@@ -118,7 +118,7 @@ function startModerator() {
     const queued = aq.filter((a) => a.status === "queued").length;
 
     view.innerHTML =
-      '<section class="now"><span class="eyebrow">' + fcEsc(quiz.title) + '</span>' +
+      '<section class="now"><span class="eyebrow">' + fcEsc(window.FC_CONFIG.EVENT_TITLE || quiz.title) + '</span>' +
         '<h2>' + (q ? (idx + 1) + '. ' + fcEsc(q.prompt) : 'No question selected') + '</h2>' +
         '<p class="count"><b id="respCount">' + count + '</b> ' + (count === 1 ? "answer" : "answers") + ' to this question</p>' +
         '<div class="row mt">' +
