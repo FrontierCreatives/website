@@ -51,6 +51,8 @@ The design system is at https://frontiercreatives.design/brand and it governs. I
 
 `.rowi` is itself an anchor, so never put a link inside a calendar row's text.
 
+**`assets/GIVE-THIS-TO-YOUR-AI.md`, `assets/fc-asset-pack.zip`, `assets/logo/` and `assets/textures/` are written by `FC DS/tools/sync-assets.py`, never by hand.** Edit them in the `design-system` repo and run the script; `assets/events/` is this repo's own.
+
 **Content protection is a hard rule on every page that puts type over the field** (`index.html`, `events/vol-*/`, `quiz-app/present.html`): no line may touch a glyph. Implement it only one way, the homepage's `#hlayer`: an absolute SVG layer between the figure and the type, `<rect>`s measured per text run with `Range.getClientRects()`, filled `rgba(0,0,0,.94)` on dark and the paper colour on light, rebuilt on `fonts.ready`, on width change, and whenever the surface it protects becomes visible. Never a CSS `mask-image` on the figure; an SVG data-URL mask is read in alpha mode, the holes keep the figure, and it fails with no error. Verify by rendering, never by reading the code: the screenshot must show the figure parting around every line.
 
 **Calendar row states are manual and must be moved when the hero rolls:**
