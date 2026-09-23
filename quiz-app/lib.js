@@ -218,8 +218,12 @@ function fcJig() {
     el.addEventListener("pointerup", () => { drag = null; });
     el.addEventListener("wheel", (e) => { e.preventDefault(); const step = e.shiftKey ? .01 : .04; st.s = Math.max(.1, st.s * (e.deltaY < 0 ? 1 + step : 1 - step)); apply(st); report(); }, { passive: false });
   }
-  const scan = () => { document.querySelectorAll("[data-jig]").forEach(attach); report(); };
-  new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+  // Watch the content area only; watching body would see the HUD's own
+  // updates and loop forever.
+  let pending = false;
+  const scan = () => { pending = false; document.querySelectorAll("[data-jig]").forEach(attach); report(); };
+  const root = document.getElementById("view") || document.querySelector("main") || document.body;
+  new MutationObserver(() => { if (!pending) { pending = true; requestAnimationFrame(scan); } }).observe(root, { childList: true, subtree: true });
   scan();
   let hd = null;
   const t = document.getElementById("fcjigT");
