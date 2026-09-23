@@ -97,6 +97,10 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
 /* ---------- slide 2 ---------- */
 .texture{position:absolute;z-index:0;height:178%;width:auto;top:50%;right:-33%;
   transform:translateY(-50%);pointer-events:none;opacity:var(--fig-op)}
+/* content protection, per the guide: bars measured from the real text line boxes,
+   between the figure and the type, so no line touches a glyph. Applied as a mask on
+   the figure rather than paint over it, so the wash stays continuous and the bars
+   read as the geometry parting around the words, never as panels. */
 #texG{stroke:var(--fig)}
 .s2{position:relative;z-index:1;max-width:min(78%,1180px)}
 .agenda{list-style:none;margin:0;padding:0;display:grid;gap:clamp(10px,1.7vh,26px)}
@@ -204,7 +208,7 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
         </ol>
       </div>
       <div class="s3-code">
-        <img src="qr-quiz-app.png" alt="QR code for frontiercreatives.design/quiz-app" width="1200" height="1200">
+        <img src="/events/vol-04/qr-quiz-app.png" alt="QR code for frontiercreatives.design/quiz-app" width="1200" height="1200">
         <span>frontiercreatives.design/quiz-app</span>
       </div>
     </div>
@@ -238,6 +242,45 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
 
   /* ---- slide 2 texture: the cardioid, held fully stitched ---- */
   put(fill(document.getElementById('texG')), CARDIOID);
+
+  /* ---- slide 2: protect the agenda from the field ----
+     Measure each text span with a Range (hugs the glyphs; a block would
+     over-cover), pad by a fraction of the line height, and cut those boxes
+     out of the figure with a mask in the figure's own pixel space. Nothing
+     is painted, so the page height cannot inflate. Re-measured on resize
+     (guarded on width) and once fonts land. */
+  var tex = document.querySelector('.texture');
+  var slide2 = tex && tex.closest('.slide');
+  var lastW = 0;
+  function guard(force){
+    if (!tex) return;
+    if (!force && innerWidth === lastW) return;
+    lastW = innerWidth;
+    var tb = tex.getBoundingClientRect();
+    if (!tb.width) return;
+    var pad = 0.28, holes = '';
+    var els = slide2.querySelectorAll('.eyebrow, .agenda .t, .agenda .l');
+    for (var i = 0; i < els.length; i++){
+      var rg = document.createRange(); rg.selectNodeContents(els[i]);
+      var rs = rg.getClientRects();
+      for (var j = 0; j < rs.length; j++){
+        var r = rs[j]; if (!r.width) continue;
+        var py = r.height * pad, px = r.height * 0.45;
+        holes += '<rect x="' + (r.left - tb.left - px).toFixed(1) + '" y="' + (r.top - tb.top - py).toFixed(1) +
+                 '" width="' + (r.width + px * 2).toFixed(1) + '" height="' + (r.height + py * 2).toFixed(1) + '" rx="4" fill="black"/>';
+      }
+    }
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + tb.width.toFixed(1) + '" height="' + tb.height.toFixed(1) + '">' +
+              '<rect width="100%" height="100%" fill="white"/>' + holes + '</svg>';
+    var url = 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+    tex.style.webkitMaskImage = url; tex.style.maskImage = url;
+    tex.style.webkitMaskSize = '100% 100%'; tex.style.maskSize = '100% 100%';
+    tex.style.webkitMaskRepeat = 'no-repeat'; tex.style.maskRepeat = 'no-repeat';
+  }
+  guard(true);
+  addEventListener('resize', function(){ guard(false); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ guard(true); });
+  setTimeout(function(){ guard(true); }, 1200);
 
   /* ---- slide 1: the living mark ---- */
   var live = fill(document.getElementById('liveG'));
