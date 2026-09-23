@@ -39,6 +39,7 @@
 <script src="lib.js"></script>
 <script>
 fcInitTheme();
+fcJig();
 if (fcRequireConfig()) {
   const view = document.getElementById("view");
   const sb = FC.client;
@@ -94,7 +95,7 @@ if (fcRequireConfig()) {
     if (state.phase === "ended") {
       view.innerHTML = '<section class="lobby"><span class="eyebrow">' + fcEsc(fcTitle()) + '</span>' +
         '<h1>That&rsquo;s a wrap</h1><p class="lede">Thanks for the questions. Stay for the room.</p>' +
-        '<div class="markwrap">' + fcAnimatedMark() + '</div></section>';
+        '<div class="markwrap" data-jig="wrap-loop">' + fcAnimatedMark() + '</div></section>';
       fcWatchMark(view);
       return;
     }
