@@ -168,12 +168,13 @@ The field treatment is tuned to disappear under text and does exactly that when 
 
 ## Text over the field: content protection
 
-If you put type over the geometry, no line may touch a glyph. The fix is a measured highlight layer, and it has four rules:
+If you put type over the geometry, no line may touch a glyph. The fix is a measured highlight layer, and it has five rules:
 
 1. **Bars are background-colored.** Black on dark, white on light. They read as the geometry parting around the words, never as cards or panels.
 2. **Measure the text, not the box.** `Range.getClientRects()` per element; a block element such as an eyebrow or label reports full column width and over-covers.
 3. **Above the figures, below all text.** The bars live on their own layer between the line field and the type. Wrong paint order and the lines cover the bars.
 4. **The layer may never inflate the page.** Give it real height (a zero-height SVG is clipped in Safari and the bars vanish), measure the document with the layer collapsed, and guard the resize observer on **width** so a height change cannot loop the layout into infinite growth.
+5. **Paint the bars; never mask the figure.** Do it by hand: an SVG layer of measured `<rect>`s, the way the homepage's `#hlayer` does. A CSS `mask-image` cut from the same boxes looks equivalent and silently fails; the browser reads an SVG mask in alpha mode, so the "holes" keep the figure instead of removing it, and nothing in the DOM tells you. Every surface that puts type on the field carries this same layer. Copy it; do not reinvent it.
 
 Re-measure on resize, on content change, and on font load.
 

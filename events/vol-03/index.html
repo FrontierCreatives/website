@@ -97,6 +97,11 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
 /* ---------- slide 2 ---------- */
 .texture{position:absolute;z-index:0;height:178%;width:auto;top:50%;right:-33%;
   transform:translateY(-50%);pointer-events:none;opacity:var(--fig-op)}
+/* content protection, per the guide and as on the main site: an absolute SVG layer
+   between the figure and the type, holding background-colored bars measured from the real
+   text line boxes (a Range, never the element box), so no line touches a glyph. The layer
+   is inset to the slide and never inflates the page. */
+.hlayer{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 #texG{stroke:var(--fig)}
 .s2{position:relative;z-index:1;max-width:min(78%,1180px)}
 .agenda{list-style:none;margin:0;padding:0;display:grid;gap:clamp(10px,1.7vh,26px)}
@@ -174,6 +179,7 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
     <svg class="texture" viewBox="0 0 800 800" aria-hidden="true">
       <g id="texG" stroke-width="0.8" vector-effect="non-scaling-stroke" stroke-linecap="round" fill="none"></g>
     </svg>
+    <svg class="hlayer" aria-hidden="true"></svg>
 
     <div class="s2">
       <span class="eyebrow">Tonight</span>
@@ -233,6 +239,44 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
   /* ---- slide 2 texture: the cardioid, held fully stitched ---- */
   put(fill(document.getElementById('texG')), CARDIOID);
 
+  /* ---- slide 2: protect the agenda from the field ----
+     Same as the main site's #hlayer. Measure each text span with a Range (hugs
+     the glyphs; a block box would over-cover), pad it, and draw a near-black bar
+     into an SVG layer that sits between the figure and the type. The layer is
+     pinned to the slide, so nothing can inflate the page. Re-measured once
+     fonts land, on resize (guarded on width) and each time the slide comes on. */
+  var slide2 = document.querySelector('.slide[data-slide="2"]');
+  var hlayer = slide2 && slide2.querySelector('.hlayer');
+  var lastW = 0;
+  function buildHL(force){
+    if (!hlayer) return;
+    if (!force && innerWidth === lastW) return;
+    lastW = innerWidth;
+    var sb = slide2.getBoundingClientRect();
+    if (!sb.width) return;
+    var theme = document.documentElement.getAttribute('data-theme') ||
+                (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    var fill = theme === 'light' ? 'rgba(244,239,231,.92)' : 'rgba(0,0,0,.94)';
+    var out = [];
+    var els = slide2.querySelectorAll('.eyebrow, .agenda .t, .agenda .l');
+    for (var i = 0; i < els.length; i++){
+      var rg = document.createRange(); rg.selectNodeContents(els[i]);
+      var rs = rg.getClientRects();
+      for (var j = 0; j < rs.length; j++){
+        var r = rs[j]; if (r.width < 2 || r.height < 2) continue;
+        var py = Math.round(r.height * 0.18), px = Math.round(r.height * 0.4);
+        out.push('<rect x="' + (r.left - sb.left - px).toFixed(1) + '" y="' + (r.top - sb.top - py).toFixed(1) +
+                 '" width="' + (r.width + px * 2).toFixed(1) + '" height="' + (r.height + py * 2).toFixed(1) +
+                 '" rx="8" fill="' + fill + '"/>');
+      }
+    }
+    hlayer.innerHTML = out.join('');
+  }
+  buildHL(true);
+  addEventListener('resize', function(){ buildHL(false); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ buildHL(true); });
+  setTimeout(function(){ buildHL(true); }, 1200);
+
   /* ---- slide 1: the living mark ---- */
   var live = fill(document.getElementById('liveG'));
   if (reduce){
@@ -265,6 +309,7 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
     cur = (n + slides.length) % slides.length;
     slides.forEach(function(s,i){ s.classList.toggle('is-on', i === cur); });
     dots.forEach(function(d,i){ d.classList.toggle('on', i === cur); });
+    if (cur === 1 && typeof buildHL === 'function') buildHL(true);
     schedule();
   }
   function schedule(){
@@ -280,6 +325,7 @@ body{font-family:var(--fb);color:var(--txt);-webkit-font-smoothing:antialiased}
     var now = root.getAttribute('data-theme');
     if (!now) now = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
     root.setAttribute('data-theme', now === 'light' ? 'dark' : 'light');
+    buildHL(true);
   }
 
   addEventListener('keydown', function(e){

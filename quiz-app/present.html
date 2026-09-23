@@ -19,6 +19,8 @@
   .foot .ctx { font-size: 12px; }
   .ctx { font-size: 13px; }
   .field.bg { position: fixed; z-index: 0; }
+  /* content protection, the main site's #hlayer: measured bars between the field and the type */
+  #hlayer { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   #view { flex: 1; display: flex; flex-direction: column; }
   .screen { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .screen h1 { font-size: clamp(32px, 4.2vw, 68px); }
@@ -75,6 +77,7 @@
 <body>
 <div class="wash"></div>
 <div class="field bg" id="bgField" aria-hidden="true"></div>
+<svg id="hlayer" aria-hidden="true"></svg>
 <div class="wrap">
   <main id="view"></main>
 </div>
@@ -204,9 +207,29 @@ if (fcRequireConfig()) {
       lq.style.fontSize = (cur * .9).toFixed(1) + "px";
     }
   }
-  async function refresh() { await load(); render(); fit(); setTimeout(fit, 400); }
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { render(); fit(); });
-  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { render(); fit(); }, 150); });
+  // Content protection, as on the homepage: whenever a field is showing, draw a
+  // background-colored bar under every text run so no line touches a glyph.
+  // Measured with a Range (hugs the glyphs), fixed to the viewport, never inflates the page.
+  const hlayer = document.getElementById("hlayer");
+  function buildHL() {
+    if (!hlayer) return;
+    if (!bgName) { hlayer.innerHTML = ""; return; }
+    const light = document.documentElement.getAttribute("data-theme") === "light";
+    const fill = light ? "rgba(255,255,255,.92)" : "rgba(0,0,0,.94)";
+    const out = [];
+    document.querySelectorAll("#view .eyebrow, #view h1, #view .lede, #view .url, #view .live-q, #view .live-by, #view .ttl, #view .sub, #view .lead, #view .empty, .foot > span").forEach((el) => {
+      const rg = document.createRange(); rg.selectNodeContents(el);
+      for (const r of rg.getClientRects()) {
+        if (r.width < 2 || r.height < 2) continue;
+        const py = Math.round(r.height * .18), px = Math.round(r.height * .4);
+        out.push('<rect x="' + (r.left - px).toFixed(1) + '" y="' + (r.top - py).toFixed(1) + '" width="' + (r.width + px * 2).toFixed(1) + '" height="' + (r.height + py * 2).toFixed(1) + '" rx="8" fill="' + fill + '"/>');
+      }
+    });
+    hlayer.innerHTML = out.join("");
+  }
+  async function refresh() { await load(); render(); fit(); buildHL(); setTimeout(() => { fit(); buildHL(); }, 400); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { render(); fit(); buildHL(); });
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { render(); fit(); buildHL(); }, 150); });
   sb.channel("p_state").on("postgres_changes", { event: "*", schema: "public", table: "quiz_state" }, refresh).subscribe();
   sb.channel("p_aq").on("postgres_changes", { event: "*", schema: "public", table: "audience_questions" }, refresh).subscribe();
   refresh();

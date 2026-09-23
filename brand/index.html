@@ -171,13 +171,14 @@ th{font-family:var(--fd);font-weight:600;color:var(--txt);font-size:13px;text-tr
     <tr><td>Protection</td><td>Selection-style bars, background-colored, measured from real text line boxes, drawn under all text. Lines never cross a glyph.</td></tr>
   </table>
   <h3>Content protection, documented</h3>
-  <p>Where the field crosses text, no line may touch a glyph. The fix is a measured highlight layer, and it has four rules we learned by breaking each one:</p>
+  <p>Where the field crosses text, no line may touch a glyph. The fix is a measured highlight layer, and it has five rules we learned by breaking each one:</p>
   <table>
     <tr><th>Rule</th><th>Why it exists</th></tr>
     <tr><td>Bars are background-colored</td><td>Black on dark, white on light. They read as the geometry parting around the words, never as cards or panels.</td></tr>
     <tr><td>Measure the text, not the box</td><td><code>Range.getClientRects()</code> per element. A block element (eyebrow, label) reports full column width and would over-cover; the range hugs the actual glyphs.</td></tr>
     <tr><td>Above the figures, below all text</td><td>The bars live on their own layer between the line field and the type. Wrong paint order and the lines cover the bars instead.</td></tr>
     <tr><td>The layer may never inflate the page</td><td>Give it real height; a zero-height SVG is clipped in Safari and the bars vanish. Measure the document with the layer collapsed, and guard the resize observer on <b>width</b> so a height change can never loop the layout into infinite growth.</td></tr>
+    <tr><td>Paint the bars; never mask the figure</td><td>Do it by hand: an SVG layer of measured <code>&lt;rect&gt;</code>s, exactly as the homepage&rsquo;s <code>#hlayer</code> does. A CSS <code>mask-image</code> cut from the same boxes looks equivalent and silently fails; the browser reads an SVG mask in alpha mode, so the &ldquo;holes&rdquo; keep the figure instead of removing it, and nothing in the DOM tells you. Every surface that puts type on the field (the event loops, the panel screen) carries this same layer; copy it, do not reinvent it.</td></tr>
   </table>
   <h3>Placing a figure, documented</h3>
   <p>A placed figure is a master under a similarity transform, and nothing else. Everything the scroll sequence needs is three numbers per keyframe.</p>
