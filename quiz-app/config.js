@@ -14,7 +14,7 @@ window.FC_CONFIG = {
   MODERATOR_PASSWORD: "frontier2026",
 
   // Shown as the eyebrow on every screen, whatever the database calls the quiz.
-  EVENT_TITLE: "Vol. 04 · Interactive panel",
+  EVENT_TITLE: "Vol. 05 · Interactive panel",
 
   // Questions containing any of these (whole word, any case) are refused on the
   // phone with a polite note. Extend freely. block.sql mirrors the list in the
