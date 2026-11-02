@@ -14,7 +14,7 @@ begin
   update quizzes set is_active = false where is_active;
 
   insert into quizzes (title, is_active)
-  values ('Vol. 04 · Interactive panel', true)
+  values ('Vol. 05 · Interactive panel', true)
   returning id into e_id;
 
   update quiz_state
