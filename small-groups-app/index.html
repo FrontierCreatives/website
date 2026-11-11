@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<base href="/small-groups-app/" />
+<title>Frontier Creatives · Small groups</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="../quiz-app/styles.css" />
+<style>
+  :root { --maxw: 560px; }
+  /* The hero carries the cardioid as a field, bleeding off the page; .hl is the content protection */
+  .hero { display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; min-height: clamp(300px, 84vw, 380px); margin: calc(-1 * clamp(28px, 6vw, 56px)) calc(-1 * clamp(16px, 4vw, 40px)) 0; padding: 28px clamp(16px, 4vw, 40px) 8px; overflow: hidden; }
+  .hero > svg.hl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  #rest { margin-top: clamp(28px, 6vw, 48px); }
+  .num { font-family: var(--fd); font-weight: 700; font-size: 80px; line-height: 1.06; letter-spacing: -.02em; color: var(--acc); }
+  .num.wait { font-size: 36px; }
+  .rules { margin: 16px 0 0; padding: 0; list-style: none; color: var(--text-2); font-size: 16px; }
+  .rules li + li { margin-top: 8px; }
+  .opts { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .opts .btn { text-align: left; white-space: normal; }
+  .opts .btn.on { background: var(--border); }
+  .opts .tick { color: var(--acc); margin-right: 8px; }
+  .opts .btn.primary { margin-top: 10px; }
+  .dqs { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
+  .dq { display: block; width: 100%; padding: 20px 20px 18px; background: var(--surface); border: 0; border-radius: var(--radius); text-align: left; cursor: pointer; color: var(--text); font-family: var(--fd); font-weight: 600; font-size: 28px; line-height: 1.2; letter-spacing: -.015em; -webkit-tap-highlight-color: transparent; }
+  .dq .eyebrow { margin-bottom: 10px; }
+  .dq .cue { display: block; margin-top: 14px; font-family: var(--fb); font-weight: 400; font-size: 14px; line-height: 1.5; letter-spacing: 0; color: var(--text-3); }
+  .dq.done { background: transparent; padding-top: 10px; padding-bottom: 10px; font-size: 17px; color: var(--text-3); }
+  .dq.done .eyebrow { margin-bottom: 4px; }
+  .dq.done .cue { margin-top: 2px; }
+  .moods { display: flex; justify-content: space-between; margin-top: 14px; }
+  .mood { flex: 1 1 0; min-height: 64px; padding: 0; background: none; border: 0; cursor: pointer; font-size: 40px; line-height: 1; transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); -webkit-tap-highlight-color: transparent; }
+  .moods.picked .mood { opacity: .3; }
+  .moods.picked .mood[aria-pressed="true"] { opacity: 1; transform: scale(1.2); }
+  .dq:focus-visible, .mood:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .dq, .mood { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wash"></div>
+<div id="app" class="wrap">
+  <header class="top">
+    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>  </header>
+  <main id="view"></main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../quiz-app/config.js"></script>
+<script src="../quiz-app/lib.js"></script>
+<script src="survey.js"></script>
+<script>
+fcInitTheme();
+if (fcRequireConfig()) {
+  const view = document.getElementById("view");
+  const sb = FC.client;
+  const pid = fcParticipantId();
+
+  const SURVEY = window.FC_SURVEY;
+  const QUESTIONS = [
+    "Which talk resonated with you most, and why?",
+    "What’s a project you’re working through right now?",
+    "What’s a problem you’re trying to solve and haven’t cracked yet?"
+  ];
+  const RULES = [
+    "Everyone answers once before anyone speaks twice.",
+    "Speak from what you’ve actually done. Ask before you advise.",
+    "Take the ideas with you; ask before you share who said them."
+  ];
+  const MOODS = [["\u{1F61E}", "Very unhappy"], ["\u{1F641}", "Unhappy"], ["\u{1F610}", "Okay"], ["\u{1F642}", "Happy"], ["\u{1F60D}", "Very happy"]];
+
+  // Scoped to this Volume, so a phone from this event starts fresh at the next.
+  const KEY = "fc-groups-v05-";
+  const get = (k, d) => { try { const v = localStorage.getItem(KEY + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } };
+  const put = (k, v) => { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) {} };
+
+  let group = get("group", null), slot = get("slot", null), answered = get("answered", null), picks = [], mood = get("mood", null);
+  // This phone's one survey question: by scan order, or at random if the database can't be reached.
+  function surveyQ() {
+    if (slot) return SURVEY[(slot - 1) % SURVEY.length];
+    let r = get("rand", null);
+    if (r === null) { r = Math.floor(Math.random() * SURVEY.length); put("rand", r); }
+    return SURVEY[r];
+  }
+  let done = Math.min(get("done", 0), 3);
+  let joining = !group;
+
+  view.innerHTML = '<section class="hero" id="hero"></section><div id="rest"></div>';
+  const hero = document.getElementById("hero"), rest = document.getElementById("rest");
+
+  function heroHtml() {
+    const eyebrow = '<span class="eyebrow">Vol. 05 · Your group</span>';
+    if (group) return eyebrow + '<div class="num">' + group + '</div>' +
+      '<p class="lede">Find the person holding up card ' + group + ' and join them.</p>';
+    if (joining) return eyebrow + '<div class="num wait">Finding your group</div>';
+    return eyebrow + '<div class="num wait">Join any group with room</div>' +
+      '<p class="hint">We couldn’t assign you a number, so pick whichever group looks smallest.</p>';
+  }
+  // Content protection, the homepage's #hlayer: a background-colored bar under
+  // every text run, so no line of the figure touches a glyph.
+  function buildHL() {
+    const layer = hero.querySelector(".hl");
+    if (!layer) return;
+    const box = hero.getBoundingClientRect();
+    const light = document.documentElement.getAttribute("data-theme") === "light";
+    const fill = light ? "#FCFAF6" : "rgba(0,0,0,.94)";
+    const out = [];
+    hero.querySelectorAll(".eyebrow, .num, .lede, .hint").forEach((el) => {
+      const rg = document.createRange(); rg.selectNodeContents(el);
+      for (const r of rg.getClientRects()) {
+        if (r.width < 2 || r.height < 2) continue;
+        const py = Math.round(r.height * .18), px = Math.round(r.height * .4);
+        out.push('<rect x="' + (r.left - box.left - px).toFixed(1) + '" y="' + (r.top - box.top - py).toFixed(1) + '" width="' + (r.width + px * 2).toFixed(1) + '" height="' + (r.height + py * 2).toFixed(1) + '" rx="8" fill="' + fill + '"/>');
+      }
+    });
+    layer.innerHTML = out.join("");
+  }
+  function renderHero() {
+    hero.innerHTML = '<svg class="hl" aria-hidden="true"></svg>' + heroHtml();
+    fcField(hero, "cardioid", { box: [800, 640], scale: .82, rot: -20, cx: 610, cy: 320 });
+    buildHL();
+  }
+  function rulesBlock() {
+    return '<section class="block"><ul class="rules" style="margin-top:0">' + RULES.map((r) => '<li>' + r + '</li>').join("") + '</ul></section>';
+  }
+  function surveyBlock() {
+    if (joining) return '<section class="block"><p class="hint">Loading your question</p></section>';
+    const s = surveyQ();
+    return '<section class="block"><h2>' + s.q + '</h2>' +
+      '<p class="hint">' + (s.multi ? 'Pick all that apply, then tap Complete Survey.' : 'Pick one, then tap Complete Survey.') + '</p><div class="opts">' +
+      s.opts.map((r, i) => {
+        const on = picks.includes(r);
+        return '<button class="btn wide' + (on ? ' on' : '') + '"' + ' aria-pressed="' + on + '"' + ' onclick="pickAnswer(' + i + ')">' +
+          (on ? '<span class="tick" aria-hidden="true">✓</span>' : '') + r + '</button>';
+      }).join("") +
+      '<button class="btn primary wide" id="doneBtn" onclick="submitPicks()"' + (picks.length ? '' : ' disabled') + '>Complete Survey</button>' +
+      '</div></section>';
+  }
+  // One question at a time: the next appears only when the group taps the current one.
+  function discussBlock() {
+    const total = QUESTIONS.length, shown = Math.min(done + 1, total);
+    return '<section class="block"><span class="eyebrow">Discussion</span>' +
+      '<p class="hint">One question at a time. Go around the group so everyone answers, then tap the question to move on.</p>' +
+      '<div class="dqs">' + QUESTIONS.slice(0, shown).map((q, i) => {
+        const isDone = i < done;
+        const cue = isDone ? "Done. Tap to go back to it." : (i === total - 1 ? "Tap when everyone has answered." : "Tap when everyone has answered to see the next question.");
+        return '<button class="dq' + (isDone ? ' done' : '') + '" aria-pressed="' + isDone + '" onclick="tapQuestion(' + i + ')">' +
+          '<span class="eyebrow' + (isDone ? ' muted' : '') + '">Question ' + (i + 1) + ' of ' + total + '</span>' + q +
+          '<span class="cue">' + cue + '</span></button>';
+      }).join("") + '</div>' +
+      (done >= total ? '<p class="hint">That’s all three. Keep the conversation going.</p>' : '') +
+      '</section>' +
+      '<section class="block"><h2>Before you go: how was tonight?</h2>' +
+      '<div class="moods' + (mood ? " picked" : "") + '" id="moods">' + MOODS.map((m, i) =>
+        '<button class="mood" aria-label="' + m[1] + '" aria-pressed="' + (mood === i + 1) + '" onclick="pickMood(' + (i + 1) + ')">' + m[0] + '</button>').join("") +
+      '</div></section>';
+  }
+  function renderRest() { rest.innerHTML = rulesBlock() + (answered ? discussBlock() : surveyBlock()); }
+
+  // Never blocks the page: with no connection, people still get the questions.
+  const joined = (async () => {
+    if (group) return;
+    try {
+      const timeout = new Promise((r) => setTimeout(() => r({ error: "timeout" }), 6000));
+      const { data, error } = await Promise.race([sb.rpc("breakout_join", { pid }), timeout]);
+      if (!error && data && data.group) { group = data.group; slot = data.slot; put("group", group); put("slot", slot); }
+    } catch (e) {}
+    joining = false;
+    renderHero();
+    renderRest();
+  })();
+  async function save(fields) {
+    await joined;
+    try { await sb.rpc("breakout_answer", Object.assign({ pid }, fields)); } catch (e) {}
+  }
+
+  // Single choice keeps one pick. Multiple choice toggles; the "none" answer clears the rest.
+  // Nothing is saved until Complete Survey.
+  window.pickAnswer = function (i) {
+    const s = surveyQ(), r = s.opts[i];
+    if (!s.multi) { picks = picks.includes(r) ? [] : [r]; renderRest(); return; }
+    if (picks.includes(r)) picks = picks.filter((x) => x !== r);
+    else picks = r === s.none ? [r] : picks.filter((x) => x !== s.none).concat(r);
+    renderRest();
+  };
+  window.submitPicks = function () {
+    const s = surveyQ();
+    if (!picks.length) return;
+    answered = s.opts.filter((o) => picks.includes(o));
+    put("answered", answered); renderRest(); save({ q: s.key, a: answered });
+  };
+  window.tapQuestion = function (i) {
+    done = i < done ? i : i + 1;
+    put("done", done);
+    renderRest();
+    const cur = document.querySelectorAll(".dq")[Math.min(done, QUESTIONS.length - 1)];
+    if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  };
+  window.pickMood = function (n) {
+    mood = n; put("mood", n);
+    const box = document.getElementById("moods");
+    box.classList.add("picked");
+    box.querySelectorAll(".mood").forEach((b, i) => b.setAttribute("aria-pressed", i + 1 === n));
+    save({ happiness: n });
+  };
+
+  renderHero();
+  renderRest();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildHL);
+  let lastW = innerWidth;
+  addEventListener("resize", () => { if (innerWidth !== lastW) { lastW = innerWidth; buildHL(); } });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<base href="/small-groups-app/" />
+<title>Frontier Creatives · Small groups admin</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="../quiz-app/styles.css" />
+<style>
+  :root { --maxw: 640px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 20px 44px; margin-top: 22px; }
+  .stat .n { font-family: var(--fd); font-weight: 700; font-size: 48px; line-height: 1.06; letter-spacing: -.02em; }
+  .stat .l, .size .l { font-size: 14px; color: var(--text-3); }
+  .sizes { display: flex; flex-wrap: wrap; gap: 14px 30px; margin-top: 18px; }
+  .size .n { font-family: var(--fd); font-weight: 700; font-size: 28px; line-height: 1.1; }
+  .tally .rowi { padding: 8px 0; }
+  .tally .rowi .ttl { font-size: 17px; }
+  .tally .rowi .lead { font-size: 17px; color: var(--text); min-width: 32px; }
+  .moodrow { display: flex; justify-content: space-between; margin-top: 18px; text-align: center; }
+  .moodrow .e { font-size: 36px; line-height: 1; }
+  .qrrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  #pass { margin-top: 14px; }
+  #stats { margin-top: clamp(36px, 7vw, 64px); }
+  .moodrow .n { font-family: var(--fd); font-weight: 700; font-size: 22px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wash sand"></div>
+<div id="app" class="wrap">
+  <header class="top">
+    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
+  </header>
+  <main id="view"></main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../quiz-app/config.js"></script>
+<script src="../quiz-app/lib.js"></script>
+<script src="survey.js"></script>
+<script>
+fcInitTheme();
+if (fcRequireConfig()) fcGate(start);
+
+// Shows totals from breakout_summary(), never individual phones, and holds the QR switch.
+function start() {
+  const view = document.getElementById("view");
+  const sb = FC.client;
+  const MOODS = ["\u{1F61E}", "\u{1F641}", "\u{1F610}", "\u{1F642}", "\u{1F60D}"];
+  const head = '<span class="eyebrow">Vol. 05 · Small groups</span><h1>How it’s going</h1>';
+  const pct = (n, t) => t ? Math.round(n / t * 100) + "%" : "";
+  const NAMES = { qa: "the Q&A", groups: "small groups" };
+  const PASSKEY = "fc-qr-pass";
+  const savedPass = () => { try { return sessionStorage.getItem(PASSKEY) || ""; } catch (e) { return ""; } };
+
+  view.innerHTML = '<div id="qrbox"></div><div id="stats"></div>';
+  const stats = document.getElementById("stats");
+  document.getElementById("qrbox").innerHTML = head +
+    '<section class="block" style="margin-top:28px"><span class="eyebrow">QR code</span>' +
+    '<p class="lede" style="margin-top:6px">Scans go to <b id="qrNow">…</b></p>' +
+    '<div class="qrrow"><button class="btn" id="to-qa" onclick="flipQR(\'qa\')">Send to the Q&amp;A</button>' +
+    '<button class="btn" id="to-groups" onclick="flipQR(\'groups\')">Send to small groups</button></div>' +
+    '<input id="pass" type="password" placeholder="Switch passphrase" autocomplete="off"' + (savedPass() ? ' hidden' : '') + ' />' +
+    '<p class="hint" id="qrMsg"></p></section>';
+  let qrNow = null;
+  function showQR(t) {
+    if (!NAMES[t] || t === qrNow) return;
+    qrNow = t;
+    document.getElementById("qrNow").textContent = NAMES[t];
+    for (const k of ["qa", "groups"]) {
+      const b = document.getElementById("to-" + k);
+      b.disabled = k === t;
+      b.classList.toggle("primary", k !== t);
+    }
+  }
+  window.flipQR = async function (t) {
+    const msg = document.getElementById("qrMsg"), box = document.getElementById("pass");
+    const pass = (box.value || savedPass()).trim();
+    if (!pass) { msg.textContent = "Enter the passphrase first."; box.focus(); return; }
+    let res = null;
+    try { res = await sb.rpc("set_qr_target", { pass, target: t }); } catch (e) {}
+    if (!res || res.error) { msg.textContent = "Couldn’t reach the database. Try again."; return; }
+    if (res.data !== true) {
+      try { sessionStorage.removeItem(PASSKEY); } catch (e) {}
+      box.hidden = false; box.value = ""; msg.textContent = "That passphrase didn’t match."; return;
+    }
+    try { sessionStorage.setItem(PASSKEY, pass); } catch (e) {}
+    box.hidden = true; box.value = "";
+    qrNow = null; showQR(t);
+    msg.textContent = "Done. New scans go to " + NAMES[t] + ". People already on a page stay there until they scan again.";
+  };
+
+  function render(d, failed) {
+    if (!d) {
+      stats.innerHTML = '<p class="hint mt">' + (failed ? "Can’t reach the database. Trying again." : "Loading") + '</p>';
+      return;
+    }
+    const top = Math.max(d.group_count, ...d.groups.map((g) => g.group), 0);
+    const sizes = Array.from({ length: top }, (_, i) => (d.groups.find((g) => g.group === i + 1) || { size: 0 }).size);
+    const surveyTotal = (d.respondents || []).reduce((a, x) => a + x.n, 0);
+    const moodTotal = d.mood.reduce((a, x) => a + x.n, 0);
+    const avg = moodTotal ? (d.mood.reduce((a, x) => a + x.mood * x.n, 0) / moodTotal).toFixed(1) : null;
+
+    showQR(d.qr_target);
+    stats.innerHTML =
+      '<section class="block"><span class="eyebrow">Small groups</span><div class="stats">' +
+        '<div class="stat"><div class="n">' + d.scans + '</div><div class="l">Phones scanned</div></div>' +
+        '<div class="stat"><div class="n">' + surveyTotal + '</div><div class="l">Answered the survey</div></div>' +
+        '<div class="stat"><div class="n">' + moodTotal + '</div><div class="l">Rated the night</div></div>' +
+      '</div></section>' +
+      '<section class="block"><span class="eyebrow">Group sizes</span><div class="sizes">' +
+        sizes.map((n, i) => '<div class="size"><div class="n">' + n + '</div><div class="l">Group ' + (i + 1) + '</div></div>').join("") +
+      '</div></section>' +
+      FC_SURVEY.map((s) => {
+        const rows = d.survey.filter((x) => x.question === s.key);
+        const t = ((d.respondents || []).find((x) => x.question === s.key) || { n: 0 }).n;
+        const list = s.opts.map((o) => [o, (rows.find((x) => x.answer === o) || { n: 0 }).n]).sort((a, b) => b[1] - a[1]);
+        return '<section class="block tally"><h3>' + s.q + '</h3>' +
+          '<p class="hint" style="margin-top:4px">' + t + (t === 1 ? ' person' : ' people') + (s.multi ? ' \u00B7 could pick more than one' : '') + '</p><div class="rows">' +
+          list.map(([o, n]) => '<div class="rowi' + (n ? '' : ' off') + '"><span class="lead">' + n + '</span><div class="body"><div class="ttl">' + fcEsc(o) + '</div>' +
+            (t ? '<div class="sub">' + pct(n, t) + '</div>' : '') + '</div></div>').join("") +
+          '</div></section>';
+      }).join("") +
+      '<section class="block"><span class="eyebrow">How was tonight?</span>' +
+        '<div class="moodrow">' + MOODS.map((e, i) => {
+          const m = d.mood.find((x) => x.mood === i + 1);
+          return '<div><div class="e">' + e + '</div><div class="n">' + (m ? m.n : 0) + '</div></div>';
+        }).join("") + '</div>' +
+        '<p class="hint">' + (avg ? "Average " + avg + " out of 5" : "No ratings yet") + '</p>' +
+      '</section>' +
+      '<p class="hint mt">Updated ' + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" }) + '. Refreshes every 5 seconds.</p>';
+  }
+
+  let last = null;
+  async function load() {
+    try {
+      const { data, error } = await sb.rpc("breakout_summary");
+      if (!error && data) { last = data; render(data); return; }
+    } catch (e) {}
+    if (!last) render(null, true);
+  }
+  render(null);
+  load();
+  setInterval(load, 5000);
+}
+</script>
+</body>
+</html>

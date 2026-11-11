@@ -118,7 +118,7 @@ function startModerator() {
       ? '<span class="small">Clear every question and vote?</span>' +
         '<button class="btn sm primary" onclick="resetYes()">Yes, reset</button>' +
         '<button class="btn sm ghost" onclick="resetNo()">Cancel</button>'
-      : '<button class="btn sm ghost" onclick="resetAsk()">Reset for next event</button>';
+      : '<button class="btn sm ghost" onclick="resetAsk()">Reset for next speaker</button>';
 
     const modes = '<div class="modes"><button class="btn sm' + (focus ? "" : " on") + '" onclick="setFocus(false)">List</button>' +
       '<button class="btn sm' + (focus ? " on" : "") + '" onclick="setFocus(true)">Focus</button></div>';

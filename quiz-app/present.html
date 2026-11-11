@@ -169,7 +169,7 @@ if (fcRequireConfig()) {
     if (phase === "lobby" || !aq.length) {
       setStatus("Open");
       view.innerHTML = '<section class="screen lobby"><div><span class="eyebrow">' + title + '</span>' +
-        '<h1>What do you want to ask the panel?</h1><p class="lede">Scan to send a question, then vote for the ones you want answered. Most votes go first.</p>' +
+        '<h1>What do you want to ask the speaker?</h1><p class="lede">Scan to send a question, then vote for the ones you want answered. Most votes go first.</p>' +
         '<div class="url">' + fcEsc(joinText) + '</div></div>' +
         '<div class="qrwrap" data-jig="join-qr">' + qrSlot(Math.round(Math.min(380, Math.max(220, innerWidth * .2)))) + '</div></section>';
       mountQRs();

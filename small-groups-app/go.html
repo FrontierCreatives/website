@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<base href="/small-groups-app/" />
+<title>Frontier Creatives · Vol. 05</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="../quiz-app/styles.css" />
+<style>
+  :root { --maxw: 560px; }
+  .opts { display: flex; flex-direction: column; gap: 8px; margin-top: 22px; }
+  a.btn { text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wash"></div>
+<div id="app" class="wrap">
+  <header class="top">
+    <a class="wordmark" href="../"><img src="../assets/logo/fc-mark.svg" alt="" /><span>Frontier Creatives</span></a>
+  </header>
+  <main id="view"><p class="empty">One moment</p></main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../quiz-app/config.js"></script>
+<script src="../quiz-app/lib.js"></script>
+<script>
+// The address on the printed QR code. Forwards each scan to whichever app the
+// admin page has switched on. If the database can't be reached, it asks instead.
+fcInitTheme();
+const DEST = { qa: "/quiz-app/", groups: "/small-groups-app/" };
+function choose() {
+  document.getElementById("view").innerHTML =
+    '<span class="eyebrow">Vol. 05</span><h1>Where to?</h1><div class="opts">' +
+    '<a class="btn primary wide" href="' + DEST.qa + '">Ask the panel</a>' +
+    '<a class="btn wide" href="' + DEST.groups + '">Small groups</a></div>';
+}
+(async () => {
+  try {
+    const timeout = new Promise((r) => setTimeout(() => r({ error: "timeout" }), 4000));
+    const { data, error } = await Promise.race([FC.client.rpc("qr_target"), timeout]);
+    if (!error && DEST[data]) { location.replace(DEST[data]); return; }
+  } catch (e) {}
+  choose();
+})();
+</script>
+</body>
+</html>
